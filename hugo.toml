@@ -1,0 +1,70 @@
+baseURL = "https://rawwnbuilds.github.io/ujjwalsrivastava/"
+locale = "en-us"
+title = "Ujjwal Srivastava"
+theme = "PaperMod"
+paginate = 10
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+
+[params]
+  env = "production"
+  title = "Ujjwal Srivastava"
+  description = "Thoughts on marketing, growth, and building in public."
+  author = "Ujjwal Srivastava"
+  defaultTheme = "auto"
+  disableThemeToggle = false
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowRssButtonInSectionTermList = true
+  UseHugoToc = true
+  disableSpecial1stPost = false
+  disableScrollToTop = false
+  comments = false
+  hidemeta = false
+  hideSummary = false
+  showtoc = false
+  tocopen = false
+
+  [params.assets]
+    disableHLJS = true
+
+  [params.homeInfoParams]
+    Title = "Hi, I'm Ujjwal 👋"
+    Content = "I write about marketing, growth, and building in public."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/RawwnBuilds"
+
+  [params.schema]
+    publisherType = "Person"
+    publisherName = "Ujjwal Srivastava"
+
+[minify]
+  disableXML = true
+  minifyOutput = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    noClasses = false
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.5

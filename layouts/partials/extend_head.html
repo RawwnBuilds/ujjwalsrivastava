@@ -1,0 +1,5 @@
+{{/* Override canonical URL if set in front matter */}}
+{{ if and .IsPage .Params.canonicalURL }}
+  {{/* Remove PaperMod's canonical and inject the custom one */}}
+  <link rel="canonical" href="{{ .Params.canonicalURL }}" />
+{{ end }}

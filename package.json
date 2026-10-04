@@ -1,0 +1,14 @@
+{
+  "name": "ujjwal-blog",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tinacms dev -c \"hugo server --buildDrafts --disableFastRender\"",
+    "build": "tinacms build && hugo --minify",
+    "start": "tinacms dev -c \"hugo server --buildDrafts\""
+  },
+  "dependencies": {
+    "@tinacms/cli": "^4.0.0",
+    "tinacms": "^3.14.2"
+  }
+}

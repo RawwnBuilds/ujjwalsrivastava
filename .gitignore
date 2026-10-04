@@ -1,0 +1,7 @@
+public/
+resources/
+.hugo_build.lock
+node_modules/
+.tina/__generated__/
+.env
+.env.local

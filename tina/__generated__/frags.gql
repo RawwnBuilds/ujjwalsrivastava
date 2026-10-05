@@ -1,0 +1,19 @@
+fragment PostParts on Post {
+  __typename
+  title
+  description
+  canonicalURL
+  cover {
+    __typename
+    image
+    alt
+    caption
+  }
+  date
+  tags
+  categories
+  author
+  draft
+  showToc
+  body
+}

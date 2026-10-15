@@ -62,7 +62,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "https://ujjwalsrivastava.com/"
+            --baseURL "https://www.ujjwalsrivastava.com/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

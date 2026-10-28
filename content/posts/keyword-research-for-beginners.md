@@ -1,11 +1,16 @@
 ---
-title: "Keyword research for beginners: How to choose primary and secondary keywords"
-description: "Keyword research for beginners: learn how to find the right keywords, check search intent and competition, and use free Google tools to choose what to write about."
-date: 2026-10-28T00:00:00Z
+title: 'Keyword research for beginners: How to choose primary and secondary keywords'
+description: 'Keyword research for beginners: learn how to find the right keywords, check search intent and competition, and use free Google tools to choose what to write about.'
+date: 2026-10-28T00:00:00.000Z
+tags:
+  - keyword research
+  - SEO
+  - content strategy
+  - Google tools
+categories:
+  - 'Foundation of content Writing '
+author: Ujjwal Srivastava
 draft: false
-author: "Ujjwal Srivastava"
-tags: ["keyword research", "SEO", "content strategy", "Google tools"]
-categories: ["SEO"]
 showToc: true
 ---
 
@@ -17,13 +22,13 @@ Before you open a keyword tool, think about what you are helping someone do. Tha
 
 ## How to do keyword research in 2026: TL;DR
 
-- Keyword research is how you find the exact phrases people type into search engines and decide which ones your content should target. It connects an article idea to a real reader need.
-- Before you open any tool, know who you are helping and what they need to do. That single decision shapes every keyword you collect.
-- Check three things for every candidate: search volume, search intent, and organic competition. Together they tell you whether a keyword is worth pursuing.
-- A primary keyword is a planning tool. One clear phrase keeps your article focused. Supporting keywords cover the same reader need from different angles.
-- Long-tail keywords aren't automatically easy. Specificity narrows the audience but doesn't guarantee low competition.
-- Free tools are enough to start. Google Keyword Planner, Google Trends, and Ahrefs' free generator cover the basics before you need to pay for anything.
-- AI can cluster and organize your keyword list. Use supplied tool data or connected sources for demand estimates, verify the output against those sources, and make the final decision yourself.
+* Keyword research is how you find the exact phrases people type into search engines and decide which ones your content should target. It connects an article idea to a real reader need.
+* Before you open any tool, know who you are helping and what they need to do. That single decision shapes every keyword you collect.
+* Check three things for every candidate: search volume, search intent, and organic competition. Together they tell you whether a keyword is worth pursuing.
+* A primary keyword is a planning tool. One clear phrase keeps your article focused. Supporting keywords cover the same reader need from different angles.
+* Long-tail keywords aren't automatically easy. Specificity narrows the audience but doesn't guarantee low competition.
+* Free tools are enough to start. Google Keyword Planner, Google Trends, and Ahrefs' free generator cover the basics before you need to pay for anything.
+* AI can cluster and organize your keyword list. Use supplied tool data or connected sources for demand estimates, verify the output against those sources, and make the final decision yourself.
 
 ## What are primary and secondary keywords?
 
@@ -53,11 +58,11 @@ Beginners should check **search volume, search intent, and organic competition**
 
 **Use these questions to assess an idea:**
 
-| What to check | Question to ask | What it can't tell you |
-|---|---|---|
-| **Search volume** | How often is this searched in my target market? | How many visitors my article will receive |
-| **Search intent** | What does the searcher want to learn, find, compare, or do? | That everyone using the query has the same goal |
-| **Organic competition** | What would it take to compete with the existing results? | That a low difficulty score guarantees a ranking |
+| What to check           | Question to ask                                             | What it can't tell you                           |
+| ----------------------- | ----------------------------------------------------------- | ------------------------------------------------ |
+| **Search volume**       | How often is this searched in my target market?             | How many visitors my article will receive        |
+| **Search intent**       | What does the searcher want to learn, find, compare, or do? | That everyone using the query has the same goal  |
+| **Organic competition** | What would it take to compete with the existing results?    | That a low difficulty score guarantees a ranking |
 
 Start with relevance. A popular keyword is still a poor choice if it serves the wrong audience or needs a page you can't provide.
 
@@ -73,47 +78,47 @@ Query wording provides a clue, but search results provide more evidence. Look at
 
 The searcher wants to understand a concept or answer a question. Answer the main question before explaining related ideas. A definition shouldn't require three paragraphs of background to become visible.
 
-- **Example:** "What is a hybrid athlete?"
-- **What the searcher wants:** A clear explanation of the concept
-- **Suitable response:** A definition-led guide that covers training approaches and context
+* **Example:** "What is a hybrid athlete?"
+* **What the searcher wants:** A clear explanation of the concept
+* **Suitable response:** A definition-led guide that covers training approaches and context
 
 ### Navigational intent
 
 The searcher wants to reach a specific destination. An independent article is unlikely to complete that task as directly as the destination itself. Brand names alone don't settle intent, since "Garmin watches" could also signal browsing or shopping.
 
-- **Example:** "Garmin official website"
-- **What the searcher wants:** The exact page or brand they already have in mind
-- **Suitable response:** The official website itself
+* **Example:** "Garmin official website"
+* **What the searcher wants:** The exact page or brand they already have in mind
+* **Suitable response:** The official website itself
 
 ### Commercial intent
 
 The searcher wants help making a decision. Recommendations should explain their basis. If you have not tested a product, don't present desk research as firsthand experience.
 
-- **Example:** "Best running watches with GPS"
-- **What the searcher wants:** Meaningful differences between options
-- **Suitable response:** A buying guide that covers price, battery life, size, and compatibility
+* **Example:** "Best running watches with GPS"
+* **What the searcher wants:** Meaningful differences between options
+* **Suitable response:** A buying guide that covers price, battery life, size, and compatibility
 
 ### Transactional intent
 
 The searcher wants to take action, usually a purchase. An educational introduction adds friction when someone already knows what they want to do.
 
-- **Example:** "Buy Garmin Forerunner 265"
-- **What the searcher wants:** A direct path to completing the purchase
-- **Suitable response:** A product or retailer page with price, availability, and purchase terms
+* **Example:** "Buy Garmin Forerunner 265"
+* **What the searcher wants:** A direct path to completing the purchase
+* **Suitable response:** A product or retailer page with price, availability, and purchase terms
 
 ## How do you assess organic keyword competition?
 
 Assess organic competition by inspecting the pages that already appear for your target query. Check their format, relevance, evidence, and usefulness. A keyword difficulty score can support this review, but it shouldn't replace reading the results.
 
-First, separate two different meanings of competition. [**Google Keyword Planner's competition column**](https://support.google.com/google-ads/answer/3022575?hl=en-uk) measures advertiser competition. It doesn't measure how hard it is to rank an unpaid article.
+First, separate two different meanings of competition. **[Google Keyword Planner's competition column](https://support.google.com/google-ads/answer/3022575?hl=en-uk)** measures advertiser competition. It doesn't measure how hard it is to rank an unpaid article.
 
-SEO tools offer their own organic difficulty estimates. For example, [**Ahrefs explains**](https://help.ahrefs.com/en/articles/72265-what-does-kd-stand-for-in-keywords-explorer) that its KD score uses referring domains linking to the top 10 organic results and excludes on-page SEO factors. Other tools use different methods. A score of 25 in one tool isn't automatically equivalent to 25 elsewhere.
+SEO tools offer their own organic difficulty estimates. For example, **[Ahrefs explains](https://help.ahrefs.com/en/articles/72265-what-does-kd-stand-for-in-keywords-explorer)** that its KD score uses referring domains linking to the top 10 organic results and excludes on-page SEO factors. Other tools use different methods. A score of 25 in one tool isn't automatically equivalent to 25 elsewhere.
 
 **Here is what I would inspect manually:**
 
-- **Page format:** Are the results mostly product pages, buying guides, or tutorials? That tells you whether your planned article fits the task. If you want to publish a blog post but the results largely serve shopping needs, reconsider the query or the page you intend to create.
-- **Evidence and usefulness:** Do the leading articles explain their recommendations, demonstrate relevant experience, and help readers make a decision? Identify what you could substantively contribute. A longer version of an existing list isn't necessarily an improvement. More useful evidence or clearer comparisons would give you a stronger reason to publish.
-- **Specific gaps:** Look for unanswered questions, unclear explanations, missing comparisons, or outdated details that affect the reader's task. Check whether those gaps matter to the intended audience. A missing section is an opportunity only if adding it makes the page more useful, rather than simply making it longer.
+* **Page format:** Are the results mostly product pages, buying guides, or tutorials? That tells you whether your planned article fits the task. If you want to publish a blog post but the results largely serve shopping needs, reconsider the query or the page you intend to create.
+* **Evidence and usefulness:** Do the leading articles explain their recommendations, demonstrate relevant experience, and help readers make a decision? Identify what you could substantively contribute. A longer version of an existing list isn't necessarily an improvement. More useful evidence or clearer comparisons would give you a stronger reason to publish.
+* **Specific gaps:** Look for unanswered questions, unclear explanations, missing comparisons, or outdated details that affect the reader's task. Check whether those gaps matter to the intended audience. A missing section is an opportunity only if adding it makes the page more useful, rather than simply making it longer.
 
 Don't make the mistake I made when I started out. A weak-looking result doesn't mean you can replace it. Check the effort it would take and whether your page actually fits the task before you commit.
 
@@ -121,7 +126,7 @@ Don't make the mistake I made when I started out. A weak-looking result doesn't 
 
 Keyword density describes how often a keyword appears relative to a page's word count. It isn't search demand, and it shouldn't guide your choice of primary or secondary keywords.
 
-Google says it has [**no notion of an optimal keyword density**](https://developers.google.com/search/help/office-hours/2023/january?hl=en). Its [**spam policies**](https://developers.google.com/search/docs/essentials/spam-policies) also warn against filling pages with keywords to manipulate rankings.
+Google says it has **[no notion of an optimal keyword density](https://developers.google.com/search/help/office-hours/2023/january?hl=en)**. Its **[spam policies](https://developers.google.com/search/docs/essentials/spam-policies)** also warn against filling pages with keywords to manipulate rankings.
 
 So I would not write a running-watch article while counting how many times I have repeated "best running watches with GPS." I would use the phrase where it makes the topic clear and describe the watches naturally elsewhere.
 
@@ -129,14 +134,21 @@ Specific details help the reader more than forced repetition. Explain battery mo
 
 ## Which free Google tools help with keyword research?
 
-[**Google Keyword Planner**](https://ads.google.com/home/tools/keyword-planner/), [**Google Trends**](https://trends.google.com/), [**Google Search**](https://www.google.com/), and [**Google Search Console**](https://search.google.com/search-console/) help with different parts of research. Use Keyword Planner for demand estimates, Trends for changes in relative interest, Search for suggestions and intent checks, and Search Console for an existing website's performance.
+**[Google Keyword Planner](https://ads.google.com/home/tools/keyword-planner/)**, **[Google Trends](https://trends.google.com/)**, **[Google Search](https://www.google.com/)**, and **[Google Search Console](https://search.google.com/search-console/)** help with different parts of research. Use Keyword Planner for demand estimates, Trends for changes in relative interest, Search for suggestions and intent checks, and Search Console for an existing website's performance.
 
-| Tool | Best beginner use | Main limitation |
-|---|---|---|
-| **Google Keyword Planner** | Generate ideas and check search-demand estimates | Its competition column concerns ads |
-| **Google Trends** | Compare interest over time and investigate seasonality | Its index isn't monthly search volume |
-| **Google Search** | Inspect page formats and discover related questions | Suggestions don't provide numerical demand |
-| **Google Search Console** | Find queries that already bring visibility to a site you manage | It isn't a market-wide or competitor keyword database |
+| Tool                       | Best beginner use                                               | Main limitation                                       |
+| -------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| **Google Keyword Planner** | Generate ideas and check search-demand estimates                | Its competition column concerns ads                   |
+| **Google Trends**          | Compare interest over time and investigate seasonality          | Its index isn't monthly search volume                 |
+| **Google Search**          | Inspect page formats and discover related questions             | Suggestions don't provide numerical demand            |
+| **Google Search Console**  | Find queries that already bring visibility to a site you manage | It isn't a market-wide or competitor keyword database |
+
+**If you prefer to learn by watching, each of these tools has a solid beginner tutorial:** 
+
+* [How to use Google Keyword Planner: Find the Best Keywords for Your Business (2026 Guide)](https://youtu.be/a6U3qD1TOmw?si=OPgnFX9dBenDpJq_)
+* [How To Use Google Trends For SEO & Google Rankings](https://youtu.be/FdHWEeDqKds?si=m3pDwgq8aVH6F-wD)
+* [How Google Search Works (in 5 minutes)](https://youtu.be/0eKVizvYSUQ?si=--PGBiJfS9TREZC-)
+* [Google Search Console Tutorial (2026): The Complete Guide](https://youtu.be/93uhFZ_9IzY?si=OyzXo-fPeVlRs-ps)
 
 ## How do you research keywords and choose a primary keyword?
 
@@ -161,15 +173,15 @@ Keep secondary keywords together when they support the same reader task and can 
 
 The following is an illustrative content map. It contains no verified search-volume or difficulty figures.
 
-| Candidate phrase or topic | Possible treatment | Reason |
-|---|---|---|
-| **Best GPS running watches** | Possible close variation | Similar comparison task, subject to a results check |
-| **Running watch battery life comparison** | Supporting comparison | Helps readers assess options |
-| **Cheap GPS running watches** | Budget section or separate guide | Depends on scope and whether results indicate a distinct need |
-| **Best GPS watch for marathon running** | Use-case section or separate guide | May need more specialized comparison criteria |
-| **How GPS running watches track distance** | Short explanation or separate explainer | Include only the detail needed for the buying decision |
-| **Garmin Connect login** | Exclude as a target | The reader wants a known destination |
-| **Hybrid athlete strength training split** | Separate article | The task is training design, rather than choosing a watch |
+| Candidate phrase or topic                  | Possible treatment                      | Reason                                                        |
+| ------------------------------------------ | --------------------------------------- | ------------------------------------------------------------- |
+| **Best GPS running watches**               | Possible close variation                | Similar comparison task, subject to a results check           |
+| **Running watch battery life comparison**  | Supporting comparison                   | Helps readers assess options                                  |
+| **Cheap GPS running watches**              | Budget section or separate guide        | Depends on scope and whether results indicate a distinct need |
+| **Best GPS watch for marathon running**    | Use-case section or separate guide      | May need more specialized comparison criteria                 |
+| **How GPS running watches track distance** | Short explanation or separate explainer | Include only the detail needed for the buying decision        |
+| **Garmin Connect login**                   | Exclude as a target                     | The reader wants a known destination                          |
+| **Hybrid athlete strength training split** | Separate article                        | The task is training design, rather than choosing a watch     |
 
 Notice that some decisions remain conditional. I treat it as part of the research. A keyword list should help you make decisions, rather than hide uncertainty behind a confident label.
 
@@ -183,12 +195,11 @@ Feed Claude your **raw Keyword Planner export** and **ask it to group keywords**
 
 While preparing my Udemy course on AI content writing, I researched keywords for hyrox and hybrid races. I pulled 16 keywords from Google Keyword Planner (United States, all languages, Google and search partners, October 2025 to September 2026).
 
-- "hyrox competition" and "hyrox competitions" both showed 10K-100K average monthly searches with a +900% three-month change and +900% YoY change. Treat a sharp increase as a reason to investigate. Check the monthly pattern, relevant event dates, search intent, and competing results before deciding whether to prioritize the topic.
-- Other terms, including "hybrid athlete," "hybrid athlete training," and "fitness competitions," showed ranges of 1K-10K with 0% change. These terms showed steady reported demand. They could support this article or become primary targets for separate pages, depending on the reader's task and the search results.
-- "hybrid athlete body" and "hybrid athlete reddit" both showed a -90% three-month drop. Before deciding whether to target those terms, inspect a longer period in Google Trends and consider relevant event dates. A short-term decline alone doesn't establish seasonality or a lasting reversal.
-![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
-
-- "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't provide an estimate for that term. Check the SERP manually before writing it off.
+* "hyrox competition" and "hyrox competitions" both showed 10K-100K average monthly searches with a +900% three-month change and +900% YoY change. Treat a sharp increase as a reason to investigate. Check the monthly pattern, relevant event dates, search intent, and competing results before deciding whether to prioritize the topic.
+* Other terms, including "hybrid athlete," "hybrid athlete training," and "fitness competitions," showed ranges of 1K-10K with 0% change. These terms showed steady reported demand. They could support this article or become primary targets for separate pages, depending on the reader's task and the search results.
+* "hybrid athlete body" and "hybrid athlete reddit" both showed a -90% three-month drop. Before deciding whether to target those terms, inspect a longer period in Google Trends and consider relevant event dates. A short-term decline alone doesn't establish seasonality or a lasting reversal.
+  ![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
+* "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't provide an estimate for that term. Check the SERP manually before writing it off.
 
 ### What I gave Claude and what it returned
 
@@ -208,7 +219,7 @@ It also flagged "hybrid events" as ambiguous because the SERP might return corpo
 
 ### The brief it helped me build
 
-Using that cluster report, I wrote this article: [**What is a Hyrox competition? Format, workouts, and rules explained**](https://medium.com/@rawwn.writes/what-is-a-hyrox-competition-format-workouts-rules-explained-7381989c99cb)
+Using that cluster report, I wrote this article: **[What is a Hyrox competition? Format, workouts, and rules explained](https://medium.com/@rawwn.writes/what-is-a-hyrox-competition-format-workouts-rules-explained-7381989c99cb)**
 
 *Primary keyword: hyrox competition. Reader goal: understand the format and find races to enter. The page covers the format explainer, Hyrox records as performance benchmarks, and hybrid events as a race calendar section. That structure came from the cluster report and my own SERP analysis. For your own brief, record the search date, target market, leading page types, and why each proposed section belongs on the page. A format explainer, performance records, and a race calendar may need separate pages if the results show different reader tasks.*
 
@@ -216,7 +227,7 @@ Run your Planner export through the same prompt.
 
 **Before you paste it in, add one line at the end:**
 
-> For each primary keyword candidate, I will manually add the top 3 organic competitors. Leave a bracketed placeholder [Competitors: ] after each primary keyword row so I can fill it in after checking Google.
+> For each primary keyword candidate, I will manually add the top 3 organic competitors. Leave a bracketed placeholder \[Competitors: ] after each primary keyword row so I can fill it in after checking Google.
 
 Then search each primary keyword yourself, note who ranks in positions 1 to 3, and add them into the prompt output. That one extra step turns a keyword group into a competitive brief you can actually write from.
 
@@ -226,10 +237,10 @@ Beginners should avoid choosing keywords from volume alone, confusing ad competi
 
 **Check these points before drafting:**
 
-- **Use the right metric:** Search volume measures demand estimates. Keyword density concerns repetition within a page. Advertiser competition concerns ads. Organic difficulty is a tool's estimate of ranking competition. Keeping those meanings separate prevents a misleading number from driving your topic choice.
-- **Check the actual task:** Don't decide intent from one word or a software badge alone. Review the results and consider possible mixed intent. A model name can lead to reviews, specifications, and shopping. A useful article needs a clear task even when the original query is ambiguous.
-- **Keep examples honest:** Don't label a phrase "easy," "high-converting," or "seasonal" without evidence. Illustrative running keywords explain a process; they don't prove a market opportunity. The same applies to testing claims. Only describe firsthand experience when you actually have it and can explain what you did.
-- **Protect the page's focus:** You don't need a separate heading for every keyword variation or a separate article for every synonym. Add a section when it helps the reader. Split a topic when it needs its own treatment. An outline should follow the questions, rather than the order of rows in a spreadsheet.
+* **Use the right metric:** Search volume measures demand estimates. Keyword density concerns repetition within a page. Advertiser competition concerns ads. Organic difficulty is a tool's estimate of ranking competition. Keeping those meanings separate prevents a misleading number from driving your topic choice.
+* **Check the actual task:** Don't decide intent from one word or a software badge alone. Review the results and consider possible mixed intent. A model name can lead to reviews, specifications, and shopping. A useful article needs a clear task even when the original query is ambiguous.
+* **Keep examples honest:** Don't label a phrase "easy," "high-converting," or "seasonal" without evidence. Illustrative running keywords explain a process; they don't prove a market opportunity. The same applies to testing claims. Only describe firsthand experience when you actually have it and can explain what you did.
+* **Protect the page's focus:** You don't need a separate heading for every keyword variation or a separate article for every synonym. Add a section when it helps the reader. Split a topic when it needs its own treatment. An outline should follow the questions, rather than the order of rows in a spreadsheet.
 
 ![Four principles for choosing keywords wisely: check the metric, match the intent, verify the evidence, keep one clear focus](/uploads/image6.jpg)
 
@@ -239,13 +250,13 @@ Before I choose a primary keyword, I want to be able to finish one sentence clea
 
 I didn't use a paid tool when I started, and you don't need one either. The concepts in this guide (search volume, intent, and competition) work the same regardless of what's in your toolbar. Pick one or two tools, learn what their numbers actually measure, and add more only when you have a specific reason to.
 
-- [**Google Keyword Planner**](https://ads.google.com/home/tools/keyword-planner/): demand estimates and keyword ideas. Requires a Google Ads account with completed setup, including billing information
-- [**Google Trends**](https://trends.google.com/): relative interest over time and seasonality
-- [**Google Search Console**](https://search.google.com/search-console/): performance data for sites you own
-- [**Ahrefs Free Keyword Generator**](https://ahrefs.com/keyword-generator): keyword ideas with basic difficulty estimates
-- [**Ubersuggest**](https://neilpatel.com/ubersuggest/): keyword suggestions and limited competitive data
-- [**Semrush Free Plan**](https://www.semrush.com/): keyword overview and limited daily searches
-- [**Keyword Surfer**](https://surferseo.com/keyword-surfer-extension/): volume estimates directly in Google Search results, browser extension
+* **[Google Keyword Planner](https://ads.google.com/home/tools/keyword-planner/)**: demand estimates and keyword ideas. Requires a Google Ads account with completed setup, including billing information
+* **[Google Trends](https://trends.google.com/)**: relative interest over time and seasonality
+* **[Google Search Console](https://search.google.com/search-console/)**: performance data for sites you own
+* **[Ahrefs Free Keyword Generator](https://ahrefs.com/keyword-generator)**: keyword ideas with basic difficulty estimates
+* **[Ubersuggest](https://neilpatel.com/ubersuggest/)**: keyword suggestions and limited competitive data
+* **[Semrush Free Plan](https://www.semrush.com/)**: keyword overview and limited daily searches
+* **[Keyword Surfer](https://surferseo.com/keyword-surfer-extension/)**: volume estimates directly in Google Search results, browser extension
 
 ## FAQs related to search and keyword research
 

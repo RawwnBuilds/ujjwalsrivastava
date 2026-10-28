@@ -1,6 +1,8 @@
 ---
 title: 'Keyword research for beginners: How to choose primary and secondary keywords'
 description: 'Keyword research for beginners: learn how to find the right keywords, check search intent and competition, and use free Google tools to choose what to write about.'
+cover:
+  image: /uploads/Keyword-research-for-beginners.png
 date: 2026-10-28T00:00:00.000Z
 tags:
   - keyword research
@@ -198,7 +200,7 @@ While preparing my Udemy course on AI content writing, I researched keywords for
 * "hyrox competition" and "hyrox competitions" both showed 10K-100K average monthly searches with a +900% three-month change and +900% YoY change. Treat a sharp increase as a reason to investigate. Check the monthly pattern, relevant event dates, search intent, and competing results before deciding whether to prioritize the topic.
 * Other terms, including "hybrid athlete," "hybrid athlete training," and "fitness competitions," showed ranges of 1K-10K with 0% change. These terms showed steady reported demand. They could support this article or become primary targets for separate pages, depending on the reader's task and the search results.
 * "hybrid athlete body" and "hybrid athlete reddit" both showed a -90% three-month drop. Before deciding whether to target those terms, inspect a longer period in Google Trends and consider relevant event dates. A short-term decline alone doesn't establish seasonality or a lasting reversal.
-* "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't estimate that term. Check the SERP manually before writing it off.\
+* "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't estimate that term. Check the SERP manually before writing it off.\\
 
   ![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
 

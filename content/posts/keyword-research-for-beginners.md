@@ -27,6 +27,8 @@ Before you open a keyword tool, think about what you are helping someone do. Tha
 
 ## What are primary and secondary keywords?
 
+![Diagram showing primary keyword "best running watches with GPS" in the centre, surrounded by secondary keywords: battery life, GPS accuracy, budget options, and works without a phone. A separate card labelled "hybrid athlete meal plan" is marked as a different reader task.](/uploads/image1.jpg)
+
 A primary keyword represents the **main search query** you want a page to address, while secondary keywords are **related phrases and questions** that help you cover that topic. Together, they give the page a clear focus without restricting it to one exact wording.
 
 For a comparison article, an illustrative primary keyword could be "best running watches with GPS." Supporting topics might include battery life, GPS accuracy, budget options, and whether a watch records a run without a phone. **These support the same decision:** which watch should the reader choose?
@@ -42,6 +44,8 @@ The practical test is whether each supporting topic helps the intended reader. A
 **Broad keywords** cover a large topic with high search demand ("running watches"), while **long-tail keywords** describe a more specific need with lower demand ("running watch for small wrists"), though word count alone doesn't define either. A short phrase can have little demand; a longer one can be popular.
 
 Specificity also doesn't guarantee low competition. A detailed query about an expensive product can still attract strong retailers and specialist publishers. For beginners, the better question isn't "is this long-tail?" It's "can I answer this need well?"
+
+![Google Keyword Planner results for "running watch for small wrists" showing 10–100 average monthly searches and High competition](/uploads/image4.jpg)
 
 ## What should beginners check before choosing a keyword?
 
@@ -149,6 +153,8 @@ Choose a primary keyword by identifying the reader's task, collecting relevant q
 
 You can start with a small shortlist. You don't need to collect a thousand terms to plan one useful article.
 
+![Six-step process for finding your primary keyword: 1. Define the reader, 2. Collect seed terms, 3. Record the evidence, 4. Inspect the results, 5. Choose the main query, 6. Group related topics](/uploads/image2.jpg)
+
 ## How do you decide which secondary keywords belong on the same page?
 
 Keep secondary keywords together when they support the same reader task and can be covered properly within one page. Separate them when they need a different format, audience, or depth of explanation. Shared words alone are not enough to justify grouping.
@@ -180,6 +186,8 @@ While preparing my Udemy course on AI content writing, I researched keywords for
 - "hyrox competition" and "hyrox competitions" both showed 10K-100K average monthly searches with a +900% three-month change and +900% YoY change. Treat a sharp increase as a reason to investigate. Check the monthly pattern, relevant event dates, search intent, and competing results before deciding whether to prioritize the topic.
 - Other terms, including "hybrid athlete," "hybrid athlete training," and "fitness competitions," showed ranges of 1K-10K with 0% change. These terms showed steady reported demand. They could support this article or become primary targets for separate pages, depending on the reader's task and the search results.
 - "hybrid athlete body" and "hybrid athlete reddit" both showed a -90% three-month drop. Before deciding whether to target those terms, inspect a longer period in Google Trends and consider relevant event dates. A short-term decline alone doesn't establish seasonality or a lasting reversal.
+![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
+
 - "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't provide an estimate for that term. Check the SERP manually before writing it off.
 
 ### What I gave Claude and what it returned
@@ -193,6 +201,8 @@ Claude returned four keyword groups, each with a reader goal, a primary keyword,
 The most useful output was Group 1, Hyrox events, where Claude proposed grouping "hyrox competition" and "hyrox competitions" on one page. Their similar wording makes this a reasonable starting point, but I would confirm the grouping by comparing search intent and overlapping results.
 
 Google Keyword Planner includes close variants in its search estimates, so identical metrics alone don't prove that two pages would compete.
+
+![Claude's keyword cluster report grouping hyrox and hybrid athlete keywords into four pages by reader goal, with primary keywords, supporting terms, and flagged ambiguities](/uploads/image5.jpg)
 
 It also flagged "hybrid events" as ambiguous because the SERP might return corporate event results rather than fitness races. That saves you from building a section around a keyword that doesn't mean what you think it means.
 
@@ -220,6 +230,8 @@ Beginners should avoid choosing keywords from volume alone, confusing ad competi
 - **Check the actual task:** Don't decide intent from one word or a software badge alone. Review the results and consider possible mixed intent. A model name can lead to reviews, specifications, and shopping. A useful article needs a clear task even when the original query is ambiguous.
 - **Keep examples honest:** Don't label a phrase "easy," "high-converting," or "seasonal" without evidence. Illustrative running keywords explain a process; they don't prove a market opportunity. The same applies to testing claims. Only describe firsthand experience when you actually have it and can explain what you did.
 - **Protect the page's focus:** You don't need a separate heading for every keyword variation or a separate article for every synonym. Add a section when it helps the reader. Split a topic when it needs its own treatment. An outline should follow the questions, rather than the order of rows in a spreadsheet.
+
+![Four principles for choosing keywords wisely: check the metric, match the intent, verify the evidence, keep one clear focus](/uploads/image6.jpg)
 
 Before I choose a primary keyword, I want to be able to finish one sentence clearly. "This page helps this person do this specific thing." If I can't finish it, I am still researching.
 

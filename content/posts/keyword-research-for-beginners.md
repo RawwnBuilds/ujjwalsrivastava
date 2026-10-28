@@ -8,7 +8,7 @@ tags:
   - content strategy
   - Google tools
 categories:
-  - 'Foundation of content Writing '
+  - 'Foundation of Content '
 author: Ujjwal Srivastava
 draft: false
 showToc: true
@@ -143,7 +143,7 @@ Specific details help the reader more than forced repetition. Explain battery mo
 | **Google Search**          | Inspect page formats and discover related questions             | Suggestions don't provide numerical demand            |
 | **Google Search Console**  | Find queries that already bring visibility to a site you manage | It isn't a market-wide or competitor keyword database |
 
-**If you prefer to learn by watching, each of these tools has a solid beginner tutorial:** 
+**If you prefer to learn by watching, each of these tools has a solid beginner tutorial:**
 
 * [How to use Google Keyword Planner: Find the Best Keywords for Your Business (2026 Guide)](https://youtu.be/a6U3qD1TOmw?si=OPgnFX9dBenDpJq_)
 * [How To Use Google Trends For SEO & Google Rankings](https://youtu.be/FdHWEeDqKds?si=m3pDwgq8aVH6F-wD)
@@ -198,10 +198,11 @@ While preparing my Udemy course on AI content writing, I researched keywords for
 * "hyrox competition" and "hyrox competitions" both showed 10K-100K average monthly searches with a +900% three-month change and +900% YoY change. Treat a sharp increase as a reason to investigate. Check the monthly pattern, relevant event dates, search intent, and competing results before deciding whether to prioritize the topic.
 * Other terms, including "hybrid athlete," "hybrid athlete training," and "fitness competitions," showed ranges of 1K-10K with 0% change. These terms showed steady reported demand. They could support this article or become primary targets for separate pages, depending on the reader's task and the search results.
 * "hybrid athlete body" and "hybrid athlete reddit" both showed a -90% three-month drop. Before deciding whether to target those terms, inspect a longer period in Google Trends and consider relevant event dates. A short-term decline alone doesn't establish seasonality or a lasting reversal.
-  ![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
-* "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't provide an estimate for that term. Check the SERP manually before writing it off.
+* "Budget watches for athletes" had no Planner data at all, which doesn't mean nobody searches it. It means this export didn't estimate that term. Check the SERP manually before writing it off.\
 
-### What I gave Claude and what it returned
+  ![Google Keyword Planner export showing 16 hyrox and hybrid athlete keywords with monthly search ranges, three-month change, YoY change, and competition columns](/uploads/image3.jpg)
+
+## What I gave Claude and what it returned
 
 **The prompt I used:**
 
@@ -243,8 +244,6 @@ Beginners should avoid choosing keywords from volume alone, confusing ad competi
 * **Protect the page's focus:** You don't need a separate heading for every keyword variation or a separate article for every synonym. Add a section when it helps the reader. Split a topic when it needs its own treatment. An outline should follow the questions, rather than the order of rows in a spreadsheet.
 
 ![Four principles for choosing keywords wisely: check the metric, match the intent, verify the evidence, keep one clear focus](/uploads/image6.jpg)
-
-Before I choose a primary keyword, I want to be able to finish one sentence clearly. "This page helps this person do this specific thing." If I can't finish it, I am still researching.
 
 ## Free tools I recommend for your keyword research
 

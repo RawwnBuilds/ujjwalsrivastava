@@ -278,4 +278,4 @@ Search Console **shows how a site you manage already performs** in Google Search
 
 ### How do you turn keyword research into an article outline?
 
-Once you have a primary keyword and a set of supporting topics, **convert the main reader questions into sections**. The primary keyword defines the page's promise. Group related questions into sections and use H2s, H3s, tables, or short paragraphs according to the explanation each needs. Order them the way a reader would naturally ask them. Answer every heading immediately in the opening sentence of that section.
+Once you have a primary keyword and a set of supporting topics, **convert the main reader questions into sections**. The primary keyword defines the page's promise. Group related questions into sections, and use H2s, H3s, tables, or short paragraphs based on what each needs. Order them the way a reader would naturally ask them. Answer every heading immediately in the opening sentence of that section.

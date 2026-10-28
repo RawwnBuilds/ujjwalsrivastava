@@ -3,6 +3,8 @@ title: 'Keyword research for beginners: How to choose primary and secondary keyw
 description: 'Keyword research for beginners: learn how to find the right keywords, check search intent and competition, and use free Google tools to choose what to write about.'
 cover:
   image: /uploads/Keyword-research-for-beginners.png
+  alt: ' Keyword research cover image '
+  caption: ''
 date: 2026-10-28T00:00:00.000Z
 tags:
   - keyword research

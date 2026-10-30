@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  (function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})();
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2PC6BBLD4"></script>
 <script>
@@ -49,37 +52,88 @@
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
+/* ── THEME TOKENS ── */
+:root {
+  --bg-page:        #0B0907;
+  --bg-section:     #141108;
+  --bg-card:        #1A1813;
+  --bg-card-hover:  #1f1c14;
+  --bg-overlay:     rgba(11,9,7,0.94);
+  --bg-grad-card:   linear-gradient(transparent, rgba(11,9,7,0.88));
+  --bg-grad-div:    linear-gradient(to right, #28231A, transparent);
+  --text-primary:   #EDE8DF;
+  --text-secondary: #9A8E7E;
+  --text-muted:     #5A5148;
+  --text-ghost:     #2E2820;
+  --text-dim:       #4A4438;
+  --accent:         #C4A969;
+  --accent-hover:   #d4b870;
+  --accent-on:      #0B0907;
+  --border:         #28231A;
+  --border-hover:   #3F3426;
+  --border-strong:  #4A3D2C;
+  --scrollbar-bg:   #0B0907;
+  --scrollbar-thumb:#3F3426;
+  --vinyl-shadow:   0 0 0 6px #0B0907, 0 0 0 11px #28231A, 0 0 0 16px #0B0907, 0 0 0 21px #1e1a12;
+}
+
+:root[data-theme="light"] {
+  --bg-page:        #FFFFFF;
+  --bg-section:     #E8F4FD;
+  --bg-card:        #F4F9FD;
+  --bg-card-hover:  #DFF0FA;
+  --bg-overlay:     rgba(255,255,255,0.96);
+  --bg-grad-card:   linear-gradient(transparent, rgba(232,244,253,0.94));
+  --bg-grad-div:    linear-gradient(to right, #C5DDE8, transparent);
+  --text-primary:   #0D0D0D;
+  --text-secondary: #4A6878;
+  --text-muted:     #7A9BAB;
+  --text-ghost:     #C5DDE8;
+  --text-dim:       #7AAFC4;
+  --accent:         #FF1493;
+  --accent-hover:   #D10077;
+  --accent-on:      #FFFFFF;
+  --border:         #C5DDE8;
+  --border-hover:   #A8CCDB;
+  --border-strong:  #8BBCCD;
+  --scrollbar-bg:   #FFFFFF;
+  --scrollbar-thumb:#C5DDE8;
+  --vinyl-shadow:   0 0 0 6px #FFFFFF, 0 0 0 11px #C5DDE8, 0 0 0 16px #FFFFFF, 0 0 0 21px #E0F0FA;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
 html { scroll-behavior:smooth; }
 body {
-  background:#0B0907;
-  color:#EDE8DF;
+  background: var(--bg-page);
+  color: var(--text-primary);
   font-family:'Plus Jakarta Sans',system-ui,sans-serif;
   font-size:16px;
   line-height:1.7;
   -webkit-font-smoothing:antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* SCROLLBAR */
 ::-webkit-scrollbar { width:3px; }
-::-webkit-scrollbar-track { background:#0B0907; }
-::-webkit-scrollbar-thumb { background:#3F3426; border-radius:2px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius:2px; }
 
 /* NAV */
 nav {
   position:sticky; top:0; z-index:50;
-  background:rgba(11,9,7,0.94);
+  background: var(--bg-overlay);
   backdrop-filter:blur(14px);
-  border-bottom:1px solid #28231A;
+  border-bottom:1px solid var(--border);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 /* TICKER */
-.ticker-wrap { overflow:hidden; border-top:1px solid #28231A; border-bottom:1px solid #28231A; background:#141108; padding:11px 0; }
+.ticker-wrap { overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background: var(--bg-section); padding:11px 0; transition: background 0.3s ease; }
 .ticker-track { display:flex; width:max-content; animation:ticker-scroll 40s linear infinite; }
 .ticker-track:hover { animation-play-state:paused; }
 @keyframes ticker-scroll { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
-.t-item { white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.13em; color:#9A8E7E; padding:0 1.8rem; text-transform:uppercase; }
-.t-dot { color:#C4A969; margin:0 0.5rem; }
+.t-item { white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.13em; color: var(--text-secondary); padding:0 1.8rem; text-transform:uppercase; }
+.t-dot { color: var(--accent); margin:0 0.5rem; }
 
 /* GRAIN on photo */
 .grain { position:relative; overflow:hidden; }
@@ -92,27 +146,28 @@ nav {
 /* VINYL SIDE B MARKER */
 .vinyl-disc {
   flex-shrink:0; width:60px; height:60px; border-radius:50%;
-  background:#141108; border:1px solid #C4A969;
-  box-shadow:0 0 0 6px #0B0907, 0 0 0 11px #28231A, 0 0 0 16px #0B0907, 0 0 0 21px #1e1a12;
+  background: var(--bg-section); border:1px solid var(--accent);
+  box-shadow: var(--vinyl-shadow);
   display:flex; align-items:center; justify-content:center; position:relative;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 .vinyl-disc::before {
   content:''; position:absolute;
-  width:10px; height:10px; border-radius:50%; background:#C4A969;
+  width:10px; height:10px; border-radius:50%; background: var(--accent);
 }
 
 /* CONTACT SHEET CARD */
 .cs-card {
-  background:#1A1813;
-  border:1px solid #28231A;
-  transition:border-color 0.25s ease, background 0.25s ease;
+  background: var(--bg-card);
+  border:1px solid var(--border);
+  transition: border-color 0.25s ease, background 0.25s ease;
   overflow:hidden;
 }
-.cs-card:hover { border-color:#4A3D2C; background:#1f1c14; }
+.cs-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
 .cs-img-frame {
   overflow:hidden;
   position:relative;
-  background:#0F0D0B;
+  background: var(--bg-section);
 }
 .cs-img-frame img {
   width:100%; height:100%;
@@ -125,9 +180,11 @@ nav {
   transform:scale(1.04);
   filter:contrast(1.06) brightness(0.85);
 }
+:root[data-theme="light"] .cs-img-frame img { filter:contrast(1.02) brightness(0.98) !important; }
+:root[data-theme="light"] .cs-card:hover .cs-img-frame img { filter:contrast(1.04) brightness(0.93) !important; }
 .cs-meta-reveal {
   position:absolute; bottom:0; left:0; right:0;
-  background:linear-gradient(transparent, rgba(11,9,7,0.88));
+  background: var(--bg-grad-card);
   padding:1.25rem 1rem 0.75rem;
   opacity:0; transform:translateY(5px);
   transition:opacity 0.32s, transform 0.32s;
@@ -139,7 +196,7 @@ nav {
 /* WAVE ANIMATION */
 .wave-bars { display:inline-flex; gap:3px; align-items:flex-end; height:18px; vertical-align:middle; }
 .wave-bars span {
-  width:3px; background:#C4A969; border-radius:2px;
+  width:3px; background: var(--accent); border-radius:2px;
   animation:wave-up 1.4s ease-in-out infinite;
   opacity:0; transition:opacity 0.3s;
   transform-origin:bottom;
@@ -163,28 +220,46 @@ nav {
 .fade-up.on { opacity:1; transform:translateY(0); }
 
 /* SERVICE PANEL */
-.svc { border-top:1.5px solid #C4A969; padding-top:1.4rem; transition:border-top-color 0.2s; }
-.svc:hover { border-top-color:#d4b870; }
+.svc { border-top:1.5px solid var(--accent); padding-top:1.4rem; transition:border-top-color 0.2s; }
+.svc:hover { border-top-color: var(--accent-hover); }
 
 /* BUTTONS */
 .btn-p {
   display:inline-flex; align-items:center; gap:0.35rem;
-  background:#C4A969; color:#0B0907;
+  background: var(--accent); color: var(--accent-on);
   font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.04em;
   padding:0.65rem 1.3rem; text-decoration:none;
   transition:background 0.2s, transform 0.15s;
 }
-.btn-p:hover { background:#d4b870; transform:translateY(-1px); }
+.btn-p:hover { background: var(--accent-hover); transform:translateY(-1px); }
 .btn-g {
   display:inline-flex; align-items:center; gap:0.35rem;
-  background:transparent; color:#9A8E7E;
+  background:transparent; color: var(--text-secondary);
   font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:500; letter-spacing:0.04em;
-  padding:0.65rem 1.3rem; border:1px solid #28231A; text-decoration:none;
+  padding:0.65rem 1.3rem; border:1px solid var(--border); text-decoration:none;
   transition:border-color 0.2s, color 0.2s;
 }
-.btn-g:hover { border-color:#3F3426; color:#EDE8DF; }
-.link-g { color:#C4A969; text-decoration:none; border-bottom:1px solid transparent; transition:border-color 0.2s; }
-.link-g:hover { border-bottom-color:#C4A969; }
+.btn-g:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.link-g { color: var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color 0.2s; }
+.link-g:hover { border-bottom-color: var(--accent); }
+
+/* NAV LINKS */
+.nav-link {
+  font-size:0.78rem; color: var(--text-secondary); text-decoration:none;
+  font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:0.04em;
+  transition:color 0.2s;
+}
+.nav-link:hover { color: var(--text-primary); }
+
+/* THEME TOGGLE */
+.theme-btn {
+  background:none; border:1px solid var(--border); color: var(--text-secondary);
+  font-family:'JetBrains Mono',monospace; font-size:0.72rem;
+  padding:0.28rem 0.6rem; cursor:pointer; border-radius:2px;
+  transition:border-color 0.2s, color 0.2s;
+  line-height:1;
+}
+.theme-btn:hover { border-color: var(--border-hover); color: var(--accent); }
 
 /* PUB PANEL */
 .pub-half {
@@ -193,11 +268,11 @@ nav {
 }
 .pub-item {
   display:flex; align-items:baseline; gap:0.75rem;
-  padding:0.7rem 0; border-bottom:1px solid #28231A;
+  padding:0.7rem 0; border-bottom:1px solid var(--border);
   transition:border-color 0.2s;
 }
 .pub-item:last-child { border-bottom:none; }
-.pub-item:hover { border-bottom-color:#3F3426; }
+.pub-item:hover { border-bottom-color: var(--border-hover); }
 
 /* RUNNING SPLIT on hover */
 .split-reveal {
@@ -206,6 +281,17 @@ nav {
   display:inline-flex; align-items:center; gap:0.5rem;
 }
 .cs-card:hover .split-reveal { opacity:1; transform:translateX(0); }
+
+/* FOOTER LINKS */
+.footer-link {
+  font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.04em;
+  color: var(--text-secondary); text-decoration:none; transition:color 0.2s;
+}
+.footer-link:hover { color: var(--accent); }
+.footer-link-sm {
+  font-size:0.8rem; color: var(--text-secondary); text-decoration:none; transition:color 0.2s;
+}
+.footer-link-sm:hover { color: var(--accent); }
 
 @media (max-width:768px) {
   .hero-grid { grid-template-columns:1fr !important; }
@@ -219,10 +305,10 @@ nav {
 </style>
 </head>
 
-<body class="bg-bg"> <!-- Google Tag Manager (noscript) -->
+<body>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7KRCKTH"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
 <!-- ════════════════════ NAV ════════════════════ -->
 <nav>
   <div style="max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px;">
@@ -230,11 +316,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <img src="logo.png" alt="Ujjwal Srivastava" style="height:52px;width:auto;display:block;opacity:0.92;" fetchpriority="high">
     </a>
     <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-      <a href="#services" style="font-size:0.78rem;color:#9A8E7E;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em;transition:color 0.2s;" onmouseover="this.style.color='#EDE8DF'" onmouseout="this.style.color='#9A8E7E'">Services</a>
-      <a href="#work"     style="font-size:0.78rem;color:#9A8E7E;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em;transition:color 0.2s;" onmouseover="this.style.color='#EDE8DF'" onmouseout="this.style.color='#9A8E7E'">Work</a>
-      <a href="#faq"      style="font-size:0.78rem;color:#9A8E7E;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em;transition:color 0.2s;" onmouseover="this.style.color='#EDE8DF'" onmouseout="this.style.color='#9A8E7E'">FAQ</a>
-      <a href="#beyond"   style="font-size:0.78rem;color:#9A8E7E;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em;transition:color 0.2s;" onmouseover="this.style.color='#EDE8DF'" onmouseout="this.style.color='#9A8E7E'">Side B</a>
-      <a href="/posts/"   style="font-size:0.78rem;color:#9A8E7E;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em;transition:color 0.2s;" onmouseover="this.style.color='#EDE8DF'" onmouseout="this.style.color='#9A8E7E'">Blog</a>
+      <a href="#services" class="nav-link">Services</a>
+      <a href="#work"     class="nav-link">Work</a>
+      <a href="#faq"      class="nav-link">FAQ</a>
+      <a href="#beyond"   class="nav-link">Side B</a>
+      <a href="/posts/"   class="nav-link">Blog</a>
+      <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle color theme">
+        <span id="theme-icon">☽</span>
+      </button>
       <a href="mailto:work@ujjwalsrivastava.com" class="btn-p" style="font-size:0.74rem;padding:0.45rem 1rem;">Contact Me</a>
     </div>
   </div>
@@ -246,16 +335,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="hero-grid" style="display:grid;grid-template-columns:1fr 360px;gap:5rem;align-items:start;">
 
     <div>
-      <p class="fade-up" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.16em;color:#C4A969;text-transform:uppercase;margin-bottom:1.5rem;">
+      <p class="fade-up" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.16em;color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;">
         Head of Content · Delhi, India
       </p>
-      <h1 class="fade-up" style="font-family:'Newsreader',serif;font-size:clamp(2.3rem,5vw,3.5rem);font-weight:300;line-height:1.1;letter-spacing:-0.02em;color:#EDE8DF;margin-bottom:2rem;">
-        B2B content that ranks<br>in search.<br><span style="color:#4A4438;">And gets cited by AI.</span>
+      <h1 class="fade-up" style="font-family:'Newsreader',serif;font-size:clamp(2.3rem,5vw,3.5rem);font-weight:300;line-height:1.1;letter-spacing:-0.02em;color:var(--text-primary);margin-bottom:2rem;">
+        B2B content that ranks<br>in search.<br><span style="color:var(--text-dim);">And gets cited by AI.</span>
       </h1>
-      <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:#9A8E7E;max-width:500px;margin-bottom:1.5rem;">
-        Most of what I do lives somewhere between strategy and storytelling. I lead content at <span style="color:#EDE8DF;">Magnaitic</span>. That means editorial infrastructure for B2B SaaS and tech clients: GEO/AEO architecture, high-volume publishing pipelines, and content that gets cited inside AI-generated answers. The part most brands haven't built for yet.
+      <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:var(--text-secondary);max-width:500px;margin-bottom:1.5rem;">
+        Most of what I do lives somewhere between strategy and storytelling. I lead content at <span style="color:var(--text-primary);">Magnaitic</span>. That means editorial infrastructure for B2B SaaS and tech clients: GEO/AEO architecture, high-volume publishing pipelines, and content that gets cited inside AI-generated answers. The part most brands haven't built for yet.
       </p>
-      <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:#9A8E7E;max-width:500px;margin-bottom:2.5rem;">
+      <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:var(--text-secondary);max-width:500px;margin-bottom:2.5rem;">
         The foundation is literary. A BA and MA in English Language and Literature, and a Bachelor's in Education alongside. Understanding how people learn is part of building systems that hold. The instinct for close reading, storytelling, and teaching carries straight into the frameworks. It doesn't stay academic.
       </p>
       <div class="fade-up" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
@@ -265,20 +354,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="photo-col fade-up">
-      <div class="grain" style="aspect-ratio:1/1;border:1px solid #28231A;background:#141108;">
+      <div class="grain" style="aspect-ratio:1/1;border:1px solid var(--border);background:var(--bg-section);">
         <img src="img_1.jpg" width="700" height="700" fetchpriority="high" alt="Ujjwal Srivastava"
              style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:contrast(1.08) brightness(0.92);">
       </div>
-      <p style="margin-top:0.6rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#5A5148;letter-spacing:0.08em;">
+      <p style="margin-top:0.6rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:0.08em;">
         UJJWAL SRIVASTAVA [rawwn] · MA ENG. LIT.
       </p>
 
-      <!-- ── Hashnode: Latest Writing ── -->
-      <div id="hn-writing" style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #28231A;">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin:0 0 0.75rem 0;">Latest Writing</p>
+      <!-- ── Latest Writing ── -->
+      <div id="hn-writing" style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin:0 0 0.75rem 0;">Latest Writing</p>
         <div id="hn-posts"></div>
         <a href="https://www.linkedin.com/in/ujjwalwrites/recent-activity/articles/" target="_blank" rel="noopener"
-           style="display:inline-flex;align-items:center;gap:0.35rem;font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:0.12em;color:#C4A969;text-decoration:none;margin-top:1rem;padding-bottom:2px;border-bottom:1px solid #C4A969;transition:opacity 0.2s;"
+           style="display:inline-flex;align-items:center;gap:0.35rem;font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:0.12em;color:var(--accent);text-decoration:none;margin-top:1rem;padding-bottom:2px;border-bottom:1px solid var(--accent);transition:opacity 0.2s;"
            onmouseover="this.style.opacity='0.65'" onmouseout="this.style.opacity='1'">LINKEDIN ARTICLES ↗</a>
       </div>
     </div>
@@ -319,24 +408,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <!-- ════════════════════ METRICS ════════════════════ -->
-<section style="border-bottom:1px solid #28231A;">
+<section style="border-bottom:1px solid var(--border);">
   <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
     <div class="metrics-row" style="display:grid;grid-template-columns:repeat(4,1fr);">
-      <div style="padding:2.25rem 1.5rem;border-right:1px solid #28231A;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:#EDE8DF;line-height:1;margin-bottom:0.5rem;">70<span style="color:#C4A969;">+</span></div>
-        <div style="font-size:0.78rem;color:#9A8E7E;line-height:1.5;">Articles shipped<br>every month</div>
+      <div style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--text-primary);line-height:1;margin-bottom:0.5rem;">70<span style="color:var(--accent);">+</span></div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">Articles shipped<br>every month</div>
       </div>
-      <div style="padding:2.25rem 1.5rem;border-right:1px solid #28231A;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:#C4A969;line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">GEO / AEO</div>
-        <div style="font-size:0.78rem;color:#9A8E7E;line-height:1.5;">AI-first content<br>architecture</div>
+      <div style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">GEO / AEO</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">AI-first content<br>architecture</div>
       </div>
-      <div style="padding:2.25rem 1.5rem;border-right:1px solid #28231A;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:#C4A969;line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">Editorial SOPs</div>
-        <div style="font-size:0.78rem;color:#9A8E7E;line-height:1.5;">Writer training and<br>QA infrastructure</div>
+      <div style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">Editorial SOPs</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">Writer training and<br>QA infrastructure</div>
       </div>
       <div style="padding:2.25rem 1.5rem;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:#C4A969;line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">MA Lit.</div>
-        <div style="font-size:0.78rem;color:#9A8E7E;line-height:1.5;">English Language<br>and Literature</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">MA Lit.</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">English Language<br>and Literature</div>
       </div>
     </div>
   </div>
@@ -346,27 +435,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ════════════════════ SERVICES ════════════════════ -->
 <section id="services" style="max-width:1120px;margin:0 auto;padding:80px 24px;">
   <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3.5rem;flex-wrap:wrap;gap:1rem;">
-    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:#EDE8DF;">What I actually do</h2>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:#5A5148;">SIDE A</p>
+    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">What I actually do</h2>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:var(--text-muted);">SIDE A</p>
   </div>
   <div class="svcs" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;">
 
     <div class="svc">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:1rem;">Editorial Operations</p>
-      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:#EDE8DF;margin-bottom:0.9rem;">Systems that hold at scale</h3>
-      <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;">High-volume B2B publishing breaks at volume. I build the infrastructure that prevents that: writer onboarding SOPs, line-by-line QA frameworks, and style guides that hold across writers and verticals without losing voice.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Editorial Operations</p>
+      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:var(--text-primary);margin-bottom:0.9rem;">Systems that hold at scale</h3>
+      <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;">High-volume B2B publishing breaks at volume. I build the infrastructure that prevents that: writer onboarding SOPs, line-by-line QA frameworks, and style guides that hold across writers and verticals without losing voice.</p>
     </div>
 
     <div class="svc">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:1rem;">GEO &amp; AEO Strategy</p>
-      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:#EDE8DF;margin-bottom:0.9rem;">Your content in the answer</h3>
-      <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;">AI engines retrieve information differently from search crawlers. I build content frameworks that structure information for AI discovery: semantic entity mapping, answer-phrased architecture, and topical clustering that earns citations in Perplexity, ChatGPT, and Google AI Overviews.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">GEO &amp; AEO Strategy</p>
+      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:var(--text-primary);margin-bottom:0.9rem;">Your content in the answer</h3>
+      <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;">AI engines retrieve information differently from search crawlers. I build content frameworks that structure information for AI discovery: semantic entity mapping, answer-phrased architecture, and topical clustering that earns citations in Perplexity, ChatGPT, and Google AI Overviews.</p>
     </div>
 
     <div class="svc">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:1rem;">Founder Ghostwriting</p>
-      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:#EDE8DF;margin-bottom:0.9rem;">Turning personal identity into meaningful influence.</h3>
-      <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;">The best founders have opinions worth reading. Most just don't have the time or structure to write them. I translate domain expertise into defensible essays and LinkedIn content that builds real authority: the kind someone shares because it says something true.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Founder Ghostwriting</p>
+      <h3 style="font-family:'Newsreader',serif;font-size:1.25rem;font-weight:400;line-height:1.3;color:var(--text-primary);margin-bottom:0.9rem;">Turning personal identity into meaningful influence.</h3>
+      <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;">The best founders have opinions worth reading. Most just don't have the time or structure to write them. I translate domain expertise into defensible essays and LinkedIn content that builds real authority: the kind someone shares because it says something true.</p>
     </div>
 
   </div>
@@ -374,25 +463,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <!-- ════════════════════ CASE STUDIES ════════════════════ -->
-<section id="work" style="background:#141108;border-top:1px solid #28231A;border-bottom:1px solid #28231A;">
+<section id="work" style="background:var(--bg-section);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
   <div style="max-width:1120px;margin:0 auto;padding:80px 24px;">
     <div style="margin-bottom:3rem;">
-      <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:#EDE8DF;">Editorial architecture in practice</h2>
+      <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">Editorial architecture in practice</h2>
     </div>
     <div class="cases" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
 
-      <article style="background:#1A1813;border:1px solid #28231A;padding:2rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#3F3426'" onmouseout="this.style.borderColor='#28231A'">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:#C4A969;margin-bottom:1.2rem;text-transform:uppercase;">Case: Editorial Operations</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.35rem;font-weight:400;color:#EDE8DF;line-height:1.3;margin-bottom:1.2rem;">Building editorial infrastructure for multi-client SaaS publishing</h3>
-        <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;margin-bottom:1rem;">Managing editorial for multiple B2B SaaS clients simultaneously meant the quality bar had to hold without manual oversight on every word. The solution was infrastructure: writer onboarding SOPs that compressed quality ramp time, client-specific style guides that traveled across writers, and a QA process that caught structural and factual errors before publication.</p>
-        <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;">The result: new writers produce publishable work within their second week, revision loops shrink, and editorial standards hold at volume.</p>
+      <article class="case-card" style="background:var(--bg-card);border:1px solid var(--border);padding:2rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);margin-bottom:1.2rem;text-transform:uppercase;">Case: Editorial Operations</p>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.35rem;font-weight:400;color:var(--text-primary);line-height:1.3;margin-bottom:1.2rem;">Building editorial infrastructure for multi-client SaaS publishing</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;margin-bottom:1rem;">Managing editorial for multiple B2B SaaS clients simultaneously meant the quality bar had to hold without manual oversight on every word. The solution was infrastructure: writer onboarding SOPs that compressed quality ramp time, client-specific style guides that traveled across writers, and a QA process that caught structural and factual errors before publication.</p>
+        <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;">The result: new writers produce publishable work within their second week, revision loops shrink, and editorial standards hold at volume.</p>
       </article>
 
-      <article style="background:#1A1813;border:1px solid #28231A;padding:2rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#3F3426'" onmouseout="this.style.borderColor='#28231A'">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:#C4A969;margin-bottom:1.2rem;text-transform:uppercase;">Case: GEO / AEO Framework</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.35rem;font-weight:400;color:#EDE8DF;line-height:1.3;margin-bottom:1.2rem;">A content protocol for Perplexity answers and LLM citations</h3>
-        <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;margin-bottom:1rem;">Most B2B content is structured for blue links. AI engines retrieve information differently: they prioritize entity clarity, direct answers, and topical density. The protocol starts with query modeling, asking what someone actually asks and how an AI system phrases the answer back.</p>
-        <p style="font-size:0.88rem;color:#9A8E7E;line-height:1.75;">Content is then structured to deliver that answer in the first paragraph, with supporting entities that establish authority. The result: client content appearing in AI Overview boxes and Perplexity citations for competitive SaaS keywords.</p>
+      <article class="case-card" style="background:var(--bg-card);border:1px solid var(--border);padding:2rem;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);margin-bottom:1.2rem;text-transform:uppercase;">Case: GEO / AEO Framework</p>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.35rem;font-weight:400;color:var(--text-primary);line-height:1.3;margin-bottom:1.2rem;">A content protocol for Perplexity answers and LLM citations</h3>
+        <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;margin-bottom:1rem;">Most B2B content is structured for blue links. AI engines retrieve information differently: they prioritize entity clarity, direct answers, and topical density. The protocol starts with query modeling, asking what someone actually asks and how an AI system phrases the answer back.</p>
+        <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;">Content is then structured to deliver that answer in the first paragraph, with supporting entities that establish authority. The result: client content appearing in AI Overview boxes and Perplexity citations for competitive SaaS keywords.</p>
       </article>
 
     </div>
@@ -403,97 +492,97 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ════════════════════ FAQ ════════════════════ -->
 <section id="faq" style="max-width:1120px;margin:0 auto;padding:80px 24px;">
   <div style="margin-bottom:3rem;">
-    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:#EDE8DF;">Things worth knowing</h2>
+    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">Things worth knowing</h2>
   </div>
   <div style="max-width:780px;" itemscope itemtype="https://schema.org/FAQPage">
 
-    <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">Who is Ujjwal Srivastava?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">Who is Ujjwal Srivastava?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">Ujjwal Srivastava is a B2B content strategist and Head of Content at Magnaitic, where he leads editorial output across SEO, AEO, and GEO. He holds a master's in English Literature and specialises in product-led content, tech journalism, and founder ghostwriting. Outside work, he is a hybrid athlete, musician, and essayist.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">Ujjwal Srivastava is a B2B content strategist and Head of Content at Magnaitic, where he leads editorial output across SEO, AEO, and GEO. He holds a master's in English Literature and specialises in product-led content, tech journalism, and founder ghostwriting. Outside work, he is a hybrid athlete, musician, and essayist.</p>
         </div>
       </div>
     </div>
 
-        <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">What does a B2B SaaS content strategist actually do, and how does it differ from content writing?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">What does a B2B SaaS content strategist actually do, and how does it differ from content writing?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;margin-bottom:0.7rem;">A B2B SaaS content strategist decides what gets written, why it gets written, and how it connects to a buyer's journey before anyone types a word. Content writing executes on that plan. Strategy builds it.</p>
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">In practice, this means keyword and intent mapping across funnel stages, editorial angles that differentiate from competitors, and content architecture that supports both SEO and AI discovery. Every piece serves a commercial purpose. Not just a publishing calendar.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;margin-bottom:0.7rem;">A B2B SaaS content strategist decides what gets written, why it gets written, and how it connects to a buyer's journey before anyone types a word. Content writing executes on that plan. Strategy builds it.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">In practice, this means keyword and intent mapping across funnel stages, editorial angles that differentiate from competitors, and content architecture that supports both SEO and AI discovery. Every piece serves a commercial purpose. Not just a publishing calendar.</p>
         </div>
       </div>
     </div>
 
-    <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">What is GEO and AEO content writing, and why does it matter more than traditional SEO right now?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">What is GEO and AEO content writing, and why does it matter more than traditional SEO right now?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;margin-bottom:0.7rem;"><strong style="color:#EDE8DF;">GEO (Generative Engine Optimization)</strong> is the practice of structuring content so that AI assistants such as ChatGPT, Perplexity, Google AI Overviews, and Gemini pull from and cite it when answering user queries. <strong style="color:#EDE8DF;">AEO (Answer Engine Optimization)</strong> focuses specifically on matching the question-and-answer format that AI engines use to retrieve information.</p>
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">Traditional SEO targets the ten blue links. GEO and AEO target the answer that appears above them, which is increasingly the only result a user reads. For B2B SaaS brands, this means content built to appear in Perplexity citations and Google AI Overviews, reaching buyers before they ever click a link.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;margin-bottom:0.7rem;"><strong style="color:var(--text-primary);">GEO (Generative Engine Optimization)</strong> is the practice of structuring content so that AI assistants such as ChatGPT, Perplexity, Google AI Overviews, and Gemini pull from and cite it when answering user queries. <strong style="color:var(--text-primary);">AEO (Answer Engine Optimization)</strong> focuses specifically on matching the question-and-answer format that AI engines use to retrieve information.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">Traditional SEO targets the ten blue links. GEO and AEO target the answer that appears above them, which is increasingly the only result a user reads. For B2B SaaS brands, this means content built to appear in Perplexity citations and Google AI Overviews, reaching buyers before they ever click a link.</p>
         </div>
       </div>
     </div>
 
-    <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">What are Ujjwal Srivastava's published works?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">What are Ujjwal Srivastava's published works?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;margin-bottom:0.9rem;">Ujjwal Srivastava (writing as Ujjwal Rawwn Srivastava, pen name rawwn) has published three books and several critical academic papers.</p>
-          <p style="font-size:0.9rem;color:#EDE8DF;margin-bottom:0.4rem;font-weight:500;">Books</p>
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;margin-bottom:0.8rem;"><em><a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" class="link-g">The Satanic Rhapsody</a></em> (fiction novel) and two poetry collections: <em><a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" class="link-g">Finding Home</a></em> and <em><a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" class="link-g">Dreamscaping Reveries</a></em>.</p>
-          <p style="font-size:0.9rem;color:#EDE8DF;margin-bottom:0.4rem;font-weight:500;">Critical papers</p>
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">"The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature," "Sound, Silence, and Sanity: A Literary Reading of Pink Floyd's The Dark Side of the Moon," and "The Comfort of Ruin." Full papers available at <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" class="link-g">academia.edu</a>.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;margin-bottom:0.9rem;">Ujjwal Srivastava (writing as Ujjwal Rawwn Srivastava, pen name rawwn) has published three books and several critical academic papers.</p>
+          <p style="font-size:0.9rem;color:var(--text-primary);margin-bottom:0.4rem;font-weight:500;">Books</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;margin-bottom:0.8rem;"><em><a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" class="link-g">The Satanic Rhapsody</a></em> (fiction novel) and two poetry collections: <em><a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" class="link-g">Finding Home</a></em> and <em><a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" class="link-g">Dreamscaping Reveries</a></em>.</p>
+          <p style="font-size:0.9rem;color:var(--text-primary);margin-bottom:0.4rem;font-weight:500;">Critical papers</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">"The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature," "Sound, Silence, and Sanity: A Literary Reading of Pink Floyd's The Dark Side of the Moon," and "The Comfort of Ruin." Full papers available at <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" class="link-g">academia.edu</a>.</p>
         </div>
       </div>
     </div>
 
-    <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">What is Ujjwal Srivastava's academic background?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">What is Ujjwal Srivastava's academic background?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">Ujjwal holds a BA in English Language and Literature from Amity University and an MA from National PG College, University of Lucknow. His grounding in literary analysis and critical theory shapes how he approaches content architecture, editorial voice, and reader psychology.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">Ujjwal holds a BA in English Language and Literature from Amity University and an MA from National PG College, University of Lucknow. His grounding in literary analysis and critical theory shapes how he approaches content architecture, editorial voice, and reader psychology.</p>
         </div>
       </div>
     </div>
 
-    <div class="faq-item" style="border-bottom:1px solid #28231A;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="faq-item" style="border-bottom:1px solid var(--border);" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">Does Ujjwal ghostwrite for startup founders, and what does that engagement look like?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">Does Ujjwal ghostwrite for startup founders, and what does that engagement look like?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;margin-bottom:0.7rem;">Yes. Founder ghostwriting is one of Ujjwal's core freelance services. He works with startup founders and executive leaders who have strong domain expertise but limited time or structural capacity to write consistently, translating their ideas into LinkedIn long-form content, thought leadership essays, and founder-voice articles that build real professional authority.</p>
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">A typical engagement starts with a voice extraction conversation, moves into a defined content angle, and produces pieces that sound like the founder at their clearest. Confidentiality is maintained by default. Reach out at <a href="mailto:work@ujjwalsrivastava.com" class="link-g">work@ujjwalsrivastava.com</a> to discuss scope.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;margin-bottom:0.7rem;">Yes. Founder ghostwriting is one of Ujjwal's core freelance services. He works with startup founders and executive leaders who have strong domain expertise but limited time or structural capacity to write consistently, translating their ideas into LinkedIn long-form content, thought leadership essays, and founder-voice articles that build real professional authority.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">A typical engagement starts with a voice extraction conversation, moves into a defined content angle, and produces pieces that sound like the founder at their clearest. Confidentiality is maintained by default. Reach out at <a href="mailto:work@ujjwalsrivastava.com" class="link-g">work@ujjwalsrivastava.com</a> to discuss scope.</p>
         </div>
       </div>
     </div>
 
     <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
       <div class="faq-question" style="display:flex;justify-content:space-between;align-items:start;padding:1.4rem 0;gap:1rem;cursor:pointer;" onclick="this.parentElement.classList.toggle('open')">
-        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:#EDE8DF;line-height:1.4;" itemprop="name">What B2B verticals and industries has Ujjwal written content for?</h3>
-        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:#C4A969;flex-shrink:0;margin-top:2px;">+</span>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.08rem;font-weight:400;color:var(--text-primary);line-height:1.4;" itemprop="name">What B2B verticals and industries has Ujjwal written content for?</h3>
+        <span class="faq-icon" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);flex-shrink:0;margin-top:2px;">+</span>
       </div>
       <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
         <div itemprop="text" style="padding-bottom:1.5rem;">
-          <p style="font-size:0.9rem;color:#9A8E7E;line-height:1.8;">Ujjwal has written B2B content across cybersecurity, AI and machine learning, SaaS platforms (productivity, HR, finance, marketing), developer tooling, and the creator economy. His work spans product-led articles, SEO blog content, buying guides, and comparison pieces across multiple editorial standards.</p>
+          <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;">Ujjwal has written B2B content across cybersecurity, AI and machine learning, SaaS platforms (productivity, HR, finance, marketing), developer tooling, and the creator economy. His work spans product-led articles, SEO blog content, buying guides, and comparison pieces across multiple editorial standards.</p>
         </div>
       </div>
     </div>
@@ -503,75 +592,75 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <!-- ════════════════════ SIDE B VINYL DIVIDER ════════════════════ -->
-<div style="border-top:1px solid #28231A;background:#141108;">
+<div style="border-top:1px solid var(--border);background:var(--bg-section);">
   <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
     <div style="display:flex;align-items:center;gap:2rem;padding:3.5rem 0 2rem;flex-wrap:wrap;">
       <div class="vinyl-disc"></div>
       <div>
-        <p style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:300;color:#EDE8DF;letter-spacing:-0.01em;">Side B</p>
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;color:#5A5148;text-transform:uppercase;margin-top:0.2rem;">Off the clock</p>
+        <p style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:300;color:var(--text-primary);letter-spacing:-0.01em;">Side B</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;color:var(--text-muted);text-transform:uppercase;margin-top:0.2rem;">Off the clock</p>
       </div>
-      <div style="flex:1;height:1px;background:linear-gradient(to right, #28231A, transparent);"></div>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#5A5148;letter-spacing:0.1em;flex-shrink:0;">AUTHOR · MUSICIAN · ATHLETE · BUILDER</p>
+      <div style="flex:1;height:1px;background:var(--bg-grad-div);"></div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:0.1em;flex-shrink:0;">AUTHOR · MUSICIAN · ATHLETE · BUILDER</p>
     </div>
   </div>
 </div>
 
 
 <!-- ════════════════════ SIDE B: HEADER IMAGE ════════════════════ -->
-<section id="beyond" style="background:#141108;">
+<section id="beyond" style="background:var(--bg-section);">
   <div style="max-width:1120px;margin:0 auto;padding:0 24px 48px;">
 
-    <!-- Atmospheric header image -->
-  <div class="grain" style="width:100%;overflow:hidden;border:1px solid #28231A;margin-bottom:1px;">
+    <div class="grain" style="width:100%;overflow:hidden;border:1px solid var(--border);margin-bottom:1px;">
       <img src="side-b-header.jpg" width="1440" height="720" loading="lazy" alt="rawwn"
-           style="width:100%;height:auto;display:block;filter:contrast(1.05) brightness(0.88);"> </div>
-    
+           style="width:100%;height:auto;display:block;filter:contrast(1.05) brightness(0.88);">
+    </div>
+
     <!-- ── PUBLICATIONS SPLIT PANEL ── -->
-    <div class="pub-row" style="display:flex;border:1px solid #28231A;border-top:none;margin-bottom:1.5rem;">
+    <div class="pub-row" style="display:flex;border:1px solid var(--border);border-top:none;margin-bottom:1.5rem;">
 
       <!-- LEFT: Literary Criticism -->
-      <div class="pub-half" style="border-right:1px solid #28231A;background:#1A1813;">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:1rem;">Literary Criticism</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:#EDE8DF;margin-bottom:0.6rem;">Academic papers</h3>
-        <p style="font-size:0.85rem;color:#9A8E7E;line-height:1.7;margin-bottom:1.4rem;">Three critical papers on confessional poetry, Pink Floyd's sonic philosophy, and the aesthetics of ruin. Peer-reviewed and published through academic channels.</p>
+      <div class="pub-half" style="border-right:1px solid var(--border);background:var(--bg-card);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Literary Criticism</p>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Academic papers</h3>
+        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">Three critical papers on confessional poetry, Pink Floyd's sonic philosophy, and the aesthetics of ruin. Peer-reviewed and published through academic channels.</p>
         <div style="margin-bottom:1.25rem;">
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">01</span>
-            <span style="font-size:0.85rem;color:#EDE8DF;font-style:italic;">The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature</span>
           </div>
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">02</span>
-            <span style="font-size:0.85rem;color:#EDE8DF;font-style:italic;">Sound, Silence, and Sanity: A Literary Reading of The Dark Side of the Moon</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">Sound, Silence, and Sanity: A Literary Reading of The Dark Side of the Moon</span>
           </div>
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">03</span>
-            <span style="font-size:0.85rem;color:#EDE8DF;font-style:italic;">The Comfort of Ruin</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Comfort of Ruin</span>
           </div>
         </div>
         <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">Read on academia.edu ↗</a>
       </div>
 
       <!-- RIGHT: Published Books -->
-      <div class="pub-half" style="background:#1A1813;">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:1rem;">Published Books</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:#EDE8DF;margin-bottom:0.6rem;">Three before 25</h3>
-        <p style="font-size:0.85rem;color:#9A8E7E;line-height:1.7;margin-bottom:1.4rem;">A published author of fiction, poetry, and confessional prose. Each title published independently on Amazon, written before the strategy work. Each one was an attempt to write something honest.</p>
+      <div class="pub-half" style="background:var(--bg-card);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Published Books</p>
+        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Three before 25</h3>
+        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">A published author of fiction, poetry, and confessional prose. Each title published independently on Amazon, written before the strategy work. Each one was an attempt to write something honest.</p>
         <div style="margin-bottom:1.25rem;">
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">01</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
             <a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">The Satanic Rhapsody</a>
-            <span style="font-size:0.72rem;color:#5A5148;margin-left:auto;font-family:'JetBrains Mono',monospace;">Fiction</span>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Fiction</span>
           </div>
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">02</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
             <a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Finding Home</a>
-            <span style="font-size:0.72rem;color:#5A5148;margin-left:auto;font-family:'JetBrains Mono',monospace;">Poetry</span>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Poetry</span>
           </div>
           <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;">03</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
             <a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Dreamscaping Reveries</a>
-            <span style="font-size:0.72rem;color:#5A5148;margin-left:auto;font-family:'JetBrains Mono',monospace;">Prose</span>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Prose</span>
           </div>
         </div>
         <a href="https://www.amazon.in/stores/author/B09BCP3L71/about" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">View on Amazon ↗</a>
@@ -581,7 +670,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
     <!-- ── 3 CONTACT SHEET CARDS ── -->
-    <div class="bento3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:#28231A;border:1px solid #28231A;">
+    <div class="bento3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--border);border:1px solid var(--border);">
 
       <!-- MUSIC -->
       <div class="cs-card">
@@ -591,13 +680,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="wave-bars">
               <span></span><span></span><span></span><span></span><span></span>
             </div>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#C4A969;letter-spacing:0.1em;margin-left:0.5rem;vertical-align:middle;">rawwn</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;margin-left:0.5rem;vertical-align:middle;">rawwn</span>
           </div>
         </div>
         <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:0.75rem;">Music</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:#EDE8DF;margin-bottom:0.5rem;">Self-taught. Bedroom-produced.</h3>
-          <p style="font-size:0.82rem;color:#9A8E7E;line-height:1.7;margin-bottom:1rem;">Original songs written and recorded solo under the alias rawwn. On Spotify and YouTube since 2014.</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Music</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Self-taught. Bedroom-produced.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Original songs written and recorded solo under the alias rawwn. On Spotify and YouTube since 2014.</p>
           <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
             <a href="https://open.spotify.com/artist/6F6Mlg4FGLy89njESj5KBW" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Spotify ↗</a>
             <a href="https://www.youtube.com/@Rawwn" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">YouTube ↗</a>
@@ -610,15 +699,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
           <img src="img_3.jpg" width="700" height="700" loading="lazy" alt="Ujjwal Srivastava — hybrid athlete">
           <div class="cs-meta-reveal">
-            <span class="split-reveal" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#C4A969;letter-spacing:0.1em;">
+            <span class="split-reveal" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">
               21.1km · HYBRID ATHLETE
             </span>
           </div>
         </div>
         <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:0.75rem;">Athletics</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:#EDE8DF;margin-bottom:0.5rem;">Hybrid athlete. Self-coached.</h3>
-          <p style="font-size:0.82rem;color:#9A8E7E;line-height:1.7;margin-bottom:1rem;">Regularly participates in half-marathons, running events, and hybrid obstacle races. No coach, no plan except consistency.</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Athletics</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Hybrid athlete. Self-coached.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Regularly participates in half-marathons, running events, and hybrid obstacle races. No coach, no plan except consistency.</p>
           <a href="https://www.strava.com/athletes/162115843" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Strava ↗</a>
         </div>
       </div>
@@ -628,13 +717,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
           <img src="img_4.jpg" width="700" height="700" loading="lazy" alt="Dev and Essays workspace">
           <div class="cs-meta-reveal">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#C4A969;letter-spacing:0.1em;">RAWWNBUILDS · GITHUB</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">RAWWNBUILDS · GITHUB</span>
           </div>
         </div>
         <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:#C4A969;text-transform:uppercase;margin-bottom:0.75rem;">Dev &amp; Essays</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:#EDE8DF;margin-bottom:0.5rem;">Tools, scripts, and essays.</h3>
-          <p style="font-size:0.82rem;color:#9A8E7E;line-height:1.7;margin-bottom:1rem;">Portfolio builds and content tools on GitHub. Personal essays on Substack: they start mid-thought and end without a lesson.</p>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Dev &amp; Essays</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Tools, scripts, and essays.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Portfolio builds and content tools on GitHub. Personal essays on Substack: they start mid-thought and end without a lesson.</p>
           <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
             <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">GitHub ↗</a>
             <a href="https://rawwn.substack.com/" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Substack ↗</a>
@@ -648,19 +737,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <!-- ════════════════════ FOOTER ════════════════════ -->
-<footer style="border-top:1px solid #28231A;background:#0B0907;">
+<footer style="border-top:1px solid var(--border);background:var(--bg-page);">
   <div style="max-width:1120px;margin:0 auto;padding:36px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
     <div>
-      <p style="font-family:'Newsreader',serif;font-size:0.9rem;color:#EDE8DF;margin-bottom:0.2rem;">Ujjwal Srivastava</p>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#5A5148;letter-spacing:0.08em;">HEAD OF CONTENT · B2B SAAS STRATEGIST · GHOSTWRITER</p>
+      <p style="font-family:'Newsreader',serif;font-size:0.9rem;color:var(--text-primary);margin-bottom:0.2rem;">Ujjwal Srivastava</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:0.08em;">HEAD OF CONTENT · B2B SAAS STRATEGIST · GHOSTWRITER</p>
     </div>
     <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-      <a href="mailto:work@ujjwalsrivastava.com" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.04em;color:#9A8E7E;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C4A969'" onmouseout="this.style.color='#9A8E7E'">work@ujjwalsrivastava.com</a>
-      <a href="https://www.linkedin.com/in/ujjwalwrites/" target="_blank" rel="noopener" style="font-size:0.8rem;color:#9A8E7E;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C4A969'" onmouseout="this.style.color='#9A8E7E'">LinkedIn</a>
-      <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" style="font-size:0.8rem;color:#9A8E7E;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C4A969'" onmouseout="this.style.color='#9A8E7E'">GitHub</a>
-      <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" style="font-size:0.8rem;color:#9A8E7E;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#C4A969'" onmouseout="this.style.color='#9A8E7E'">Academia</a>
+      <a href="mailto:work@ujjwalsrivastava.com" class="footer-link">work@ujjwalsrivastava.com</a>
+      <a href="https://www.linkedin.com/in/ujjwalwrites/" target="_blank" rel="noopener" class="footer-link-sm">LinkedIn</a>
+      <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" class="footer-link-sm">GitHub</a>
+      <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="footer-link-sm">Academia</a>
     </div>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#2E2820;letter-spacing:0.06em;width:100%;margin-top:0.25rem;">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-ghost);letter-spacing:0.06em;width:100%;margin-top:0.25rem;">
       © 2026 Ujjwal Srivastava · ujjwalsrivastava.com
     </p>
   </div>
@@ -668,7 +757,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <script>
-// ── HERO ENTRANCE (single orchestrated sequence) ──
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  var html = document.documentElement;
+  var isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'dark');
+    document.getElementById('theme-icon').textContent = '☽';
+  } else {
+    html.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+    document.getElementById('theme-icon').textContent = '☀';
+  }
+}
+
+// Set correct icon on load
+(function() {
+  if (document.documentElement.getAttribute('data-theme') === 'light') {
+    document.getElementById('theme-icon').textContent = '☀';
+  }
+})();
+
+// ── HERO ENTRANCE ──
 const els = document.querySelectorAll('.fade-up');
 let d = 100;
 els.forEach(el => { setTimeout(() => el.classList.add('on'), d); d += 110; });
@@ -682,8 +793,6 @@ document.querySelectorAll('.faq-question').forEach(q => {
     });
   });
 });
-
-// Blog posts loaded from /posts/
 </script>
 
 </body>

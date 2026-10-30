@@ -301,6 +301,9 @@ nav {
   .pub-row { flex-direction:column !important; }
   .metrics-row { grid-template-columns:1fr 1fr !important; }
   .cases { grid-template-columns:1fr !important; }
+  .writing-grid { grid-template-columns:1fr !important; }
+  .writing-grid > div { border-right:none !important; border-bottom:1px solid var(--border); }
+  .writing-grid > div:last-child { border-bottom:none; }
 }
 </style>
 </head>
@@ -319,7 +322,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#services" class="nav-link">Services</a>
       <a href="#work"     class="nav-link">Work</a>
       <a href="#faq"      class="nav-link">FAQ</a>
-      <a href="#beyond"   class="nav-link">Side B</a>
+      <a href="/side-b/"  class="nav-link">Side B</a>
       <a href="/posts/"   class="nav-link">Blog</a>
       <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle color theme">
         <span id="theme-icon">☽</span>
@@ -336,16 +339,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div>
       <p class="fade-up" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.16em;color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;">
-        Head of Content · Delhi, India
+        Author · Content Strategist · Delhi, India
       </p>
-      <h1 class="fade-up" style="font-family:'Newsreader',serif;font-size:clamp(2.3rem,5vw,3.5rem);font-weight:300;line-height:1.1;letter-spacing:-0.02em;color:var(--text-primary);margin-bottom:2rem;">
-        B2B content that ranks<br>in search.<br><span style="color:var(--text-dim);">And gets cited by AI.</span>
+      <h1 class="fade-up" style="font-family:'Newsreader',serif;font-size:clamp(2.6rem,5.5vw,4.2rem);font-weight:400;line-height:1.05;letter-spacing:-0.03em;color:var(--text-primary);margin-bottom:2rem;">
+        Writing that earns<br>its place.<br><span style="color:var(--text-dim);">Strategy is what gets it there.</span>
       </h1>
       <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:var(--text-secondary);max-width:500px;margin-bottom:1.5rem;">
-        Most of what I do lives somewhere between strategy and storytelling. I lead content at <span style="color:var(--text-primary);">Magnaitic</span>. That means editorial infrastructure for B2B SaaS and tech clients: GEO/AEO architecture, high-volume publishing pipelines, and content that gets cited inside AI-generated answers. The part most brands haven't built for yet.
+        Author, essayist, and Head of Content at <span style="color:var(--text-primary);">Magnaitic</span>. The craft came first: three books published, academic papers on confessional poetry and Pink Floyd, personal essays on Substack that start mid-thought. What gets built professionally is an extension of the same instinct — writing that earns a reader's attention and holds it.
       </p>
       <p class="fade-up" style="font-size:0.98rem;line-height:1.8;color:var(--text-secondary);max-width:500px;margin-bottom:2.5rem;">
-        The foundation is literary. A BA and MA in English Language and Literature, and a Bachelor's in Education alongside. Understanding how people learn is part of building systems that hold. The instinct for close reading, storytelling, and teaching carries straight into the frameworks. It doesn't stay academic.
+        That translates into editorial infrastructure for B2B SaaS clients, GEO/AEO architecture for AI discovery, and ghostwriting for founders who have strong opinions but not enough hours to write them well.
       </p>
       <div class="fade-up" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
         <a href="mailto:work@ujjwalsrivastava.com" class="btn-p">Contact Me</a>
@@ -591,143 +594,71 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 
-<!-- ════════════════════ SIDE B VINYL DIVIDER ════════════════════ -->
-<div style="border-top:1px solid var(--border);background:var(--bg-section);">
-  <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
-    <div style="display:flex;align-items:center;gap:2rem;padding:3.5rem 0 2rem;flex-wrap:wrap;">
-      <div class="vinyl-disc"></div>
-      <div>
-        <p style="font-family:'Newsreader',serif;font-size:1.5rem;font-weight:300;color:var(--text-primary);letter-spacing:-0.01em;">Side B</p>
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;color:var(--text-muted);text-transform:uppercase;margin-top:0.2rem;">Off the clock</p>
-      </div>
-      <div style="flex:1;height:1px;background:var(--bg-grad-div);"></div>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:0.1em;flex-shrink:0;">AUTHOR · MUSICIAN · ATHLETE · BUILDER</p>
+<!-- ════════════════════ PUBLISHED WRITING ════════════════════ -->
+<section style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-page);">
+  <div style="max-width:1120px;margin:0 auto;padding:72px 24px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1rem;">
+      <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">The writing itself</h2>
+      <a href="/side-b/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px;">Side B: music, athletics, essays ↗</a>
     </div>
-  </div>
-</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);" class="writing-grid">
 
-
-<!-- ════════════════════ SIDE B: HEADER IMAGE ════════════════════ -->
-<section id="beyond" style="background:var(--bg-section);">
-  <div style="max-width:1120px;margin:0 auto;padding:0 24px 48px;">
-
-    <div class="grain" style="width:100%;overflow:hidden;border:1px solid var(--border);margin-bottom:1px;">
-      <img src="side-b-header.jpg" width="1440" height="720" loading="lazy" alt="rawwn"
-           style="width:100%;height:auto;display:block;filter:contrast(1.05) brightness(0.88);">
-    </div>
-
-    <!-- ── PUBLICATIONS SPLIT PANEL ── -->
-    <div class="pub-row" style="display:flex;border:1px solid var(--border);border-top:none;margin-bottom:1.5rem;">
-
-      <!-- LEFT: Literary Criticism -->
-      <div class="pub-half" style="border-right:1px solid var(--border);background:var(--bg-card);">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Literary Criticism</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Academic papers</h3>
-        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">Three critical papers on confessional poetry, Pink Floyd's sonic philosophy, and the aesthetics of ruin. Peer-reviewed and published through academic channels.</p>
-        <div style="margin-bottom:1.25rem;">
+      <!-- BOOKS -->
+      <div style="padding:2rem;border-right:1px solid var(--border);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1.25rem;">Books · Three before 25</p>
+        <div>
           <div class="pub-item">
             <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
-            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature</span>
-          </div>
-          <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
-            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">Sound, Silence, and Sanity: A Literary Reading of The Dark Side of the Moon</span>
-          </div>
-          <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
-            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Comfort of Ruin</span>
-          </div>
-        </div>
-        <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">Read on academia.edu ↗</a>
-      </div>
-
-      <!-- RIGHT: Published Books -->
-      <div class="pub-half" style="background:var(--bg-card);">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Published Books</p>
-        <h3 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Three before 25</h3>
-        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">A published author of fiction, poetry, and confessional prose. Each title published independently on Amazon, written before the strategy work. Each one was an attempt to write something honest.</p>
-        <div style="margin-bottom:1.25rem;">
-          <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
-            <a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">The Satanic Rhapsody</a>
-            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Fiction</span>
-          </div>
-          <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
-            <a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Finding Home</a>
-            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Poetry</span>
-          </div>
-          <div class="pub-item">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
-            <a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Dreamscaping Reveries</a>
-            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Prose</span>
-          </div>
-        </div>
-        <a href="https://www.amazon.in/stores/author/B09BCP3L71/about" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">View on Amazon ↗</a>
-      </div>
-
-    </div>
-
-
-    <!-- ── 3 CONTACT SHEET CARDS ── -->
-    <div class="bento3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--border);border:1px solid var(--border);">
-
-      <!-- MUSIC -->
-      <div class="cs-card">
-        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
-          <img src="img_2.jpg" width="659" height="525" loading="lazy" alt="rawwn — bedroom sessions">
-          <div class="cs-meta-reveal">
-            <div class="wave-bars">
-              <span></span><span></span><span></span><span></span><span></span>
+            <div>
+              <a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" rel="noopener" class="link-g" style="font-size:0.88rem;font-style:italic;display:block;">The Satanic Rhapsody</a>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">Fiction</span>
             </div>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;margin-left:0.5rem;vertical-align:middle;">rawwn</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
+            <div>
+              <a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" rel="noopener" class="link-g" style="font-size:0.88rem;font-style:italic;display:block;">Finding Home</a>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">Poetry</span>
+            </div>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
+            <div>
+              <a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" rel="noopener" class="link-g" style="font-size:0.88rem;font-style:italic;display:block;">Dreamscaping Reveries</a>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">Prose</span>
+            </div>
           </div>
         </div>
-        <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Music</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Self-taught. Bedroom-produced.</h3>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Original songs written and recorded solo under the alias rawwn. On Spotify and YouTube since 2014.</p>
-          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-            <a href="https://open.spotify.com/artist/6F6Mlg4FGLy89njESj5KBW" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Spotify ↗</a>
-            <a href="https://www.youtube.com/@Rawwn" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">YouTube ↗</a>
-          </div>
-        </div>
+        <a href="https://www.amazon.in/stores/author/B09BCP3L71/about" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.45rem 0.9rem;margin-top:1.5rem;">Amazon ↗</a>
       </div>
 
-      <!-- ATHLETICS -->
-      <div class="cs-card">
-        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
-          <img src="img_3.jpg" width="700" height="700" loading="lazy" alt="Ujjwal Srivastava — hybrid athlete">
-          <div class="cs-meta-reveal">
-            <span class="split-reveal" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">
-              21.1km · HYBRID ATHLETE
-            </span>
+      <!-- ACADEMIC PAPERS -->
+      <div style="padding:2rem;border-right:1px solid var(--border);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1.25rem;">Literary Criticism · Three papers</p>
+        <div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;line-height:1.5;">The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;line-height:1.5;">Sound, Silence, and Sanity: A Literary Reading of The Dark Side of the Moon</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;line-height:1.5;">The Comfort of Ruin</span>
           </div>
         </div>
-        <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Athletics</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Hybrid athlete. Self-coached.</h3>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Regularly participates in half-marathons, running events, and hybrid obstacle races. No coach, no plan except consistency.</p>
-          <a href="https://www.strava.com/athletes/162115843" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Strava ↗</a>
-        </div>
+        <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.45rem 0.9rem;margin-top:1.5rem;">academia.edu ↗</a>
       </div>
 
-      <!-- DEV & ESSAYS -->
-      <div class="cs-card">
-        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
-          <img src="img_4.jpg" width="700" height="700" loading="lazy" alt="Dev and Essays workspace">
-          <div class="cs-meta-reveal">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">RAWWNBUILDS · GITHUB</span>
-          </div>
-        </div>
-        <div class="cs-body">
-          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Dev &amp; Essays</p>
-          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Tools, scripts, and essays.</h3>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Portfolio builds and content tools on GitHub. Personal essays on Substack: they start mid-thought and end without a lesson.</p>
-          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-            <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">GitHub ↗</a>
-            <a href="https://rawwn.substack.com/" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Substack ↗</a>
-          </div>
+      <!-- ONGOING WRITING -->
+      <div style="padding:2rem;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1.25rem;">Ongoing · Essays &amp; Articles</p>
+        <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.75;margin-bottom:1.5rem;">Personal essays on Substack that start mid-thought and end without a lesson. LinkedIn articles on content strategy, GEO, and the business of writing.</p>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <a href="https://rawwn.substack.com/" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.45rem 0.9rem;">Substack ↗</a>
+          <a href="https://www.linkedin.com/in/ujjwalwrites/recent-activity/articles/" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.45rem 0.9rem;">LinkedIn Articles ↗</a>
         </div>
       </div>
 

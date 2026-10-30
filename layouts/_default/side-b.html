@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Side B — rawwn | Ujjwal Srivastava</title>
+<meta name="description" content="Author, musician, hybrid athlete, and builder. The off-clock life of Ujjwal Srivastava (rawwn).">
+<meta name="author" content="Ujjwal Srivastava">
+<link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-family='serif' fill='%23C4A969'>U</text></svg>">
+<link rel="canonical" href="https://www.ujjwalsrivastava.com/side-b/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ── THEME TOKENS ── */
+:root {
+  --bg-page:        #0B0907;
+  --bg-section:     #141108;
+  --bg-card:        #1A1813;
+  --bg-card-hover:  #1f1c14;
+  --bg-overlay:     rgba(11,9,7,0.94);
+  --bg-grad-card:   linear-gradient(transparent, rgba(11,9,7,0.88));
+  --bg-grad-div:    linear-gradient(to right, #28231A, transparent);
+  --text-primary:   #EDE8DF;
+  --text-secondary: #9A8E7E;
+  --text-muted:     #5A5148;
+  --text-ghost:     #2E2820;
+  --text-dim:       #4A4438;
+  --accent:         #C4A969;
+  --accent-hover:   #d4b870;
+  --accent-on:      #0B0907;
+  --border:         #28231A;
+  --border-hover:   #3F3426;
+  --border-strong:  #4A3D2C;
+  --scrollbar-bg:   #0B0907;
+  --scrollbar-thumb:#3F3426;
+  --vinyl-shadow:   0 0 0 6px #0B0907, 0 0 0 11px #28231A, 0 0 0 16px #0B0907, 0 0 0 21px #1e1a12;
+}
+:root[data-theme="light"] {
+  --bg-page:        #FFFFFF;
+  --bg-section:     #E8F4FD;
+  --bg-card:        #F4F9FD;
+  --bg-card-hover:  #DFF0FA;
+  --bg-overlay:     rgba(255,255,255,0.96);
+  --bg-grad-card:   linear-gradient(transparent, rgba(232,244,253,0.94));
+  --bg-grad-div:    linear-gradient(to right, #C5DDE8, transparent);
+  --text-primary:   #0D0D0D;
+  --text-secondary: #4A6878;
+  --text-muted:     #7A9BAB;
+  --text-ghost:     #C5DDE8;
+  --text-dim:       #7AAFC4;
+  --accent:         #FF1493;
+  --accent-hover:   #D10077;
+  --accent-on:      #FFFFFF;
+  --border:         #C5DDE8;
+  --border-hover:   #A8CCDB;
+  --border-strong:  #8BBCCD;
+  --scrollbar-bg:   #FFFFFF;
+  --scrollbar-thumb:#C5DDE8;
+  --vinyl-shadow:   0 0 0 6px #FFFFFF, 0 0 0 11px #C5DDE8, 0 0 0 16px #FFFFFF, 0 0 0 21px #E0F0FA;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius:2px; }
+
+nav {
+  position:sticky; top:0; z-index:50;
+  background: var(--bg-overlay);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.nav-link {
+  font-size:0.78rem; color: var(--text-secondary); text-decoration:none;
+  font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:0.04em;
+  transition:color 0.2s;
+}
+.nav-link:hover { color: var(--text-primary); }
+.nav-link.active { color: var(--accent); }
+.theme-btn {
+  background:none; border:1px solid var(--border); color: var(--text-secondary);
+  font-family:'JetBrains Mono',monospace; font-size:0.72rem;
+  padding:0.28rem 0.6rem; cursor:pointer; border-radius:2px;
+  transition:border-color 0.2s, color 0.2s;
+  line-height:1;
+}
+.theme-btn:hover { border-color: var(--border-hover); color: var(--accent); }
+.btn-p {
+  display:inline-flex; align-items:center; gap:0.35rem;
+  background: var(--accent); color: var(--accent-on);
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.04em;
+  padding:0.65rem 1.3rem; text-decoration:none;
+  transition:background 0.2s, transform 0.15s;
+}
+.btn-p:hover { background: var(--accent-hover); transform:translateY(-1px); }
+.btn-g {
+  display:inline-flex; align-items:center; gap:0.35rem;
+  background:transparent; color: var(--text-secondary);
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:500; letter-spacing:0.04em;
+  padding:0.65rem 1.3rem; border:1px solid var(--border); text-decoration:none;
+  transition:border-color 0.2s, color 0.2s;
+}
+.btn-g:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.link-g { color: var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color 0.2s; }
+.link-g:hover { border-bottom-color: var(--accent); }
+.footer-link {
+  font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.04em;
+  color: var(--text-secondary); text-decoration:none; transition:color 0.2s;
+}
+.footer-link:hover { color: var(--accent); }
+.footer-link-sm {
+  font-size:0.8rem; color: var(--text-secondary); text-decoration:none; transition:color 0.2s;
+}
+.footer-link-sm:hover { color: var(--accent); }
+.grain { position:relative; overflow:hidden; }
+.grain::after {
+  content:''; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+  opacity:0.09; mix-blend-mode:overlay; pointer-events:none; z-index:2;
+}
+.vinyl-disc {
+  flex-shrink:0; width:60px; height:60px; border-radius:50%;
+  background: var(--bg-section); border:1px solid var(--accent);
+  box-shadow: var(--vinyl-shadow);
+  display:flex; align-items:center; justify-content:center; position:relative;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.vinyl-disc::before {
+  content:''; position:absolute;
+  width:10px; height:10px; border-radius:50%; background: var(--accent);
+}
+.cs-card {
+  background: var(--bg-card);
+  border:1px solid var(--border);
+  transition: border-color 0.25s ease, background 0.25s ease;
+  overflow:hidden;
+}
+.cs-card:hover { border-color: var(--border-strong); background: var(--bg-card-hover); }
+.cs-img-frame {
+  overflow:hidden; position:relative;
+  background: var(--bg-section);
+}
+.cs-img-frame img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  display:block;
+  filter:contrast(1.04) brightness(0.92);
+  transition:transform 0.5s ease, filter 0.4s ease;
+}
+.cs-card:hover .cs-img-frame img {
+  transform:scale(1.04);
+  filter:contrast(1.06) brightness(0.85);
+}
+:root[data-theme="light"] .cs-img-frame img { filter:contrast(1.02) brightness(0.98) !important; }
+:root[data-theme="light"] .cs-card:hover .cs-img-frame img { filter:contrast(1.04) brightness(0.93) !important; }
+.cs-meta-reveal {
+  position:absolute; bottom:0; left:0; right:0;
+  background: var(--bg-grad-card);
+  padding:1.25rem 1rem 0.75rem;
+  opacity:0; transform:translateY(5px);
+  transition:opacity 0.32s, transform 0.32s;
+  z-index:3;
+}
+.cs-card:hover .cs-meta-reveal { opacity:1; transform:translateY(0); }
+.cs-body { padding:1.25rem 1.25rem 1.5rem; }
+.wave-bars { display:inline-flex; gap:3px; align-items:flex-end; height:18px; vertical-align:middle; }
+.wave-bars span {
+  width:3px; background: var(--accent); border-radius:2px;
+  animation:wave-up 1.4s ease-in-out infinite;
+  opacity:0; transition:opacity 0.3s;
+  transform-origin:bottom;
+}
+.cs-card:hover .wave-bars span { opacity:1; }
+.wave-bars span:nth-child(1) { animation-delay:0s; }
+.wave-bars span:nth-child(2) { animation-delay:0.15s; }
+.wave-bars span:nth-child(3) { animation-delay:0.3s; }
+.wave-bars span:nth-child(4) { animation-delay:0.15s; }
+.wave-bars span:nth-child(5) { animation-delay:0s; }
+@keyframes wave-up { 0%,100% { height:3px; } 50% { height:15px; } }
+.split-reveal {
+  opacity:0; transform:translateX(-4px);
+  transition:opacity 0.3s, transform 0.3s;
+  display:inline-flex; align-items:center; gap:0.5rem;
+}
+.cs-card:hover .split-reveal { opacity:1; transform:translateX(0); }
+.pub-half { flex:1; padding:2rem; transition:background 0.22s; }
+.pub-item {
+  display:flex; align-items:baseline; gap:0.75rem;
+  padding:0.7rem 0; border-bottom:1px solid var(--border);
+  transition:border-color 0.2s;
+}
+.pub-item:last-child { border-bottom:none; }
+.pub-item:hover { border-bottom-color: var(--border-hover); }
+.page-header {
+  max-width:1120px; margin:0 auto;
+  padding:60px 24px 40px;
+  border-bottom:1px solid var(--border);
+}
+
+@media (max-width:768px) {
+  .pub-row { flex-direction:column !important; }
+  .bento3 { grid-template-columns:1fr !important; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px;">
+    <a href="/">
+      <img src="/logo.png" alt="Ujjwal Srivastava" style="height:52px;width:auto;display:block;opacity:0.92;">
+    </a>
+    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <a href="/#services"  class="nav-link">Services</a>
+      <a href="/#work"      class="nav-link">Work</a>
+      <a href="/#faq"       class="nav-link">FAQ</a>
+      <a href="/side-b/"    class="nav-link active">Side B</a>
+      <a href="/posts/"     class="nav-link">Blog</a>
+      <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle color theme">
+        <span id="theme-icon">☽</span>
+      </button>
+      <a href="mailto:work@ujjwalsrivastava.com" class="btn-p" style="font-size:0.74rem;padding:0.45rem 1rem;">Contact Me</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+    <div class="vinyl-disc"></div>
+    <div>
+      <p style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;color:var(--text-primary);letter-spacing:-0.01em;">Side B</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;color:var(--text-muted);text-transform:uppercase;margin-top:0.2rem;">Off the clock</p>
+    </div>
+    <div style="flex:1;height:1px;background:var(--bg-grad-div);"></div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:0.1em;flex-shrink:0;">AUTHOR · MUSICIAN · ATHLETE · BUILDER</p>
+  </div>
+</div>
+
+
+<!-- SIDE B CONTENT -->
+<section style="background:var(--bg-section);">
+  <div style="max-width:1120px;margin:0 auto;padding:0 24px 48px;">
+
+    <div class="grain" style="width:100%;overflow:hidden;border:1px solid var(--border);margin-top:1px;margin-bottom:1px;">
+      <img src="/side-b-header.jpg" width="1440" height="720" loading="lazy" alt="rawwn"
+           style="width:100%;height:auto;display:block;filter:contrast(1.05) brightness(0.88);">
+    </div>
+
+    <!-- PUBLICATIONS SPLIT PANEL -->
+    <div class="pub-row" style="display:flex;border:1px solid var(--border);border-top:none;margin-bottom:1.5rem;">
+
+      <!-- LEFT: Literary Criticism -->
+      <div class="pub-half" style="border-right:1px solid var(--border);background:var(--bg-card);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Literary Criticism</p>
+        <h2 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Academic papers</h2>
+        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">Three critical papers on confessional poetry, Pink Floyd's sonic philosophy, and the aesthetics of ruin. Peer-reviewed and published through academic channels.</p>
+        <div style="margin-bottom:1.25rem;">
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Art of Self-Disclosure: Confessional Poetry in Contemporary Literature</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">Sound, Silence, and Sanity: A Literary Reading of The Dark Side of the Moon</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
+            <span style="font-size:0.85rem;color:var(--text-primary);font-style:italic;">The Comfort of Ruin</span>
+          </div>
+        </div>
+        <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">Read on academia.edu ↗</a>
+      </div>
+
+      <!-- RIGHT: Published Books -->
+      <div class="pub-half" style="background:var(--bg-card);">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:1rem;">Published Books</p>
+        <h2 style="font-family:'Newsreader',serif;font-size:1.2rem;font-weight:400;color:var(--text-primary);margin-bottom:0.6rem;">Three before 25</h2>
+        <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.4rem;">Published author of fiction, poetry, and confessional prose. Each title published independently on Amazon, written before the strategy work. Each one was an attempt to write something honest.</p>
+        <div style="margin-bottom:1.25rem;">
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">01</span>
+            <a href="https://www.amazon.in/Satanic-Rhapsody-Ujjwal-Rawwn-Srivastava-ebook/dp/B09BCBGDFF" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">The Satanic Rhapsody</a>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Fiction</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">02</span>
+            <a href="https://www.amazon.in/Poetry-book-Finding-Ujjwal-Srivastava/dp/9392223102" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Finding Home</a>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Poetry</span>
+          </div>
+          <div class="pub-item">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);">03</span>
+            <a href="https://www.amazon.in/gp/product/B0BFJX72VY" target="_blank" rel="noopener" class="link-g" style="font-size:0.85rem;font-style:italic;">Dreamscaping Reveries</a>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:'JetBrains Mono',monospace;">Prose</span>
+          </div>
+        </div>
+        <a href="https://www.amazon.in/stores/author/B09BCP3L71/about" target="_blank" rel="noopener" class="btn-g" style="font-size:0.75rem;padding:0.5rem 1rem;">View on Amazon ↗</a>
+      </div>
+
+    </div>
+
+    <!-- 3 BENTO CARDS -->
+    <div class="bento3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--border);border:1px solid var(--border);">
+
+      <!-- MUSIC -->
+      <div class="cs-card">
+        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
+          <img src="/img_2.jpg" width="659" height="525" loading="lazy" alt="rawwn — bedroom sessions">
+          <div class="cs-meta-reveal">
+            <div class="wave-bars">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;margin-left:0.5rem;vertical-align:middle;">rawwn</span>
+          </div>
+        </div>
+        <div class="cs-body">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Music</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Self-taught. Bedroom-produced.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Original songs written and recorded solo under the alias rawwn. On Spotify and YouTube since 2014.</p>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <a href="https://open.spotify.com/artist/6F6Mlg4FGLy89njESj5KBW" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Spotify ↗</a>
+            <a href="https://www.youtube.com/@Rawwn" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATHLETICS -->
+      <div class="cs-card">
+        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
+          <img src="/img_3.jpg" width="700" height="700" loading="lazy" alt="Ujjwal Srivastava — hybrid athlete">
+          <div class="cs-meta-reveal">
+            <span class="split-reveal" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">
+              21.1km · HYBRID ATHLETE
+            </span>
+          </div>
+        </div>
+        <div class="cs-body">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Athletics</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Hybrid athlete. Self-coached.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Regularly participates in half-marathons, running events, and hybrid obstacle races. No coach, no plan except consistency.</p>
+          <a href="https://www.strava.com/athletes/162115843" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Strava ↗</a>
+        </div>
+      </div>
+
+      <!-- DEV & ESSAYS -->
+      <div class="cs-card">
+        <div class="cs-img-frame grain" style="aspect-ratio:4/3;">
+          <img src="/img_4.jpg" width="700" height="700" loading="lazy" alt="Dev and Essays workspace">
+          <div class="cs-meta-reveal">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;">RAWWNBUILDS · GITHUB</span>
+          </div>
+        </div>
+        <div class="cs-body">
+          <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:0.75rem;">Dev &amp; Essays</p>
+          <h3 style="font-family:'Newsreader',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin-bottom:0.5rem;">Tools, scripts, and essays.</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Portfolio builds and content tools on GitHub. Personal essays on Substack: they start mid-thought and end without a lesson.</p>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">GitHub ↗</a>
+            <a href="https://rawwn.substack.com/" target="_blank" rel="noopener" class="btn-g" style="font-size:0.72rem;padding:0.4rem 0.8rem;">Substack ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border);background:var(--bg-page);">
+  <div style="max-width:1120px;margin:0 auto;padding:36px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
+    <div>
+      <p style="font-family:'Newsreader',serif;font-size:0.9rem;color:var(--text-primary);margin-bottom:0.2rem;">Ujjwal Srivastava</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:0.08em;">HEAD OF CONTENT · B2B SAAS STRATEGIST · GHOSTWRITER</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <a href="mailto:work@ujjwalsrivastava.com" class="footer-link">work@ujjwalsrivastava.com</a>
+      <a href="https://www.linkedin.com/in/ujjwalwrites/" target="_blank" rel="noopener" class="footer-link-sm">LinkedIn</a>
+      <a href="https://github.com/RawwnBuilds" target="_blank" rel="noopener" class="footer-link-sm">GitHub</a>
+      <a href="https://lkouniv.academia.edu/UjjwalSrivastava" target="_blank" rel="noopener" class="footer-link-sm">Academia</a>
+    </div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-ghost);letter-spacing:0.06em;width:100%;margin-top:0.25rem;">
+      © 2026 Ujjwal Srivastava · ujjwalsrivastava.com
+    </p>
+  </div>
+</footer>
+
+<script>
+function toggleTheme() {
+  var html = document.documentElement;
+  var isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'dark');
+    document.getElementById('theme-icon').textContent = '☽';
+  } else {
+    html.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+    document.getElementById('theme-icon').textContent = '☀';
+  }
+}
+(function() {
+  if (document.documentElement.getAttribute('data-theme') === 'light') {
+    document.getElementById('theme-icon').textContent = '☀';
+  }
+})();
+</script>
+
+</body>
+</html>

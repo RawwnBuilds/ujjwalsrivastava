@@ -1,8 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ClientLens</title>
 <meta name="description" content="Understand any client deeply in minutes. A free tool for content writers by Ujjwal Srivastava.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -671,7 +666,7 @@ body {
       </div>
       <div class="field">
         <label for="fDesc">What do they do?</label>
-        <textarea id="fDesc" placeholder="2–3 sentences. Plain language is fine."></textarea>
+        <textarea id="fDesc" placeholder="We'll look them up automatically — or add context here to sharpen the brief."></textarea>
       </div>
       <div class="field">
         <label for="fWebsite">Company website <span class="form-opt">(optional)</span></label>
@@ -755,7 +750,7 @@ body {
     </div>
 
     <div class="gen-area">
-      <button class="btn-generate" id="genBtn" onclick="generate()">Generate Writer Brief →</button>
+      <button class="btn-generate" id="genBtn" onclick="generate()">Research & Generate Brief →</button>
       <button class="btn-example" onclick="loadExample()">Load example client</button>
     </div>
   </aside>
@@ -1619,17 +1614,18 @@ const IND = {
 function getTemplate(d) {
   const indKey = Object.keys(IND).find(k => d.ind.includes(k.split(' ')[0])) || Object.keys(IND)[0];
   const base = IND[indKey];
-  const voice = d.voice || 'professional';
-  const aud = d.aud || 'business professionals';
+  const aud = d.aud || '';
 
-  // Build voice goodExample using client name
-  const goEx = `${d.name} customers ${base.voice.goodExample ? base.voice.goodExample.replace(/^Customers\s/, '') : 'get results fast — that\'s the whole point.'}`;
+  const goEx = `${d.name} customers ${base.voice.goodExample ? base.voice.goodExample.replace(/^Customers\s/, '') : "get results fast — that's the whole point."}`;
+
+  // Use actual researched/provided description when available
+  const hasRealDesc = d.desc && d.desc.length > 30;
+  const summary = hasRealDesc
+    ? d.desc
+    : `${d.name} operates in the ${d.ind} space${aud ? ', serving ' + aud : ''}. Understanding their business model and audience is the foundation of every piece you'll write for them.`;
 
   return {
-    overview: {
-      summary: `${d.name} operates in the ${d.ind} space${aud && aud !== 'business professionals' ? ', serving ' + aud : ''}. ${d.desc || 'Understanding their business model and audience is the foundation of every piece of content you\'ll write for them.'} As a writer on this account, your job is to make their expertise legible to buyers who are researching, comparing, and deciding.`,
-      whyMatters: base.overview.whyMatters
-    },
+    overview: { summary, whyMatters: base.overview.whyMatters },
     customers: base.customers,
     industry: base.industry,
     competitors: base.competitors,
@@ -1639,29 +1635,45 @@ function getTemplate(d) {
 
 function renderOverview(d, data, name) {
   const wts = d.wts;
-  const hasDesc = d.desc && d.desc.length > 10;
+  const hasDesc = data.overview.summary && data.overview.summary.length > 30;
   const hasWebsite = d.website && d.website.length > 4;
   const hasComps = d.competitors && d.competitors.length > 0;
+  const descSource = d.descSource; // 'Wikipedia', 'you', domain name, or ''
+  const autoSourced = descSource && descSource !== 'you' && descSource.length > 0;
+
+  const sourceTag = autoSourced
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);color:var(--fg3);margin-top:10px;padding:3px 8px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">↗ Sourced from ${esc(descSource)}</span>`
+    : '';
+
   return `
     <div class="sec-head">Who Is ${esc(name)}?</div>
-    <p class="sec-sub">Start here — your plain-language briefing on the client.</p>
-    ${hasDesc ? `<div class="product-card">
-      <div class="product-card-label">What they do — in their own words</div>
-      <p class="product-desc-text">${esc(d.desc)}</p>
-      ${hasWebsite ? `<p style="margin:8px 0 0;font-size:12px;font-family:var(--mono)"><a href="${esc(d.website)}" target="_blank" rel="noopener" style="color:var(--gold-lo);text-decoration:none;">${esc(d.website)} ↗</a></p>` : ''}
-      ${hasComps ? `<p style="margin:10px 0 0;font-size:12px;color:var(--fg3)">Competes with: <strong style="color:var(--fg2)">${esc(d.competitors.join(', '))}</strong></p>` : ''}
-    </div>` : ''}
+    <p class="sec-sub">What your writer needs to know before writing a single word.</p>
+
+    ${hasDesc ? `
+    <div class="product-card">
+      <div class="product-card-label">${autoSourced ? `Found on ${esc(descSource)}` : 'What they do'}</div>
+      <p class="product-desc-text" style="font-size:15px;line-height:1.75">${esc(data.overview.summary)}</p>
+      ${hasWebsite ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" style="font-size:12px;font-family:var(--mono);color:var(--gold-lo);text-decoration:none;display:inline-block;margin-top:10px;">${esc(d.website.replace(/^https?:\/\//,'').replace(/\/+$/,''))} ↗</a>` : ''}
+      ${hasComps ? `<p style="margin:12px 0 0;font-size:12.5px;color:var(--fg2)">Competing with: <strong style="color:var(--fg)">${esc(d.competitors.join(', '))}</strong>${d.compSource ? ` <span style="color:var(--fg3);font-family:var(--mono);font-size:11px">· via ${esc(d.compSource)}</span>` : ''}</p>` : ''}
+    </div>` : `
+    <div class="card gold-bg">
+      <div class="card-label">Research is running at ujjwalsrivastava.com/clientlens</div>
+      <p>Auto-research (Wikipedia, G2, company website) works in the deployed tool. Here in the preview, add a website or description above to sharpen the brief.</p>
+    </div>`}
+
     <div class="card gold-left">
-      <div class="card-label">Your Writer Context</div>
-      <p>${esc(data.overview.summary)}</p>
-      ${wts.length ? `<p>Your writing will help them through <strong>${esc(wts.join(', ').toLowerCase())}</strong>. Voice: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
-      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px">Notes: ${esc(d.extra)}</p>` : ''}
+      <div class="card-label">What This Means for Your Writing</div>
+      <p>As a writer on this account, your job is not to describe their product — their marketing does that. Your job is to help their audience understand <em>why</em> it matters to them, in language that earns trust rather than demanding it.</p>
+      ${wts.length ? `<p>Your formats on this account: <strong>${esc(wts.join(', '))}</strong>. Voice target: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
+      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px;margin-bottom:0">Context: ${esc(d.extra)}</p>` : ''}
     </div>
+
     <div class="stat-row">
-      <div class="stat"><div class="stat-val">${esc(d.ind.split(' ')[0])}</div><div class="stat-lbl">${esc(d.ind)}</div></div>
-      <div class="stat"><div class="stat-val">${wts.length || '—'}</div><div class="stat-lbl">content type${wts.length !== 1 ? 's' : ''} you write</div></div>
-      <div class="stat"><div class="stat-val">${hasComps ? d.competitors.length : (d.doc ? '✓' : '—')}</div><div class="stat-lbl">${hasComps ? 'named competitor' + (d.competitors.length !== 1 ? 's' : '') : 'source docs'}</div></div>
+      <div class="stat"><div class="stat-val">${esc(d.ind.split('/')[0].trim().split(' ')[0])}</div><div class="stat-lbl">${esc(d.ind)}</div></div>
+      <div class="stat"><div class="stat-val">${wts.length || '—'}</div><div class="stat-lbl">content type${wts.length !== 1 ? 's' : ''}</div></div>
+      <div class="stat"><div class="stat-val">${hasComps ? d.competitors.length : '—'}</div><div class="stat-lbl">${hasComps ? 'competitor' + (d.competitors.length !== 1 ? 's found' : ' found') : 'competitors'}</div></div>
     </div>
+
     <div class="card"><div class="card-label">Why This Industry Matters for Writing</div><ul class="checklist">${data.overview.whyMatters.map(m => `<li>${esc(m)}</li>`).join('')}</ul></div>
     ${wts.length ? `<div class="card"><div class="card-label">Your Content Formats</div><div class="pill-row">${wts.map(t => `<span class="pill pill-gold">${esc(t)}</span>`).join('')}</div><p style="margin:0;font-size:13px;color:var(--fg2)">Each format serves a different stage of the buyer journey.</p></div>` : ''}
   `;
@@ -1798,23 +1810,134 @@ function renderBrief(d, data, docText) {
   document.getElementById('outputCol').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-const LOAD_MSGS = ['Analysing industry context...','Building buyer personas...','Mapping competitive landscape...','Crafting voice and style guide...','Assembling your brief...'];
+// ── AUTO RESEARCH ─────────────────────────────────────────────────────────────
+async function autoResearch(d) {
+  const result = { desc: '', descSource: '', competitors: [], compSource: '' };
+  const name = d.name;
+
+  // 1. Scrape homepage meta description if website is provided — works for any company
+  if (d.website) {
+    try {
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(d.website),
+        { signal: AbortSignal.timeout(7000) });
+      if (r.ok) {
+        const html = await r.text();
+        const doc2 = new DOMParser().parseFromString(html, 'text/html');
+        const metaDesc = doc2.querySelector('meta[name="description"]')?.getAttribute('content')
+          || doc2.querySelector('meta[property="og:description"]')?.getAttribute('content');
+        if (metaDesc && metaDesc.length > 25) {
+          result.desc = metaDesc.trim();
+          result.descSource = d.website.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+        }
+      }
+    } catch {}
+  }
+
+  // 2. Wikipedia — rich paragraphs for well-known companies
+  if (!result.desc) {
+    try {
+      const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
+        { signal: AbortSignal.timeout(5000) });
+      if (r.ok) {
+        const wiki = await r.json();
+        if (wiki.extract && wiki.type !== 'disambiguation') {
+          // First 2–3 sentences only
+          result.desc = wiki.extract.split(/(?<=\.)\s+/).slice(0, 3).join(' ');
+          result.descSource = 'Wikipedia';
+        }
+      }
+    } catch {}
+  }
+
+  // 3. DuckDuckGo Instant Answer — good fallback for mid-tier companies
+  if (!result.desc) {
+    try {
+      const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
+        { signal: AbortSignal.timeout(5000) });
+      if (r.ok) {
+        const ddg = await r.json();
+        if (ddg.AbstractText && ddg.AbstractText.length > 30) {
+          result.desc = ddg.AbstractText.split(/(?<=\.)\s+/).slice(0, 3).join(' ');
+          result.descSource = ddg.AbstractSource || 'Web';
+        }
+      }
+    } catch {}
+  }
+
+  // 4. G2 alternatives page — best source for competitor names
+  if (d.competitors.length === 0) {
+    try {
+      const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const g2url = 'https://www.g2.com/products/' + slug + '/competitors/alternatives';
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(g2url),
+        { signal: AbortSignal.timeout(9000) });
+      if (r.ok) {
+        const html = await r.text();
+        const doc2 = new DOMParser().parseFromString(html, 'text/html');
+        const names = new Set();
+        // G2 marks product names in several ways depending on page version
+        doc2.querySelectorAll('[data-product-name],[itemprop="name"],[class*="product-name"]').forEach(el => {
+          const n = el.textContent.trim();
+          if (n && n !== name && n.length > 1 && n.length < 60 && !/\n/.test(n)) names.add(n);
+        });
+        // Fallback: scan h3/h4 near "alternative" context
+        if (names.size === 0) {
+          doc2.querySelectorAll('h3,h4').forEach(el => {
+            const n = el.textContent.trim();
+            if (n && n !== name && n.length > 2 && n.length < 50) names.add(n);
+          });
+        }
+        const comps = [...names].slice(0, 5);
+        if (comps.length > 0) { result.competitors = comps; result.compSource = 'G2'; }
+      }
+    } catch {}
+  }
+
+  return result;
+}
 
 async function generate() {
   const d = fd();
-  const docText = getAllDocText();
-  document.getElementById('stEmpty').style.display   = 'none';
-  document.getElementById('stError').style.display   = 'none';
+  document.getElementById('stEmpty').style.display    = 'none';
+  document.getElementById('stError').style.display    = 'none';
   document.getElementById('briefContent').classList.remove('show');
   document.getElementById('briefContent').style.display = 'none';
-  document.getElementById('stLoading').style.display = 'flex';
-  document.getElementById('loadLabel').textContent = docText ? 'Reading your documents…' : 'Building your brief…';
+  document.getElementById('stLoading').style.display  = 'flex';
   document.getElementById('genBtn').disabled = true;
+
+  const msgs = [
+    `Looking up ${d.name}…`,
+    'Checking what people say about them…',
+    'Scanning for competitor signals…',
+    'Building your content brief…',
+    'Finalising the research…'
+  ];
   let mi = 0;
   const st = document.getElementById('loadStatus');
-  const iv = setInterval(() => { if (mi < LOAD_MSGS.length) st.textContent = LOAD_MSGS[mi++]; }, 600);
+  document.getElementById('loadLabel').textContent = `Researching ${d.name}…`;
+  const iv = setInterval(() => { if (mi < msgs.length) st.textContent = msgs[mi++]; }, 900);
+
   try {
-    await new Promise(r => setTimeout(r, 2200));
+    // Auto-research the client from public sources
+    const research = await autoResearch(d);
+
+    // Populate description if the writer didn't provide one
+    if (research.desc && d.desc.length < 20) {
+      d.desc = research.desc;
+      d.descSource = research.descSource;
+      document.getElementById('fDesc').value = research.desc;
+    } else if (d.desc.length >= 20) {
+      d.descSource = 'you';
+    }
+
+    // Auto-populate competitors if none were entered
+    if (research.competitors.length > 0 && d.competitors.length === 0) {
+      d.competitors = research.competitors;
+      d.compSource = research.compSource;
+      document.getElementById('fCompetitors').value = research.competitors.join(', ');
+    }
+
+    const docText = getAllDocText();
     let data = getTemplate(d);
     if (docText) data = enrichWithDocs(data, docText);
     clearInterval(iv);
@@ -1845,4 +1968,3 @@ function loadExample() {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initUpload);
 </script>
-</html>

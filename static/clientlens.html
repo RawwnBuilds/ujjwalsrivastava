@@ -1720,6 +1720,26 @@ function getTemplate(d) {
   };
 }
 
+// ── AUDIENCE EXTRACTION HELPER ────────────────────────────────────────────────
+function extractAudienceFromDesc(desc) {
+  if (!desc) return '';
+  const patterns = [
+    /(?:built|designed|made|created|platform|tool|service)\s+(?:specifically\s+)?for\s+([^.—,;\n]{8,120})/i,
+    /(?:serving|helps?|enables?|empowers?)\s+([^.—,;\n]{8,100})\s+to\s+/i,
+    /used by\s+([^.—,;\n]{8,100})/i,
+    /([A-Za-z]+ (?:freelancers?|creatives?|designers?|photographers?|illustrators?|developers?|writers?|artists?)[^.]{0,80})/i,
+    /(?:freelancers?|creatives?|small businesses?|startups?|entrepreneurs?)[^.]{0,100}/i,
+  ];
+  for (const pattern of patterns) {
+    const m = desc.match(pattern);
+    if (m) {
+      const hit = (m[1] || m[0] || '').trim();
+      if (hit.length > 8 && hit.length < 200) return hit;
+    }
+  }
+  return '';
+}
+
 // ── COMPANY BRIEF TAB ─────────────────────────────────────────────────────────
 function renderCompanyBrief(d, data, docText) {
   const name = d.name;
@@ -1728,100 +1748,127 @@ function renderCompanyBrief(d, data, docText) {
   const hasWebsite = d.website && d.website.length > 4;
   const autoSourced = d.descSource && d.descSource !== 'you';
 
-  // ── WHO THEY ARE ──────────────────────────────────────────────────────────
-  // Build description block from research
+  // ── WHO THEY ARE — ESSAY STRUCTURE ───────────────────────────────────────
   const rawDesc = (d.desc || '').trim();
-  // For long body-text extractions, limit to meaningful first portion
-  const displayDesc = rawDesc.length > 1500 ? rawDesc.slice(0, 1500).replace(/\s+\S+$/, '') + '…' : rawDesc;
-  const paras = displayDesc.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 20).slice(0, 3);
-  const hasRichDesc = paras.length > 0 && displayDesc.length > 30;
+  const extraNote = (d.extra || '').trim();
 
-  const descBlock = hasRichDesc ? `
-    <div class="product-card">
-      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">${autoSourced ? `Sourced from ${esc(d.descSource)}` : 'What they do'}</div>
-      ${paras.map((p, i) => `<p style="font-size:${i===0?'15.5':'13.5'}px;line-height:1.8;margin:${i===0?'8':'10'}px 0 0;color:${i===0?'var(--fg)':'var(--fg2)'}">${esc(p)}</p>`).join('')}
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border2)">
-        ${hasWebsite ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" style="font-size:12px;font-family:var(--mono);color:var(--gold-lo);text-decoration:none;">${esc(d.website.replace(/^https?:\/\//,'').replace(/\/+$/,''))} ↗</a>` : ''}
-        ${d.companyType && d.companyType !== 'unknown' ? `<span style="font-size:11px;font-family:var(--mono);color:var(--fg3);padding:2px 7px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">${d.companyType}</span>` : ''}
-      </div>
+  // Split description into paragraphs for multi-card display
+  let descParas = [];
+  if (rawDesc.length > 20) {
+    // Try splitting on double newlines first (Wikipedia format)
+    const dblNl = rawDesc.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 20);
+    if (dblNl.length >= 2) {
+      descParas = dblNl.slice(0, 4);
+    } else {
+      // Single paragraph — split at sentence boundaries into 2-3 chunks
+      const sentences = rawDesc.match(/[^.!?]+[.!?]+/g) || [rawDesc];
+      let chunks = [], buf = [];
+      sentences.forEach((s, i) => {
+        buf.push(s.trim());
+        if (buf.length >= 3 || (buf.length >= 2 && i === sentences.length - 1)) {
+          chunks.push(buf.join(' '));
+          buf = [];
+        }
+      });
+      if (buf.length) chunks.push(buf.join(' '));
+      descParas = chunks.filter(c => c.length > 20).slice(0, 4);
+    }
+  }
+
+  // Pull quote: first full sentence from the description
+  const firstSentence = descParas.length > 0
+    ? (descParas[0].match(/^[^.!?]+[.!?]/)?.[0]?.trim() || descParas[0].slice(0, 180))
+    : '';
+
+  // Section labels per paragraph position
+  const sectionLabels = ['What they do', 'How it works', 'What makes them different', 'More context'];
+
+  const hasDesc = descParas.length > 0;
+
+  const whoTheyAreBlock = hasDesc ? `
+    ${firstSentence.length > 20 ? `<div style="font-family:var(--serif);font-size:19px;font-style:italic;font-weight:300;line-height:1.65;color:var(--fg);border-left:2px solid var(--gold-lo);padding-left:18px;margin-bottom:22px">${esc(firstSentence)}</div>` : ''}
+
+    ${descParas.map((para, i) => `
+    <div class="product-card" style="margin-bottom:14px">
+      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${i === 0 && autoSourced ? `Sourced from ${esc(d.descSource)}` : sectionLabels[i] || 'More context'}</div>
+      <p style="font-size:${i===0?'14.5':'13.5'}px;line-height:1.85;margin:8px 0 0;color:${i===0?'var(--fg)':'var(--fg2)'}">${esc(para)}</p>
+    </div>`).join('')}
+
+    ${extraNote ? `
+    <div class="card gold-left" style="margin-bottom:14px">
+      <div class="card-label">What makes them different</div>
+      <p style="font-size:14px;line-height:1.8;margin:0">${esc(extraNote)}</p>
+    </div>` : ''}
+
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;margin-bottom:28px">
+      ${hasWebsite ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" style="font-size:12px;font-family:var(--mono);color:var(--gold-lo);text-decoration:none;">${esc(d.website.replace(/^https?:\/\//,'').replace(/\/+$/,''))} ↗</a>` : ''}
+      ${d.ind ? `<span style="font-size:11px;font-family:var(--mono);color:var(--fg3);padding:2px 7px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">${esc(d.ind)}</span>` : ''}
+      ${d.companyType && d.companyType !== 'unknown' ? `<span style="font-size:11px;font-family:var(--mono);color:var(--fg3);padding:2px 7px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">${d.companyType}</span>` : ''}
     </div>` : `
-    <div class="card gold-bg">
+    <div class="card gold-bg" style="margin-bottom:28px">
       <div class="card-label">Add context to sharpen this section</div>
-      <p>Add a website URL or a description in the form — the deployed tool will also pull from Wikipedia and the web automatically.</p>
+      <p>Add a website URL or description in the form — the deployed tool pulls from Wikipedia and the web automatically.</p>
     </div>`;
 
   // ── THEIR CUSTOMERS ───────────────────────────────────────────────────────
-  // Priority: 1) uploaded docs with ICP section  2) research-derived  3) minimal template hint
-  let customerBlock = '';
-  if (data.docCustomers) {
-    // ICP docs were uploaded — use them verbatim
-    customerBlock = `
-      <div style="margin-top:28px">
-        <div class="sec-head" style="font-size:17px">Their Customers</div>
-        <p class="sec-sub">From your uploaded documents.</p>
-        <div class="product-card">
-          <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">From your ICP / brand docs</div>
-          <p style="font-size:13.5px;line-height:1.8;margin:8px 0 0;white-space:pre-wrap">${esc(data.docCustomers)}</p>
-        </div>
-      </div>`;
-  } else if (isB2C) {
-    // B2C: describe the audience from research, no fake personas
-    const rawFull = (d.desc || '').trim();
-    // Pull first meaningful paragraph for audience characterisation
-    const firstPara = rawFull.split(/\n\n+/)[0] || rawFull;
-    const audienceSnippet = firstPara.length > 300 ? firstPara.slice(0, 300).replace(/\s+\S+$/, '') + '…' : firstPara;
+  // Priority: 1) uploaded ICP docs  2) explicit aud field  3) extracted from desc  4) B2C/B2B writing notes
+  const audField = (d.aud || '').trim();
+  const extractedAud = extractAudienceFromDesc(rawDesc);
+  const hasSpecificAud = data.docCustomers || audField.length > 10 || extractedAud.length > 10;
 
-    customerBlock = `
-      <div style="margin-top:28px">
-        <div class="sec-head" style="font-size:17px">Their Customers</div>
-        <p class="sec-sub">Consumer-facing — your writing reaches individuals, not procurement teams.</p>
-        ${audienceSnippet.length > 30 ? `
-        <div class="product-card">
-          <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">Who uses this product</div>
-          <p style="font-size:14px;line-height:1.8;margin:8px 0 0;color:var(--fg2)">${esc(audienceSnippet)}</p>
-        </div>` : ''}
-        <div class="card gold-left" style="margin-top:14px">
-          <div class="card-label">What this means for your writing</div>
-          <ul class="checklist">
-            <li>You're writing for <strong>individuals</strong>, not procurement departments or committee buyers</li>
-            <li>Personal motivation — achievement, identity, belonging, self-improvement — is the real driver behind every purchase</li>
-            <li>Social proof (community size, user stories, shared results) lands harder than feature specs</li>
-            <li>The job-to-be-done is tied to a personal goal, not a business outcome or ROI calculation</li>
-            <li>Emotion earns trust first. Logic gives people permission to take the next step.</li>
-            <li>Write to one specific person, not to a demographic — the reader always feels the difference</li>
-          </ul>
-        </div>
-      </div>`;
-  } else if (isB2B) {
-    // B2B: explain who the buyer is in plain terms, no fake persona cards
-    customerBlock = `
-      <div style="margin-top:28px">
-        <div class="sec-head" style="font-size:17px">Their Customers</div>
-        <p class="sec-sub">B2B — your writing reaches business buyers. Upload an ICP doc to get more specific detail here.</p>
-        <div class="card gold-left">
-          <div class="card-label">What this means for your writing</div>
-          <ul class="checklist">
-            <li>Your reader has to sell this internally — write content that makes their job easier to do that</li>
-            <li>ROI and proof matter: specific data, case studies, and real outcomes beat vague claims every time</li>
-            <li>Multiple people read and share this content before a purchase decision is made</li>
-            <li>The decision timeline is long — every piece should move readers one step forward, not close them in one shot</li>
-          </ul>
-        </div>
-        <div class="card" style="margin-top:12px">
-          <div class="card-label">Go deeper on this section</div>
-          <p style="margin:0;font-size:13px;color:var(--fg2)">Upload an ICP document, LinkedIn company page, or brand brief in the left panel — ClientLens will extract the customer context and populate this section from your own materials.</p>
-        </div>
-      </div>`;
-  } else {
-    customerBlock = `
-      <div style="margin-top:28px">
-        <div class="sec-head" style="font-size:17px">Their Customers</div>
-        <div class="card">
-          <div class="card-label">Add context to sharpen this section</div>
-          <p style="margin:0;font-size:13px;color:var(--fg2)">Upload an ICP document or brand brief — ClientLens will extract and display the customer context from your own materials rather than guessing.</p>
-        </div>
-      </div>`;
+  let audienceDetail = '';
+  let audienceSource = '';
+  if (data.docCustomers) {
+    audienceDetail = data.docCustomers;
+    audienceSource = 'From your ICP / brand docs';
+  } else if (audField.length > 10) {
+    audienceDetail = audField;
+    audienceSource = 'Target audience';
+  } else if (extractedAud.length > 10) {
+    audienceDetail = extractedAud;
+    audienceSource = 'Who uses this — derived from research';
   }
+
+  const audienceCard = audienceDetail ? `
+    <div class="product-card" style="margin-bottom:14px">
+      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${audienceSource}</div>
+      <p style="font-size:14.5px;line-height:1.85;margin:8px 0 0;color:var(--fg);${data.docCustomers ? 'white-space:pre-wrap' : ''}">${esc(audienceDetail)}</p>
+    </div>` : '';
+
+  // Writing implications based on company type / audience signals
+  const b2cImplications = [
+    `You're writing for <strong>individuals</strong>, not procurement departments — the decision is personal, not organisational`,
+    `Personal motivation (achievement, identity, belonging, self-improvement) is the real driver behind every action. The product is the vehicle, not the point.`,
+    `Social proof lands harder than feature specs — community size, user stories, shared results carry more weight than a bullet-pointed feature list`,
+    `The job-to-be-done is tied to a personal goal, not a business outcome or ROI calculation`,
+    `Emotion earns trust first. Logic gives people permission to act.`,
+    `Write to one specific person — the reader always feels the difference between "my audience" and "you"`
+  ];
+  const b2bImplications = [
+    `Your reader has to sell this internally — write content that gives them the words to do that`,
+    `ROI and proof matter: specific data, case studies, and real outcomes beat vague claims every time`,
+    `Multiple people read and share this content before a purchase decision is made`,
+    `The decision timeline is long — every piece should move readers one step forward, not close in one shot`,
+    `Jargon is a double-edged sword — use the industry's own language, but define it on the first use`
+  ];
+  const genericImplications = [
+    `Know the specific person you're writing for before writing the first sentence`,
+    `Proof earns trust; assertions erode it — back every claim with something verifiable`,
+    `The opening earns or loses the rest. If the first paragraph doesn't earn attention, nothing else matters.`,
+    `End with clarity — the reader should know exactly what to do next`
+  ];
+  const implications = isB2C ? b2cImplications : (isB2B ? b2bImplications : genericImplications);
+
+  const customerSection = `
+    <div style="margin-bottom:28px">
+      <div class="sub-head" style="margin-bottom:12px;font-size:17px">Their Customers</div>
+      ${audienceCard}
+      <div class="card gold-left" style="margin-top:${audienceCard ? '14' : '0'}px">
+        <div class="card-label">What this means for your writing</div>
+        <ul class="checklist">${implications.map(b => `<li>${b}</li>`).join('')}</ul>
+        ${!hasSpecificAud ? `<p style="margin:12px 0 0;font-size:12.5px;color:var(--fg3)">Fill in "their target audience" in the form or upload an ICP doc for a richer customer profile here.</p>` : ''}
+      </div>
+    </div>`;
 
   // ── COMPETITIVE LANDSCAPE ─────────────────────────────────────────────────
   const comps = d.competitors && d.competitors.length > 0 ? d.competitors
@@ -1829,9 +1876,8 @@ function renderCompanyBrief(d, data, docText) {
   const hasComps = comps.length > 0;
 
   const compBlock = `
-    <div style="margin-top:28px">
-      <div class="sec-head" style="font-size:17px">Competitive Landscape</div>
-      <p class="sec-sub">${hasComps ? `${comps.length} competitor${comps.length > 1 ? 's' : ''} identified.` : 'Who else plays in this space.'}</p>
+    <div>
+      <div class="sub-head" style="margin-bottom:12px;font-size:17px">Competitive Landscape</div>
       ${hasComps ? `
       <div class="card gold-bg">
         <div class="card-label">Competitors${d.compSource ? ` · via ${esc(d.compSource)}` : ''}</div>
@@ -1844,7 +1890,7 @@ function renderCompanyBrief(d, data, docText) {
       </div>` : `
       <div class="card">
         <div class="card-label">Find competitors</div>
-        <p style="margin:0;font-size:13px;color:var(--fg2)">Add competitor names in the form, or search <a href="https://www.google.com/search?q=${encodeURIComponent(name + ' alternatives')}" target="_blank" rel="noopener" style="color:var(--gold-lo)">${esc(name)} alternatives ↗</a> or <a href="https://www.g2.com/search?utf8=%E2%9C%93&query=${encodeURIComponent(name)}" target="_blank" rel="noopener" style="color:var(--gold-lo)">${esc(name)} on G2 ↗</a></p>
+        <p style="margin:0;font-size:13px;color:var(--fg2)">Add competitor names in the form, or start here: <a href="https://www.google.com/search?q=${encodeURIComponent(name + ' alternatives')}" target="_blank" rel="noopener" style="color:var(--gold-lo)">${esc(name)} alternatives ↗</a></p>
       </div>`}
       <div class="card" style="margin-top:12px">
         <div class="card-label">The differentiation questions every writer must answer</div>
@@ -1856,11 +1902,12 @@ function renderCompanyBrief(d, data, docText) {
 
   return `
     <div class="sec-head">Who Is ${esc(name)}?</div>
-    <p class="sec-sub">What your writer needs to know before writing a single word.</p>
-    ${descBlock}
-    ${customerBlock}
+    <p class="sec-sub">Everything your writer needs to know before writing a single word.</p>
+    ${whoTheyAreBlock}
+    <hr style="border:none;border-top:1px solid var(--border2);margin:0 0 24px">
+    ${customerSection}
+    <hr style="border:none;border-top:1px solid var(--border2);margin:0 0 24px">
     ${compBlock}
-    ${d.extra ? `<div class="card" style="margin-top:16px"><div class="card-label">Brief notes</div><p style="margin:0;font-size:13px;color:var(--fg2)">${esc(d.extra)}</p></div>` : ''}
   `;
 }
 

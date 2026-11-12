@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClientLens</title>
+<meta name="description" content="Understand any client deeply in minutes. A free tool for content writers by Ujjwal Srivastava.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<style>
+:root {
+  --bg:       #080604;
+  --surface:  #100E0B;
+  --surface2: #181410;
+  --surface3: #221D16;
+  --fg:       #EAE4DA;
+  --fg2:      #9A8E7E;
+  --fg3:      #5A5248;
+  --fg4:      #35302A;
+  --gold:     #C4A969;
+  --gold-hi:  #DDBF7C;
+  --gold-lo:  #8C7A49;
+  --gold-bg:  #130E03;
+  --gold-dim: #8C7A49;
+  --border:   #1C1912;
+  --border2:  #26211A;
+  --border3:  #332C1F;
+  --green:    #4A9B6F;
+  --green-bg: #0A1A10;
+  --red:      #9B5050;
+  --red-bg:   #1A0A0A;
+  --radius:   10px;
+  --radius-sm:5px;
+  --font:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --serif:    'Newsreader', Georgia, serif;
+  --mono:     'JetBrains Mono', monospace;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; }
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.key-banner {
+  background: var(--gold-bg);
+  border-bottom: 1px solid var(--gold-dim);
+  padding: 10px max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.key-banner span { font-size: 12px; color: var(--fg2); font-family: var(--mono); }
+.key-banner span.note { color: var(--fg3); font-size: 11px; }
+.key-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg);
+  outline: none;
+}
+.key-input:focus { border-color: var(--gold-dim); }
+.key-save-btn {
+  padding: 6px 14px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.key-save-btn:hover { opacity: 0.85; }
+.key-status-ok {
+  background: var(--green-bg);
+  border-bottom: 1px solid var(--green);
+  padding: 8px max(20px, env(safe-area-inset-left, 0px));
+  font-size: 12px;
+  color: var(--green);
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.back-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg2);
+  text-decoration: none;
+  font-family: var(--mono);
+  letter-spacing: 0.03em;
+  transition: color 140ms;
+}
+.back-link:hover { color: var(--fg); }
+.header-product { display: flex; align-items: center; gap: 10px; }
+.product-mark {
+  width: 28px; height: 28px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-dim);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--gold);
+}
+.product-name {
+  font-family: var(--serif);
+  font-size: 17px; font-weight: 400; font-style: italic;
+  color: var(--fg); letter-spacing: -0.01em;
+}
+.header-mode { display: none; }
+
+.app-body { display: flex; height: calc(100vh - 56px); }
+
+.form-col {
+  width: 340px; min-width: 340px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px max(18px, env(safe-area-inset-left, 0px));
+  padding-right: 18px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.output-col {
+  flex: 1; min-width: 0; overflow-y: auto;
+  padding: 36px max(36px, env(safe-area-inset-right, 0px)) 60px 36px;
+}
+
+.form-section {
+  font-size: 10px; font-family: var(--mono); font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg3); margin-bottom: 12px; margin-top: 20px;
+}
+.form-section:first-child { margin-top: 0; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; font-weight: 500; color: var(--fg2); margin-bottom: 5px; }
+.field input, .field textarea, .field select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 140ms, box-shadow 140ms;
+  -webkit-appearance: none; appearance: none;
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--fg3); }
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 2px rgba(196,169,105,0.12);
+}
+.field textarea { resize: vertical; min-height: 70px; line-height: 1.55; }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235A5248'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center; background-size: 16px;
+  padding-right: 28px; cursor: pointer;
+}
+.field select option { background: var(--surface2); }
+
+.upload-area {
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 14px; text-align: center; cursor: pointer;
+  transition: border-color 140ms, background 140ms;
+  position: relative;
+}
+.upload-area:hover, .upload-area.drag-over { border-color: var(--gold-dim); background: var(--gold-bg); }
+.upload-area input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-label { font-size: 12px; color: var(--fg2); pointer-events: none; display: block; }
+.upload-label span { color: var(--gold); }
+.file-loaded { font-size: 11px; font-family: var(--mono); color: var(--green); margin-top: 6px; display: none; }
+
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.chip-input { display: none; }
+.chip-input + label {
+  display: inline-flex; padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border2); font-size: 11.5px; font-weight: 500;
+  color: var(--fg2); cursor: pointer; transition: all 140ms; user-select: none;
+}
+.chip-input:checked + label { background: var(--gold-bg); border-color: var(--gold-dim); color: var(--gold); }
+
+.btn-generate {
+  width: 100%; padding: 11px; background: var(--gold); color: var(--bg);
+  border: none; border-radius: var(--radius-sm); font-family: var(--font);
+  font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px;
+  transition: opacity 140ms, transform 140ms; letter-spacing: -0.01em;
+}
+.btn-generate:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-generate:active { transform: none; }
+.btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-example {
+  width: 100%; padding: 9px; background: transparent; color: var(--fg2);
+  border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  font-family: var(--font); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; margin-top: 7px; transition: color 140ms, border-color 140ms;
+}
+.btn-example:hover { color: var(--fg); border-color: var(--fg3); }
+
+.state-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; min-height: 400px; text-align: center; padding: 32px;
+}
+.empty-mark {
+  width: 56px; height: 56px; border: 1px dashed var(--border2); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 20px; color: var(--fg3); margin-bottom: 20px;
+}
+.state-empty h2 {
+  font-family: var(--serif); font-size: 22px; font-weight: 400; font-style: italic;
+  color: var(--fg); margin: 0 0 10px; text-wrap: balance;
+}
+.state-empty p { font-size: 13px; color: var(--fg2); max-width: 280px; margin: 0; }
+
+.state-loading {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; min-height: 400px; gap: 0; padding: 32px;
+}
+.load-label {
+  font-family: var(--serif); font-size: 20px; font-style: italic; font-weight: 400;
+  color: var(--fg); margin-bottom: 20px; text-align: center; text-wrap: balance;
+}
+.load-bar { width: 200px; height: 1px; background: var(--border2); position: relative; overflow: hidden; }
+.load-bar::after {
+  content: ''; position: absolute; top: 0; height: 100%; background: var(--gold);
+  animation: lbar 1.6s ease-in-out infinite;
+}
+@keyframes lbar {
+  0%   { left: -40%; width: 40%; }
+  50%  { left: 30%;  width: 55%; }
+  100% { left: 100%; width: 40%; }
+}
+.load-status { font-size: 11.5px; font-family: var(--mono); color: var(--fg3); margin-top: 14px; text-align: center; }
+
+.state-error {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; min-height: 400px; gap: 12px; padding: 32px; text-align: center;
+}
+.error-msg {
+  font-family: var(--mono); font-size: 12.5px; color: var(--red);
+  background: var(--red-bg); border: 1px solid var(--red); border-radius: var(--radius-sm);
+  padding: 12px 16px; max-width: 400px; line-height: 1.5;
+}
+
+.brief-content { display: none; }
+.brief-content.show { display: block; animation: fadeUp .25s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.brief-top { margin-bottom: 28px; }
+.brief-name {
+  font-family: var(--serif); font-size: 32px; font-weight: 400; font-style: italic;
+  color: var(--fg); margin: 0 0 10px; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance;
+}
+.brief-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.btag { font-size: 10.5px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.05em; padding: 2px 9px; border-radius: 20px; }
+.btag-gold   { background: var(--gold-bg); color: var(--gold); border: 1px solid var(--gold-dim); }
+.btag-muted  { background: var(--surface2); color: var(--fg2); border: 1px solid var(--border2); }
+.btag-green  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+
+.tabs-nav {
+  display: flex; border-bottom: 1px solid var(--border2); margin-bottom: 28px;
+  overflow-x: auto; scrollbar-width: none; gap: 0;
+}
+.tabs-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 8px 16px; font-family: var(--font); font-size: 12.5px; font-weight: 500;
+  color: var(--fg2); background: none; border: none; border-bottom: 1.5px solid transparent;
+  cursor: pointer; white-space: nowrap; transition: color 130ms; margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--fg); }
+.tab-btn.on { color: var(--gold); border-bottom-color: var(--gold); font-weight: 600; }
+.tab-pane { display: none; }
+.tab-pane.on { display: block; }
+
+.sec-head {
+  font-family: var(--serif); font-size: 20px; font-weight: 400; font-style: italic;
+  color: var(--fg); margin: 0 0 4px; letter-spacing: -0.01em; text-wrap: balance;
+}
+.sec-sub { font-size: 13px; color: var(--fg2); margin: 0 0 20px; }
+.card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px; }
+.card-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg3); margin: 0 0 10px; }
+.card p { margin: 0 0 8px; font-size: 13.5px; line-height: 1.65; color: var(--fg); }
+.card p:last-child { margin-bottom: 0; }
+.card.gold-left { border-left: 2px solid var(--gold); }
+.card.gold-bg { background: var(--gold-bg); border-color: var(--gold-dim); }
+
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.stat { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px 14px 12px; }
+.stat-val { font-family: var(--serif); font-size: 22px; font-style: italic; color: var(--gold); line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 11px; color: var(--fg3); font-family: var(--mono); line-height: 1.35; }
+
+.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.checklist li { display: flex; gap: 10px; font-size: 13.5px; color: var(--fg); line-height: 1.6; align-items: flex-start; }
+.checklist li::before { content: '→'; color: var(--gold); font-size: 12px; margin-top: 3px; flex-shrink: 0; }
+
+.persona-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+.persona-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.persona-av { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.persona-name { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--fg); margin: 0 0 2px; }
+.persona-role { font-size: 12px; color: var(--fg2); font-family: var(--mono); }
+.persona-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mini-label { font-size: 10px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg3); margin-bottom: 8px; }
+.p-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.p-list li { font-size: 12.5px; color: var(--fg); display: flex; gap: 7px; line-height: 1.45; align-items: flex-start; }
+.p-list li .dot { color: var(--gold-dim); flex-shrink: 0; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+.pill { padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-family: var(--mono); font-weight: 500; border: 1px solid; }
+.pill-gold  { background: var(--gold-bg); color: var(--gold); border-color: var(--gold-dim); }
+.pill-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.pill-red   { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.box { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px 16px; }
+.box.g { border-left: 2px solid var(--green); }
+.box.r { border-left: 2px solid var(--red); }
+.box-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.box.g .box-label { color: var(--green); }
+.box.r .box-label { color: var(--red); }
+.box ul { margin: 0; padding-left: 14px; display: flex; flex-direction: column; gap: 6px; }
+.box ul li { font-size: 12.5px; color: var(--fg); line-height: 1.45; }
+
+.glossary { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+.grow { display: flex; gap: 16px; padding: 10px 12px; background: var(--surface); border-radius: var(--radius-sm); align-items: flex-start; }
+.gterm { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--gold); min-width: 130px; flex-shrink: 0; line-height: 1.5; }
+.gdef { font-size: 12.5px; color: var(--fg2); line-height: 1.6; }
+
+.rstep { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+.rstep-n { width: 26px; height: 26px; min-width: 26px; background: var(--gold-bg); border: 1px solid var(--gold-dim); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; color: var(--gold); font-variant-numeric: tabular-nums; }
+.rstep-b p { margin: 0; font-size: 13px; color: var(--fg2); line-height: 1.55; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+.cside { background: var(--surface); padding: 14px 16px; }
+.cside-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.cside.bad  .cside-label { color: var(--red); }
+.cside.good .cside-label { color: var(--green); }
+.cside p { margin: 0; font-size: 13px; line-height: 1.6; }
+.cside.bad  p { color: var(--fg3); }
+.cside.good p { color: var(--fg); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.sub-head { font-family: var(--serif); font-size: 17px; font-style: italic; font-weight: 400; color: var(--fg); margin: 0 0 14px; letter-spacing: -0.01em; }
+
+.site-footer {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 16px max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.footer-text { font-family: var(--mono); font-size: 11px; color: var(--fg3); }
+.footer-link { color: var(--gold); text-decoration: none; font-size: 11px; font-family: var(--mono); }
+.footer-link:hover { color: var(--fg); }
+
+/* ── FORM HERO ── */
+.form-hero {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(170deg,var(--surface) 0%,var(--surface2) 100%);
+}
+.form-hero-label { font-family:var(--mono);font-size:10px;color:var(--gold-lo);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px; }
+.form-hero-title { font-family:var(--serif);font-size:19px;font-style:italic;line-height:1.35;color:var(--fg);margin:0; }
+.g-gold { background:linear-gradient(120deg,#A88B45 0%,#DDBF7C 45%,#C4A969 70%,#A88B45 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+
+/* ── FORM ── */
+.form-body { padding:0 20px 120px;flex:1; }
+.form-section {
+  font-size:10px;font-family:var(--mono);font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg4);background:var(--surface3);margin:20px -20px 14px;
+  padding:6px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.form-section:first-of-type { margin-top:16px; }
+.field { margin-bottom:12px; }
+.field label { display:block;font-size:12px;font-weight:500;color:var(--fg2);margin-bottom:5px; }
+.field input,.field textarea,.field select {
+  width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:8px 10px;font-family:var(--font);font-size:13px;color:var(--fg);outline:none;
+  transition:border-color 140ms,box-shadow 140ms;-webkit-appearance:none;appearance:none;
+}
+.field input::placeholder,.field textarea::placeholder { color:var(--fg4); }
+.field input:focus,.field textarea:focus,.field select:focus { border-color:var(--gold-lo);box-shadow:0 0 0 2px rgba(196,169,105,.1); }
+.field textarea { resize:vertical;min-height:68px;line-height:1.55; }
+.field select {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235A5248'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:16px;padding-right:28px;cursor:pointer;
+}
+.field select option { background:var(--surface2); }
+
+/* ── CHIPS ── */
+.chip-group { display:flex;flex-wrap:wrap;gap:6px; }
+.chip-input { display:none; }
+.chip-input + label { display:inline-flex;align-items:center;padding:4px 10px;background:var(--bg);border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--fg2);cursor:pointer;transition:all 140ms; }
+.chip-input:checked + label { background:var(--gold-bg);border-color:var(--gold-lo);color:var(--gold); }
+
+/* ── UPLOAD ── */
+.upload-zone {
+  border:1px dashed var(--border3);border-radius:var(--radius);padding:16px;text-align:center;
+  cursor:pointer;transition:border-color 180ms,background 180ms;background:var(--bg);position:relative;
+}
+.upload-zone:hover,.upload-zone.drag-over { border-color:var(--gold-lo);background:rgba(196,169,105,.04); }
+.upload-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+.upload-icon { font-size:22px;display:block;margin-bottom:5px;opacity:.45; }
+.upload-label { font-size:12px;color:var(--fg2);pointer-events:none; }
+.upload-label span { color:var(--gold); }
+.upload-sub { font-size:11px;color:var(--fg3);pointer-events:none;margin-top:3px; }
+.file-list { display:none;flex-direction:column;gap:4px;margin-top:8px; }
+.file-tag { display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:5px 8px; }
+.file-tag-name { font-size:11px;font-family:var(--mono);color:var(--fg2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.file-tag-info { font-size:10px;color:var(--fg3);font-family:var(--mono);margin:0 6px;white-space:nowrap; }
+.file-tag.extracting .file-tag-info { color:var(--gold-lo); }
+.file-tag-remove { background:none;border:none;color:var(--fg3);cursor:pointer;font-size:14px;padding:0 2px;transition:color 140ms;line-height:1; }
+.file-tag-remove:hover { color:var(--red); }
+.doc-status-bar { background:rgba(196,169,105,.07);border:1px solid rgba(196,169,105,.2);border-radius:var(--radius-sm);padding:7px 10px;margin-bottom:10px;font-size:11px;color:var(--gold);font-family:var(--mono);display:none; }
+
+/* ── BUTTON ── */
+@keyframes shimmer { from{background-position:200% center}to{background-position:-200% center} }
+.gen-area { padding:0 20px 20px;position:sticky;bottom:0;background:linear-gradient(0deg,var(--surface) 60%,transparent); }
+.btn-generate {
+  width:100%;padding:13px 20px;margin-top:12px;
+  background:linear-gradient(90deg,#8C7A49,#DDBF7C,#C4A969,#DDBF7C,#8C7A49);
+  background-size:200% auto;animation:shimmer 3s linear infinite;
+  color:rgba(10,8,4,.9);border:none;border-radius:var(--radius);
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;
+  transition:transform 100ms,box-shadow 200ms;
+  box-shadow:0 2px 20px rgba(196,169,105,.2);
+}
+.btn-generate:hover { transform:translateY(-1px);box-shadow:0 4px 28px rgba(196,169,105,.4); }
+.btn-generate:active { transform:none; }
+.btn-generate:disabled { opacity:.4;cursor:not-allowed;transform:none;animation:none; }
+.btn-example { width:100%;margin-top:8px;padding:9px 20px;background:none;border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font);font-size:12px;font-weight:500;color:var(--fg3);cursor:pointer;transition:color 140ms,border-color 140ms; }
+.btn-example:hover { color:var(--fg2);border-color:var(--border3); }
+
+/* ── HEADER ── */
+.site-header { background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));height:56px;position:sticky;top:0;z-index:20; }
+.back-link { font-size:11px;font-weight:500;color:var(--fg3);text-decoration:none;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;transition:color 140ms; }
+.back-link:hover { color:var(--fg2); }
+.header-brand { display:flex;align-items:center;gap:10px; }
+.brand-mark { width:28px;height:28px;background:linear-gradient(135deg,#1A1308,#261C0E);border:1px solid var(--gold-lo);border-radius:7px;display:flex;align-items:center;justify-content:center; }
+.brand-mark-txt { font-family:var(--mono);font-size:10px;font-weight:500;color:var(--gold);letter-spacing:.05em; }
+.brand-name { font-family:var(--serif);font-size:18px;font-weight:400;font-style:italic;color:var(--fg);letter-spacing:-.02em; }
+.header-badge { font-family:var(--mono);font-size:10px;color:var(--fg3);letter-spacing:.08em;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border2);padding:3px 8px;border-radius:4px; }
+
+/* ── LAYOUT ── */
+.app-body { display:flex;height:calc(100vh - 56px);overflow:hidden; }
+.form-col { width:360px;min-width:360px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column; }
+.output-col { flex:1;min-width:0;overflow-y:auto;padding:40px max(44px,env(safe-area-inset-right,0px)) 80px 44px; }
+
+/* ── STATES ── */
+.state-empty { display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px; }
+.empty-mark { font-size:36px;color:var(--gold-lo);margin-bottom:20px;opacity:.45; }
+.state-empty h2 { font-family:var(--serif);font-size:28px;font-style:italic;font-weight:400;color:var(--fg);margin:0 0 10px;letter-spacing:-.02em; }
+.state-empty p { color:var(--fg2);font-size:14px;max-width:380px;margin:0 auto 6px;line-height:1.65; }
+
+@keyframes dot { 0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-8px);opacity:1} }
+.state-loading { display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center; }
+.load-dots { display:flex;gap:6px;margin-bottom:20px; }
+.load-dots span { width:7px;height:7px;background:var(--gold);border-radius:50%;animation:dot 1.4s ease-in-out infinite; }
+.load-dots span:nth-child(2){animation-delay:.15s} .load-dots span:nth-child(3){animation-delay:.3s}
+.load-label { font-family:var(--serif);font-size:20px;font-style:italic;color:var(--fg);margin-bottom:8px; }
+.load-status { font-size:12px;color:var(--fg3);font-family:var(--mono);letter-spacing:.05em; }
+.state-error { display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px; }
+.error-msg { color:var(--red);font-size:14px;max-width:400px; }
+
+/* ── BRIEF ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
+.brief-content { display:none; }
+.brief-content.show { display:block;animation:fadeUp .35s ease; }
+.brief-top { margin-bottom:24px; }
+.brief-name { font-family:var(--serif);font-size:30px;font-style:italic;font-weight:400;color:var(--fg);letter-spacing:-.03em;margin-bottom:10px;line-height:1.1; }
+.brief-tags { display:flex;flex-wrap:wrap;gap:6px; }
+.btag { display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-family:var(--mono);font-weight:500; }
+.btag-gold { background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-lo); }
+.btag-muted { background:var(--surface3);color:var(--fg3);border:1px solid var(--border2); }
+.btag-green { background:var(--green-bg);color:var(--green);border:1px solid var(--green); }
+
+.tabs-nav { display:flex;gap:0;border-bottom:1px solid var(--border2);margin-bottom:28px;overflow-x:auto;-webkit-overflow-scrolling:touch; }
+.tab-btn { background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px 9px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--fg3);cursor:pointer;transition:color 140ms,border-color 140ms;white-space:nowrap;margin-bottom:-1px; }
+.tab-btn:hover { color:var(--fg2); }
+.tab-btn.on { color:var(--gold);border-bottom-color:var(--gold); }
+.tab-pane { display:none; }
+.tab-pane.on { display:block; }
+
+/* ── BRIEF COMPONENTS ── */
+.section-label { font-size:10px;font-family:var(--mono);font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-lo);margin-bottom:10px; }
+.card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px; }
+.card-title { font-weight:600;font-size:13px;color:var(--fg);margin-bottom:6px; }
+.overview-summary { font-family:var(--serif);font-size:18px;font-style:italic;font-weight:300;line-height:1.6;color:var(--fg);margin-bottom:24px;border-left:2px solid var(--gold-lo);padding-left:16px; }
+.why-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px; }
+.why-item { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px; }
+.why-num { font-family:var(--mono);font-size:10px;color:var(--gold-lo);margin-bottom:6px; }
+.why-text { font-size:12px;color:var(--fg2);line-height:1.6; }
+.stat-row { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px; }
+.stat-box { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center; }
+.stat-val { font-family:var(--serif);font-size:24px;font-style:italic;color:var(--gold);margin-bottom:3px; }
+.stat-label { font-size:11px;color:var(--fg3);font-family:var(--mono); }
+
+.persona-row { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px; }
+.persona-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:border-color 200ms; }
+.persona-card:hover { border-color:var(--border2); }
+.persona-emoji { font-size:26px;display:block;margin-bottom:10px; }
+.persona-name { font-weight:600;color:var(--fg);margin-bottom:2px; }
+.persona-role { font-size:12px;color:var(--fg2);font-family:var(--mono);margin-bottom:10px; }
+.persona-pill { display:inline-block;font-size:10px;font-family:var(--mono);color:var(--fg3);background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:3px;margin-bottom:10px; }
+.persona-sec-label { font-size:10px;font-family:var(--mono);color:var(--gold-lo);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px; }
+.persona-list { margin:0 0 10px;padding:0 0 0 14px; }
+.persona-list li { font-size:12px;color:var(--fg2);margin-bottom:4px;line-height:1.5; }
+.search-tag { display:inline-block;font-family:var(--mono);font-size:10px;background:var(--gold-bg);color:var(--gold-lo);border:1px solid rgba(196,169,105,.2);padding:3px 7px;border-radius:3px;margin:2px 2px 0 0; }
+
+.primer-list { list-style:none;margin:0 0 20px;padding:0; }
+.primer-list li { padding:12px 14px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--gold-lo);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13px;color:var(--fg2);line-height:1.6; }
+.glossary-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+.glossary-item { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px; }
+.glossary-term { font-family:var(--mono);font-size:11px;font-weight:500;color:var(--gold);margin-bottom:4px; }
+.glossary-def { font-size:12px;color:var(--fg2);line-height:1.55; }
+
+.comp-cols { display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px; }
+.comp-col-title { font-family:var(--mono);font-size:10px;color:var(--gold-lo);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px; }
+.comp-src-list,.comp-q-list { list-style:none;margin:0;padding:0; }
+.comp-src-list li,.comp-q-list li { padding:10px 12px;margin-bottom:5px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--fg2);line-height:1.5; }
+.comp-q-list { counter-reset:cq; }
+.comp-q-list li { padding-left:34px;position:relative;counter-increment:cq; }
+.comp-q-list li::before { content:counter(cq);position:absolute;left:10px;top:10px;font-family:var(--mono);font-size:10px;color:var(--gold-lo); }
+
+.voice-desc { font-family:var(--serif);font-size:16px;font-style:italic;font-weight:300;line-height:1.65;color:var(--fg);margin-bottom:20px;border-left:2px solid var(--gold-lo);padding-left:16px; }
+.voice-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px; }
+.word-cloud { display:flex;flex-wrap:wrap;gap:6px; }
+.word-use  { background:var(--green-bg);color:var(--green);border:1px solid var(--green);padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--mono); }
+.word-avoid{ background:var(--red-bg);color:var(--red);border:1px solid var(--red);padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--mono); }
+.ex-box { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px; }
+.ex-box-label { font-size:10px;font-family:var(--mono);color:var(--fg3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px; }
+.ex-box-bad { font-size:13px;color:var(--red);font-style:italic;line-height:1.55; }
+.ex-box-good { font-size:13px;color:var(--green);font-style:italic;line-height:1.55; }
+.two-col,.do-cols { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+.do-list { list-style:none;margin:0;padding:0; }
+.do-list li { padding:8px 10px;margin-bottom:5px;border-radius:var(--radius-sm);font-size:12px;line-height:1.5; }
+.do-more li { background:var(--green-bg);color:var(--fg2);border:1px solid rgba(74,155,111,.2); }
+.do-less li { background:var(--red-bg);color:var(--fg2);border:1px solid rgba(155,80,80,.2); }
+.compare { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+
+/* ── RESEARCH PACK ── */
+.rp-wrap { margin-top:40px;padding-top:32px;border-top:1px solid var(--border); }
+.rp-header { margin-bottom:20px; }
+.rp-eyebrow { font-family:var(--mono);font-size:10px;color:var(--gold-lo);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px; }
+.rp-title { font-family:var(--serif);font-size:22px;font-style:italic;color:var(--fg);margin-bottom:6px; }
+.rp-sub { font-size:13px;color:var(--fg2); }
+.rp-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+.rp-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 200ms,transform 150ms; }
+.rp-card:hover { border-color:var(--border3);transform:translateY(-2px); }
+.rp-card-top { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
+.rp-icon { font-size:16px; }
+.rp-card-title { font-size:12px;font-weight:600;color:var(--fg); }
+.rp-tip { font-size:11px;color:var(--fg3);line-height:1.55;margin-bottom:10px; }
+.rp-links { display:flex;flex-wrap:wrap;gap:5px; }
+.rp-link { font-size:10px;font-family:var(--mono);color:var(--gold-lo);background:var(--gold-bg);border:1px solid rgba(196,169,105,.2);padding:3px 8px;border-radius:3px;text-decoration:none;transition:color 140ms,border-color 140ms; }
+.rp-link:hover { color:var(--gold);border-color:var(--gold-lo); }
+
+/* ── DOC EXCERPT ── */
+.doc-excerpt { margin-top:24px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--gold-lo);border-radius:0 var(--radius) var(--radius) 0;display:none; }
+.doc-excerpt-label { font-size:10px;font-family:var(--mono);color:var(--gold-lo);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px; }
+.doc-excerpt-text { font-size:11px;color:var(--fg3);font-family:var(--mono);white-space:pre-wrap;max-height:80px;overflow:hidden;line-height:1.6; }
+
+/* ── FAQ ── */
+.faq-section { background:var(--surface);border-top:2px solid var(--border);padding:60px max(48px,env(safe-area-inset-left,0px)) 80px;padding-right:max(48px,env(safe-area-inset-right,0px)); }
+.faq-inner { max-width:760px; }
+.faq-eyebrow { font-family:var(--mono);font-size:10px;color:var(--gold-lo);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px; }
+.faq-title { font-family:var(--serif);font-size:34px;font-style:italic;font-weight:400;color:var(--fg);margin:0 0 8px;letter-spacing:-.02em; }
+.faq-sub { font-size:14px;color:var(--fg2);margin-bottom:40px; }
+.faq-list { display:flex;flex-direction:column; }
+.faq-item { border-bottom:1px solid var(--border); }
+.faq-q { display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;cursor:pointer;font-size:15px;font-weight:500;color:var(--fg);transition:color 140ms;user-select:none; }
+.faq-q:hover { color:var(--gold); }
+.faq-plus { font-size:22px;color:var(--fg3);transition:transform 240ms,color 180ms;flex-shrink:0; }
+.faq-item.open .faq-plus { transform:rotate(45deg);color:var(--gold); }
+.faq-a { display:none;color:var(--fg2);font-size:14px;line-height:1.75;padding-bottom:18px;max-width:580px; }
+.faq-item.open .faq-a { display:block; }
+
+/* ── FOOTER ── */
+.site-footer { background:var(--bg);border-top:1px solid var(--border);padding:20px max(48px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:8px; }
+.footer-text { font-size:12px;color:var(--fg3);font-family:var(--mono); }
+.footer-link { font-size:12px;color:var(--gold-lo);text-decoration:none;font-family:var(--mono);transition:color 140ms; }
+.footer-link:hover { color:var(--gold); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:800px) {
+  .app-body { flex-direction:column;height:auto;overflow:visible; }
+  .form-col { width:100%;min-width:0; }
+  .output-col { padding:24px max(20px,env(safe-area-inset-right,0px)) 60px 20px; }
+  .why-grid,.persona-row,.glossary-grid,.comp-cols,.voice-grid,.do-cols,.two-col,.compare { grid-template-columns:1fr; }
+  .rp-grid { grid-template-columns:1fr 1fr; }
+  .brief-name { font-size:24px; }
+  .faq-title { font-size:24px; }
+}
+@media (max-width:480px) { .rp-grid { grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce) { .brief-content.show,.rp-card { animation:none;transition:none; } .btn-generate { animation:none; } }
+</style>
+
+<header class="site-header">
+  <a href="https://www.ujjwalsrivastava.com" class="back-link">← ujjwalsrivastava.com</a>
+  <div class="header-brand">
+    <div class="brand-mark"><span class="brand-mark-txt">CL</span></div>
+    <span class="brand-name">ClientLens</span>
+  </div>
+  <span class="header-badge">Free · No signup</span>
+</header>
+
+<div class="app-body">
+  <aside class="form-col">
+    <div class="form-hero">
+      <div class="form-hero-label">Writer Intelligence Tool</div>
+      <p class="form-hero-title">Stop guessing who you're<br><span class="g-gold">writing for.</span></p>
+    </div>
+
+    <div class="form-body">
+      <div class="form-section">The Client</div>
+      <div class="field">
+        <label for="fName">Client name</label>
+        <input type="text" id="fName" placeholder="e.g. Acme Corp">
+      </div>
+      <div class="field">
+        <label for="fDesc">What do they do?</label>
+        <textarea id="fDesc" placeholder="2–3 sentences. Plain language is fine."></textarea>
+      </div>
+      <div class="field">
+        <label for="fInd">Industry</label>
+        <select id="fInd">
+          <option value="">Select...</option>
+          <option value="B2B SaaS">B2B SaaS</option>
+          <option value="B2C / E-commerce">B2C / E-commerce</option>
+          <option value="Healthcare / Health Tech">Healthcare / Health Tech</option>
+          <option value="Finance / Fintech">Finance / Fintech</option>
+          <option value="Marketing / Agency">Marketing / Agency</option>
+          <option value="Professional Services">Professional Services</option>
+          <option value="Education / EdTech">Education / EdTech</option>
+          <option value="Creator Economy">Creator Economy</option>
+          <option value="Dev Tools / API">Dev Tools / API</option>
+          <option value="HR / People Tech">HR / People Tech</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fAud">Their target audience</label>
+        <input type="text" id="fAud" placeholder="e.g. HR managers at mid-size companies">
+      </div>
+
+      <div class="form-section">Writing Context</div>
+      <div class="field">
+        <label>Content types you write</label>
+        <div class="chip-group">
+          <input class="chip-input" type="checkbox" id="c1" value="Blog Posts"><label for="c1">Blog Posts</label>
+          <input class="chip-input" type="checkbox" id="c2" value="Case Studies"><label for="c2">Case Studies</label>
+          <input class="chip-input" type="checkbox" id="c3" value="LinkedIn / Social"><label for="c3">LinkedIn</label>
+          <input class="chip-input" type="checkbox" id="c4" value="Email Campaigns"><label for="c4">Email</label>
+          <input class="chip-input" type="checkbox" id="c5" value="White Papers"><label for="c5">White Papers</label>
+          <input class="chip-input" type="checkbox" id="c6" value="Landing Pages"><label for="c6">Landing Pages</label>
+          <input class="chip-input" type="checkbox" id="c7" value="Product Copy"><label for="c7">Product Copy</label>
+          <input class="chip-input" type="checkbox" id="c8" value="Ghostwriting"><label for="c8">Ghostwriting</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fVoice">Brand voice</label>
+        <select id="fVoice">
+          <option value="">Select...</option>
+          <option value="Professional & authoritative">Professional & authoritative</option>
+          <option value="Warm & conversational">Warm & conversational</option>
+          <option value="Technical & precise">Technical & precise</option>
+          <option value="Inspirational & visionary">Inspirational & visionary</option>
+          <option value="Playful & bold">Playful & bold</option>
+          <option value="Empathetic & supportive">Empathetic & supportive</option>
+          <option value="Journalistic & neutral">Journalistic & neutral</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fExtra">Anything else? <span style="color:var(--fg3);font-weight:400">(optional)</span></label>
+        <textarea id="fExtra" placeholder="Key competitors, recent news, known constraints, tone notes..."></textarea>
+      </div>
+
+      <div class="form-section">Source Documents</div>
+      <div class="doc-status-bar" id="docStatusBar"></div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.csv,.docx">
+        <span class="upload-icon">📎</span>
+        <div class="upload-label">Drop files or <span>browse</span></div>
+        <div class="upload-sub">PDF, TXT, MD, CSV — ICPs, brand docs, LinkedIn pages</div>
+      </div>
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+    <div class="gen-area">
+      <button class="btn-generate" id="genBtn" onclick="generate()">Generate Writer Brief →</button>
+      <button class="btn-example" onclick="loadExample()">Load example client</button>
+    </div>
+  </aside>
+
+  <section class="output-col" id="outputCol">
+    <div class="state-empty" id="stEmpty">
+      <div class="empty-mark">✦</div>
+      <h2>Your writer brief appears here</h2>
+      <p>Fill in the client details on the left and click Generate. You'll get a structured brief covering their customers, industry context, competitors, and voice — all tailored to your client.</p>
+      <p style="font-size:12px;color:var(--fg3)">Upload their ICP, brand docs, or LinkedIn pages for a more personalised brief.</p>
+    </div>
+    <div class="state-loading" id="stLoading">
+      <div class="load-dots"><span></span><span></span><span></span></div>
+      <div class="load-label" id="loadLabel">Building your brief...</div>
+      <div class="load-status" id="loadStatus">Analysing industry context</div>
+    </div>
+    <div class="state-error" id="stError">
+      <div class="error-msg" id="errorMsg"></div>
+      <button class="btn-example" style="width:auto;padding:8px 20px" onclick="showEmpty()">← Try again</button>
+    </div>
+    <div class="brief-content" id="briefContent">
+      <div class="brief-top">
+        <div class="brief-name" id="outName"></div>
+        <div class="brief-tags" id="outTags"></div>
+      </div>
+      <div class="tabs-nav">
+        <button class="tab-btn on" onclick="switchTab('overview',this)">Overview</button>
+        <button class="tab-btn" onclick="switchTab('customers',this)">Their Customers</button>
+        <button class="tab-btn" onclick="switchTab('industry',this)">Industry 101</button>
+        <button class="tab-btn" onclick="switchTab('competitors',this)">Competitor Research</button>
+        <button class="tab-btn" onclick="switchTab('voice',this)">Voice & Style</button>
+      </div>
+      <div class="tab-pane on" id="pane-overview"></div>
+      <div class="tab-pane" id="pane-customers"></div>
+      <div class="tab-pane" id="pane-industry"></div>
+      <div class="tab-pane" id="pane-competitors"></div>
+      <div class="tab-pane" id="pane-voice"></div>
+      <div id="docExcerpt" class="doc-excerpt">
+        <div class="doc-excerpt-label">From your documents</div>
+        <div class="doc-excerpt-text" id="docExcerptText"></div>
+      </div>
+      <div id="researchPack"></div>
+    </div>
+  </section>
+</div>
+
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="faq-eyebrow">Questions & Answers</div>
+    <h2 class="faq-title">Everything you need to know about ClientLens</h2>
+    <p class="faq-sub">Built for writers who want to look like they've done their homework. Because you have.</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">What is ClientLens?<span class="faq-plus">+</span></div>
+        <div class="faq-a">ClientLens is a free writer brief tool that helps content writers understand a new client before writing a single word. Enter the client's name, industry, and audience, and ClientLens builds a structured brief covering who their customers are, how their industry works, who they compete with, and how they should sound. No signup, no API key, no cost.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Who built ClientLens?<span class="faq-plus">+</span></div>
+        <div class="faq-a">ClientLens was built by Ujjwal Srivastava, a content strategist and writer based in India. It came out of a real problem: spending hours researching a new client before the first brief. The tool makes that research instant — and free. You can read more of Ujjwal's work at ujjwalsrivastava.com.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Who should use ClientLens?<span class="faq-plus">+</span></div>
+        <div class="faq-a">ClientLens is built for content writers, marketers, and content editors who work with multiple clients. It is especially useful for freelancers pitching a new client and wanting to show up prepared, for content editors onboarding a new brand, and for anyone who has ever written a piece that felt slightly off because they did not fully understand who they were writing for.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Does ClientLens require an API key or account?<span class="faq-plus">+</span></div>
+        <div class="faq-a">No. ClientLens is completely free and runs entirely in your browser. There is no login, no API key, no subscription, and no backend. Everything happens on your device. Your data stays yours — nothing is sent to any server.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Can I upload documents to personalise the brief?<span class="faq-plus">+</span></div>
+        <div class="faq-a">Yes. You can upload PDFs, text files, Markdown files, or CSVs — things like ICPs, brand guidelines, LinkedIn pages you have saved, or previous briefs. ClientLens reads them in-browser and uses that context to personalise your writer brief. No file is ever uploaded to a server.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">What is the Research Pack?<span class="faq-plus">+</span></div>
+        <div class="faq-a">After generating your brief, ClientLens shows a Research Pack: a set of curated search links for that specific client. Each link opens a targeted search on Google News, G2, LinkedIn, Reddit, or Crunchbase. It is not a summary — it is a shortcut to the freshest information on the web, specific to your client, so you can go deeper whenever you need to.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span class="footer-text">ClientLens — a free tool by</span>
+  <a href="https://www.ujjwalsrivastava.com" class="footer-link">Ujjwal Srivastava ↗</a>
+</footer>
+
+<script>
+// ── PDF.JS WORKER ─────────────────────────────────────────────────────────────
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+}
+
+// ── DOCUMENT UPLOAD STATE ─────────────────────────────────────────────────────
+const uploadedDocs = []; // [{name, size, text, status}]
+
+async function extractPDF(arrayBuffer) {
+  if (typeof pdfjsLib === 'undefined') return '';
+  try {
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let text = '';
+    for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(s => s.str).join(' ') + '\n';
+    }
+    return text.trim();
+  } catch (e) { return ''; }
+}
+
+async function processFile(file) {
+  const entry = { name: file.name, size: file.size, text: '', status: 'extracting' };
+  uploadedDocs.push(entry);
+  updateDocStatus();
+  renderFileList();
+  try {
+    if (file.name.endsWith('.pdf')) {
+      const buf = await file.arrayBuffer();
+      entry.text = await extractPDF(buf);
+    } else {
+      entry.text = await file.text();
+    }
+    entry.status = 'done';
+  } catch (e) {
+    entry.status = 'error';
+  }
+  updateDocStatus();
+  renderFileList();
+}
+
+function addFiles(files) {
+  Array.from(files).forEach(f => {
+    if (!uploadedDocs.find(d => d.name === f.name)) processFile(f);
+  });
+}
+
+function removeFile(name) {
+  const i = uploadedDocs.findIndex(d => d.name === name);
+  if (i !== -1) uploadedDocs.splice(i, 1);
+  updateDocStatus();
+  renderFileList();
+}
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  if (!list) return;
+  if (uploadedDocs.length === 0) { list.style.display = 'none'; return; }
+  list.style.display = 'flex';
+  list.innerHTML = uploadedDocs.map(d => `
+    <div class="file-tag${d.status === 'extracting' ? ' extracting' : ''}">
+      <span class="file-tag-name">${d.name}</span>
+      <span class="file-tag-info">${d.status === 'extracting' ? 'reading…' : d.status === 'error' ? 'error' : Math.round(d.size/1024) + 'kb'}</span>
+      <button class="file-tag-remove" onclick="removeFile('${d.name.replace(/'/g,"\\'")}')">×</button>
+    </div>`).join('');
+}
+
+function updateDocStatus() {
+  const bar = document.getElementById('docStatusBar');
+  if (!bar) return;
+  if (uploadedDocs.length === 0) { bar.style.display = 'none'; return; }
+  const done = uploadedDocs.filter(d => d.status === 'done').length;
+  bar.style.display = 'block';
+  bar.textContent = `${done}/${uploadedDocs.length} document${uploadedDocs.length > 1 ? 's' : ''} loaded`;
+}
+
+function getAllDocText() {
+  return uploadedDocs.filter(d => d.status === 'done').map(d => d.text).join('\n\n').slice(0, 8000);
+}
+
+function initUpload() {
+  const zone = document.getElementById('uploadZone');
+  const input = document.getElementById('fileInput');
+  if (!zone || !input) return;
+  input.addEventListener('change', e => addFiles(e.target.files));
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    addFiles(e.dataTransfer.files);
+  });
+}
+
+// ── RESEARCH PACK ─────────────────────────────────────────────────────────────
+function buildResearchPack(d) {
+  const q = encodeURIComponent(d.name);
+  const qi = encodeURIComponent(d.name + ' ' + d.ind);
+  return [
+    {
+      icon: '📰', title: 'Latest News',
+      tip: 'What's happening with this client right now.',
+      links: [
+        { label: 'Google News', url: `https://news.google.com/search?q=${q}` },
+        { label: 'Industry news', url: `https://news.google.com/search?q=${qi}` }
+      ]
+    },
+    {
+      icon: '⭐', title: 'Reviews & Reputation',
+      tip: 'What real users say — the good, the bad, the nuanced.',
+      links: [
+        { label: 'G2', url: `https://www.g2.com/search?utf8=%E2%9C%93&query=${q}` },
+        { label: 'Trustpilot', url: `https://www.trustpilot.com/search?query=${q}` },
+        { label: 'Capterra', url: `https://www.capterra.com/search/?query=${q}` }
+      ]
+    },
+    {
+      icon: '💼', title: 'Company Intel',
+      tip: 'Funding, headcount, leadership signals.',
+      links: [
+        { label: 'LinkedIn', url: `https://www.linkedin.com/search/results/companies/?keywords=${q}` },
+        { label: 'Crunchbase', url: `https://www.crunchbase.com/textsearch?q=${q}` }
+      ]
+    },
+    {
+      icon: '💬', title: 'Community Chatter',
+      tip: 'What their audience is actually talking about.',
+      links: [
+        { label: 'Reddit', url: `https://www.reddit.com/search/?q=${q}` },
+        { label: 'Hacker News', url: `https://hn.algolia.com/?q=${q}` }
+      ]
+    },
+    {
+      icon: '🔍', title: 'Competitor Signals',
+      tip: 'Who else plays in this space.',
+      links: [
+        { label: `${d.name} vs`, url: `https://www.google.com/search?q=${encodeURIComponent(d.name + ' vs')}` },
+        { label: `${d.ind} alternatives`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' alternatives')}` }
+      ]
+    },
+    {
+      icon: '✍️', title: 'Content Benchmarks',
+      tip: 'What content looks like in this niche.',
+      links: [
+        { label: 'Their blog', url: `https://www.google.com/search?q=site%3A${encodeURIComponent(d.name.toLowerCase().replace(/\s+/g,'')+'.com')}` },
+        { label: `${d.ind} content`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' content marketing examples')}` }
+      ]
+    }
+  ];
+}
+
+function renderResearchPack(d) {
+  const el = document.getElementById('researchPack');
+  if (!el) return;
+  const cards = buildResearchPack(d);
+  el.innerHTML = `
+    <div class="rp-wrap">
+      <div class="rp-header">
+        <div class="rp-eyebrow">Go deeper</div>
+        <div class="rp-title">Research Pack for ${d.name}</div>
+        <div class="rp-sub">Six targeted search bundles. Open any link to pull the freshest data straight from the source.</div>
+      </div>
+      <div class="rp-grid">
+        ${cards.map(c => `
+          <div class="rp-card">
+            <div class="rp-card-top"><span class="rp-icon">${c.icon}</span><span class="rp-card-title">${c.title}</span></div>
+            <div class="rp-tip">${c.tip}</div>
+            <div class="rp-links">${c.links.map(l => `<a class="rp-link" href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`).join('')}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── FAQ TOGGLE ────────────────────────────────────────────────────────────────
+function toggleFAQ(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+
+// ── DOC ENRICHMENT ────────────────────────────────────────────────────────────
+function enrichWithDocs(data, docText) {
+  if (!docText) return data;
+  const compMentions = [];
+  const patterns = [/vs\.?\s+([A-Z][a-zA-Z]+)/g, /versus\s+([A-Z][a-zA-Z]+)/g, /compared to\s+([A-Z][a-zA-Z]+)/g, /alternative to\s+([A-Z][a-zA-Z]+)/g];
+  patterns.forEach(re => { let m; while ((m = re.exec(docText)) !== null) compMentions.push(m[1]); });
+  if (compMentions.length > 0) {
+    const unique = [...new Set(compMentions)].slice(0, 4);
+    data.competitors = unique;
+    if (data.competitorQuestions && unique.length > 0) {
+      data.competitorQuestions = data.competitorQuestions.map((q, i) =>
+        i < unique.length ? q.replace(/competitor/i, unique[i]) : q);
+    }
+  }
+  const docSnippet = docText.slice(0, 300).trim();
+  if (docSnippet && data.overviewSummary) {
+    data.docSnippet = docSnippet;
+  }
+  return data;
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function fd() {
+  const wts = [];
+  document.querySelectorAll('.chip-input:checked').forEach(c => wts.push(c.value));
+  return {
+    name:  document.getElementById('fName').value.trim() || 'Your Client',
+    desc:  document.getElementById('fDesc').value.trim(),
+    ind:   document.getElementById('fInd').value || 'General Business',
+    aud:   document.getElementById('fAud').value.trim(),
+    wts,
+    voice: document.getElementById('fVoice').value,
+    extra: document.getElementById('fExtra').value.trim()
+  };
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pane-' + id).classList.add('on');
+}
+
+function showEmpty() {
+  document.getElementById('stEmpty').style.display = 'flex';
+  document.getElementById('stLoading').style.display = 'none';
+  document.getElementById('stError').style.display = 'none';
+  document.getElementById('briefContent').classList.remove('show');
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INDUSTRY TEMPLATES ────────────────────────────────────────────────────────
+
+const IND = {
+  'B2B SaaS': {
+    overview: {
+      whyMatters: [
+        'SaaS buyers compare 3–5 tools before deciding — your writing competes with deep research. It must be more useful, specific, and credible than what competitors publish.',
+        'Software purchases involve 3–5 stakeholders. The person using the tool and the person approving the budget need different reassurances. Your content often needs to speak to both.',
+        'AI tools like Perplexity and Google AI Overviews now surface SaaS comparison content directly — the right structure and specificity matters as much as the right words.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Champion', emoji: '🧑‍💼', role: 'Ops / Marketing Manager', age: '28–42',
+        goals: ['Solve a workflow pain that slows the team down', 'Prove ROI upward to justify the purchase', 'Look competent and strategic in front of their boss'],
+        pains: ['Manual processes eating too much team time', 'Difficulty reporting tangible results upward', 'Using multiple tools that don\'t integrate'],
+        searches: ['"best [tool type] for [use case]"', '"[product] vs [competitor] 2025"', '"how to automate [process] without coding"'] },
+      secondary: { name: 'The Economic Buyer', emoji: '👔', role: 'Director / VP / C-Suite', age: '35–55',
+        goals: ['Clear, documented ROI before signing', 'Low implementation risk and reliable support', 'A tool the team will actually adopt'],
+        pains: ['Software that over-promised in the sales cycle', 'Switching costs when a tool fails after deployment', 'Adoption problems and change management'],
+        searches: ['"enterprise [category] comparison"', '"[product] reviews G2 Capterra"', '"[product] security SOC 2 compliance"'] }
+    },
+    industry: {
+      primer: [
+        'SaaS businesses live and die by recurring revenue — MRR and ARR. Growth always means subscription growth, not one-time sales.',
+        'Churn is the enemy. Content that helps a customer succeed with the product is worth more than content that just acquires new users.',
+        'Integration and security are table stakes. Only write about them as differentiators if the client genuinely does them better than competitors.',
+        'SaaS buyers hate buzzwords. "AI-powered", "seamless", "game-changing" land flat. Specific outcomes with real numbers cut through every time.',
+        'The free trial or freemium model means content drives sign-ups, not direct purchases. The goal is to get someone into the product, then let the product sell itself.',
+        'Comparison content (vs. competitors) is high-intent and often converts better than awareness content — understand what alternatives exist before writing anything.'
+      ],
+      glossary: [
+        { term: 'ARR / MRR', def: 'Annual/Monthly Recurring Revenue — the heartbeat of a SaaS business. When executives talk about growth, this is what they mean.' },
+        { term: 'Churn Rate', def: 'Percentage of customers who cancel in a given period. High churn is a slow death for SaaS companies — writers should understand this fear.' },
+        { term: 'CAC / LTV', def: 'Customer Acquisition Cost vs Lifetime Value. Good content reduces CAC; good product increases LTV.' },
+        { term: 'Champion', def: 'The person inside the buying company who pushes for the tool internally. Often your most important reader — they need help making the case to their boss.' },
+        { term: 'PLG', def: 'Product-Led Growth — the free trial IS the marketing. Content drives trial adoption, not direct purchase.' },
+        { term: 'ICP', def: 'Ideal Customer Profile — the type of company that gets the most value. Know this before writing anything.' }
+      ]
+    },
+    competitors: {
+      sources: ['G2 and Capterra — read the "What do you wish it had?" sections. These reveal competitor weaknesses your client can address.', 'Search "[client name] alternatives" — third-party comparison pages reveal how the client is positioned in the market.', '"[client name] vs [competitor]" searches show high-intent readers and what objections they\'re weighing.', 'Competitor pricing pages reveal market segment and positioning — budget, mid-market, or enterprise.', 'Competitor case studies show what results they claim and what company sizes they target. Find the gaps.'],
+      questions: ['What does this client do that no competitor does in exactly the same way? Can you say it in one sentence?', 'What do the happiest customers say in reviews that competitor customers don\'t? This is authentic differentiation.', 'Where does this client sit — budget, mid-market, or enterprise — and how does that compare to the top 3 alternatives?', 'What is the main objection a buyer brings up that this client addresses better than anyone else?']
+    },
+    voice: {
+      description: 'Professional but human — the kind of writing that sounds like a smart colleague explaining something important. Clear, specific, grounded in evidence. Never corporate-speak.',
+      sentenceStyle: 'Medium-length sentences that build logically. Lead with the point, then support it. Bullets for lists of 3 or more.',
+      perspective: 'Second person ("you") for direct content; third person for case studies. Avoid "we" in blogs unless it\'s a first-person piece.',
+      useWords: ['proven', 'specifically', 'results', 'according to', 'because', 'without', 'in practice'],
+      avoidWords: ['revolutionary', 'game-changing', 'synergize', 'leverage', 'disrupt', 'seamless', 'robust'],
+      badExample: 'Our cutting-edge platform leverages AI to synergize your workflow and deliver game-changing results across your enterprise.',
+      doMore: ['Specific outcomes with numbers ("saves 4 hours a week", "reduces errors by 60%")', 'Real customer stories that name the problem, the switch, and the result', 'Honest comparison content that explains differentiation', 'Educational content that answers real buyer questions without selling', 'Use-case content that shows the product in real workflows'],
+      doLess: ['Feature-first copy that leads with capabilities before benefits', 'Generic ROI claims without proof ("will transform your business")', 'Jargon without explanation — if you use a term, define it', 'First-person brand voice in educational content ("we believe...")', 'Overselling in content that should be informational']
+    }
+  },
+
+  'B2C / E-commerce': {
+    overview: {
+      whyMatters: [
+        'B2C buyers decide fast — often in seconds. Headlines, product descriptions, and email subject lines are doing most of the selling. Every word earns its place.',
+        'The buying cycle is emotional, not rational. Writers must connect with identity, desire, and aspiration — not features and specs — before making a logical case.',
+        'Returns and reviews are part of the product experience. Content that sets accurate expectations reduces returns and builds long-term loyalty.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Eager Buyer', emoji: '🛍️', role: 'Individual consumer / end user', age: '24–45',
+        goals: ['Find exactly what they need without scrolling forever', 'Feel confident they\'re getting good value', 'Complete the purchase in as few steps as possible'],
+        pains: ['Product descriptions that don\'t answer their real questions', 'Hidden costs and surprises at checkout', 'Slow shipping or difficult returns'],
+        searches: ['"best [product type] under [price]"', '"[product] review 2025"', '"[brand] discount code"'] },
+      secondary: { name: 'The Gift Buyer', emoji: '🎁', role: 'Purchasing for someone else', age: '28–55',
+        goals: ['Find something that feels thoughtful and personal', 'Stay within budget while seeming generous', 'Get it delivered on time without hassle'],
+        pains: ['Overwhelming choice with no clear recommendation', 'Unclear delivery timelines', 'Worried about getting the wrong size, fit, or style'],
+        searches: ['"gifts for [person type] who has everything"', '"[product] size guide"', '"[brand] gift wrapping options"'] }
+    },
+    industry: {
+      primer: [
+        'The Add to Cart moment is emotional, not rational. Lead with desire and identity; justify with features.',
+        'Mobile is where most shopping research happens — but desktop is still where high-ticket purchases are completed. Know which applies to this client.',
+        'Social proof (reviews, UGC, ratings) outperforms brand copy in almost every test. Weave proof into everything.',
+        'Abandoned cart is a massive revenue opportunity. Email copy that recovers even 5% of abandoned carts can outperform a full campaign.',
+        'Seasonality drives huge swings — plan content around holidays, gifting seasons, and product launches, not just evergreen topics.',
+        'Free shipping is now a baseline expectation. Any content around shipping should lead with the threshold or offer, not bury it.'
+      ],
+      glossary: [
+        { term: 'AOV', def: 'Average Order Value — a core metric. Writers help increase AOV through upsell copy, bundle descriptions, and "pairs well with" language.' },
+        { term: 'LTV', def: 'Customer Lifetime Value — how much revenue a customer generates over time. Retention-focused content (loyalty, re-purchase) increases this.' },
+        { term: 'UGC', def: 'User-Generated Content — photos, reviews, and social posts from real customers. The highest-trust content you can put on a product page.' },
+        { term: 'Abandoned Cart', def: 'When a shopper adds to cart but doesn\'t complete the purchase. Recovery emails are one of the highest-ROI channels in e-commerce.' },
+        { term: 'ROAS', def: 'Return on Ad Spend — how much revenue comes from each dollar of paid ads. Ad copy has a direct, measurable impact on this number.' },
+        { term: 'CVR', def: 'Conversion Rate — the percentage of visitors who buy. Product copy, trust signals, and clear CTAs all directly affect this.' }
+      ]
+    },
+    competitors: {
+      sources: ['Amazon reviews for similar products — especially the 3-star reviews, which reveal what customers wish was different.', 'Google Shopping searches reveal how competitors name and describe products. The language they use reveals what buyers search for.', 'Competitor email lists — sign up and study their subject lines, cadence, and offers for 2–3 weeks.', 'Instagram and TikTok search for the product category — see what creators and competitors are saying organically.', 'Trustpilot and Google reviews for the brand — what do returning customers praise, and what do first-time buyers complain about?'],
+      questions: ['What does this brand\'s product actually do that comparable products from Amazon basics or a generic brand don\'t?', 'What is the main purchase hesitation — price, quality doubt, sizing, shipping? Content must address this head-on.', 'Who is the customer when they\'re at their happiest buying this? What occasion, feeling, or aspiration drives the purchase?', 'What\'s the return policy, and is it a differentiator? A strong returns policy is content — write it that way.']
+    },
+    voice: {
+      description: 'Warm, direct, and aspirational without being pushy. Sounds like a knowledgeable friend who knows their stuff and respects your intelligence.',
+      sentenceStyle: 'Short to medium sentences. High energy without exclamation marks everywhere. Product descriptions: lead with the experience, then the specs.',
+      perspective: 'Second person ("you", "your") throughout. The reader is always the hero.',
+      useWords: ['discover', 'yours', 'made for', 'designed to', 'finally', 'exactly what you need', 'built to last'],
+      avoidWords: ['cheap', 'affordable luxury', 'premium quality', 'best-in-class', 'innovative', 'state-of-the-art', 'perfect'],
+      badExample: 'Our innovative, premium-quality product is the best-in-class solution for your lifestyle needs.',
+      doMore: ['Sensory language that makes the product feel real before they buy', 'Social proof woven into copy, not stuck in a separate section', 'Clear "who this is for" language that helps buyers self-select', 'Specific details — materials, dimensions, what comes in the box', 'Occasion and use-case framing ("for the person who...")'  ],
+      doLess: ['Vague superlatives without proof ("the best", "unbeatable")', 'Feature lists that read like spec sheets with no emotional context', 'Overpromising on outcomes that vary by person', 'Passive voice — especially in CTAs', 'Generic lifestyle copy that could belong to any brand in the category']
+    }
+  },
+
+  'Healthcare / Health Tech': {
+    overview: {
+      whyMatters: [
+        'Healthcare readers hold content to a higher standard than almost any other industry — a factual error or unsubstantiated claim damages trust permanently. Every claim needs a source.',
+        'The person reading is often anxious, in pain, or making a decision for someone they love. Tone matters enormously — clinical distance and false cheerfulness are equally wrong.',
+        'Regulatory compliance shapes what can and cannot be said. Writers must know what claims are permitted and which require legal/medical disclaimer language.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Patient / Caregiver', emoji: '🧑‍⚕️', role: 'Patient, family member, or caregiver', age: '30–65',
+        goals: ['Understand a diagnosis, treatment, or option in plain language', 'Find trustworthy guidance without being overwhelmed by jargon', 'Make a confident decision for themselves or their loved one'],
+        pains: ['Medical language they don\'t understand', 'Contradictory information across sources', 'Fear of making the wrong decision with limited time'],
+        searches: ['"what is [condition] in simple terms"', '"[treatment] side effects"', '"how to talk to your doctor about [symptom]"'] },
+      secondary: { name: 'The Clinician / Administrator', emoji: '🏥', role: 'Doctor, nurse, clinic manager, or health admin', age: '30–55',
+        goals: ['Save time finding reliable, citable clinical information', 'Stay current on protocols, tools, and industry standards', 'Improve patient outcomes and care efficiency'],
+        pains: ['Information overload from too many sources', 'Technology that doesn\'t integrate into their workflow', 'Compliance requirements that make communication harder'],
+        searches: ['"[clinical term] best practices 2025"', '"[tool name] EMR integration"', '"[condition] treatment protocol guidelines"'] }
+    },
+    industry: {
+      primer: [
+        'The FDA and similar regulatory bodies govern what health claims can be made. "Treats", "cures", and "prevents" are red-flag words — know what your client is and isn\'t allowed to say.',
+        'Plain language is a public health issue. Patients make worse decisions when they can\'t understand their options. Write at an 8th-grade reading level unless the audience is clinicians.',
+        'Health and wellness are different markets. Wellness is aspirational (supplements, fitness apps, stress management). Healthcare is clinical (diagnosis, treatment, insurance). The tone, evidence bar, and regulatory context differ significantly.',
+        'Trust signals in healthcare are different from other industries: clinical studies, physician endorsements, and accreditation badges matter more than customer reviews.',
+        'HIPAA and patient privacy are always in the background. Never ask for or describe personal health information in content without proper consent and legal review.',
+        'Health content is often the most-searched category online. High-quality, accurate content can reach people at their most vulnerable moments — this is a responsibility, not just an opportunity.'
+      ],
+      glossary: [
+        { term: 'EHR / EMR', def: 'Electronic Health Record / Electronic Medical Record — the digital version of a patient\'s chart. Health tech products often live or die based on EHR integration.' },
+        { term: 'Value-Based Care', def: 'A payment model where providers are paid based on patient outcomes, not services rendered. The business model for much of modern healthcare technology.' },
+        { term: 'HIPAA', def: 'Health Insurance Portability and Accountability Act — the US law governing patient data privacy. Any content involving patient information must comply.' },
+        { term: 'SDOH', def: 'Social Determinants of Health — factors like income, education, and housing that affect health outcomes. Increasingly important in healthcare content.' },
+        { term: 'Payer', def: 'The entity that pays for healthcare — typically insurance companies or government programs like Medicare/Medicaid. Distinct from the patient (the user) and the provider (the doctor).' },
+        { term: 'Indication', def: 'The specific condition or use case a treatment or product is approved for. Writers must stay within the approved indication — anything beyond it is off-label.' }
+      ]
+    },
+    competitors: {
+      sources: ['PubMed and clinical journals — to understand what the evidence base actually says about the condition or treatment area your client operates in.', 'WebMD, Healthline, and Mayo Clinic — the trust benchmarks patients compare everything against. See how they frame similar topics.', 'Competitor "About" and "Clinical Evidence" pages — health tech companies often publish their outcomes data. Find where your client can credibly compare.', 'Patient advocacy groups and forums (Reddit health communities, Inspire.com) — real patients describe their experience in their own words. This is gold for voice and vocabulary.', 'CMS and FDA websites — for regulatory context, approved claims language, and what competitors have been cited for.'],
+      questions: ['What specific condition, patient population, or workflow does this client serve — and how does that differ from the closest alternative?', 'What clinical evidence does the client have, and how does it compare to what competitors claim?', 'Is this product B2B (selling to hospitals or providers) or B2C (selling directly to patients)? The compliance requirements and voice are completely different.', 'What is the one thing this client can claim that a writer should never oversell, understate, or imply beyond the evidence?']
+    },
+    voice: {
+      description: 'Clear, calm, and authoritative. Warm without being saccharine. Serious without being cold. The reader may be scared — good healthcare writing acknowledges this without amplifying it.',
+      sentenceStyle: 'Short to medium sentences. No jargon without immediate plain-language explanation. When in doubt, simplify.',
+      perspective: 'Second person for patient-facing content. Third person or institutional voice for clinical and B2B content.',
+      useWords: ['evidence-based', 'clinical', 'your care team', 'in plain terms', 'research shows', 'designed for', 'approved by'],
+      avoidWords: ['cure', 'miracle', 'guaranteed', 'revolutionary', 'cutting-edge', 'transform your health', 'breakthrough'],
+      badExample: 'Our revolutionary, cutting-edge platform will transform your health journey and cure what ails you with guaranteed results.',
+      doMore: ['Plain language explanations of complex clinical concepts', 'Citing specific studies, guidelines, or regulatory approvals', 'Acknowledging the emotional experience of the reader without being patronizing', 'Practical next steps the reader can actually take', 'Patient stories (with appropriate consent language) that show real outcomes'],
+      doLess: ['Unsubstantiated health claims — anything that implies treatment or cure without evidence', 'Jargon that excludes the non-clinical reader (unless writing for clinicians)', 'False urgency that exploits anxiety', 'Generic wellness language that makes healthcare content feel like a lifestyle blog', 'Overpromising on outcomes that depend on individual patient factors']
+    }
+  },
+
+  'Finance / Fintech': {
+    overview: {
+      whyMatters: [
+        'Financial content carries legal and regulatory weight. Writers must know what claims are compliant — the wrong phrasing can expose the client to regulatory action.',
+        'Money is emotional. Fear of loss, embarrassment about debt, anxiety about the future — your writing sits inside all of this. Tone determines whether the reader trusts you or leaves.',
+        'Fintech is competing against inertia. The hardest part is convincing someone to change how they bank, invest, or manage money — a behaviour they\'ve had for years. Content must make the switch feel safe and obvious.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Financially Aware', emoji: '💰', role: 'Individual earner or small business owner', age: '26–45',
+        goals: ['Understand their options in plain language without feeling talked down to', 'Make a confident financial decision with the information they have', 'Save time — they don\'t want to read a 40-page terms document'],
+        pains: ['Financial jargon that excludes rather than informs', 'Fear of making the wrong choice with real money', 'Distrust of financial institutions after past bad experiences'],
+        searches: ['"how does [product] work"', '"is [app/bank] safe"', '"[product] vs [competitor] fees"'] },
+      secondary: { name: 'The CFO / Finance Manager', emoji: '📊', role: 'Finance Director, CFO, or operations lead at a business', age: '35–55',
+        goals: ['Reduce financial risk and increase visibility into cash flow', 'Automate manual processes without introducing compliance risk', 'Show ROI on any tool to the board or CEO'],
+        pains: ['Legacy systems that don\'t integrate with modern tools', 'Compliance overhead that slows everything down', 'Vendors that promise integration but underdeliver on support'],
+        searches: ['"[fintech category] for enterprise"', '"[product] SOC 2 / ISO 27001 compliance"', '"accounting software that integrates with [ERP]"'] }
+    },
+    industry: {
+      primer: [
+        'Regulatory bodies (SEC, FCA, FINRA, RBI depending on market) govern what can be said about financial products. "Guaranteed returns" is never allowed. Know the rules before writing.',
+        'Trust is the product in financial services. Every copy choice either builds it or erodes it. Plain language, transparency about fees, and honest risk disclosure build it.',
+        'APR, APY, and fee structures are the most-compared numbers in fintech. If the client has a competitive rate or low-fee structure, make it specific and prominent.',
+        'Fintech often serves underserved populations — the unbanked, gig workers, immigrants, small business owners. The content must meet these readers where they are, not where a traditional bank would expect them to be.',
+        'Open banking and API-first infrastructure are reshaping the competitive landscape. Many fintech companies are infrastructure plays, not consumer-facing products — the buyer is a developer or product team, not an end user.',
+        'The "regulatory sandbox" in many markets means fintech moves faster than traditional finance. Writers must distinguish what\'s live, what\'s in beta, and what\'s a roadmap item — precision matters.'
+      ],
+      glossary: [
+        { term: 'APR / APY', def: 'Annual Percentage Rate / Annual Percentage Yield — the cost of borrowing or the return on savings, annualised. The numbers buyers compare first.' },
+        { term: 'KYC / AML', def: 'Know Your Customer / Anti-Money Laundering — regulatory requirements for verifying user identity. Fintech onboarding content must address these without creating friction.' },
+        { term: 'Open Banking', def: 'A system that allows third-party apps to access financial data with user consent via APIs. The foundation of most modern fintech products.' },
+        { term: 'Neobank', def: 'A digital-only bank with no physical branches. Often targeting underserved segments or specific use cases like freelancers or SMBs.' },
+        { term: 'RegTech', def: 'Technology that helps companies comply with financial regulations more efficiently. A growing B2B fintech subcategory.' },
+        { term: 'Chargeback', def: 'When a customer disputes a transaction and the payment is reversed. Important context for payment-focused fintech — chargebacks are a key pain point for merchants.' }
+      ]
+    },
+    competitors: {
+      sources: ['Trustpilot, App Store, and Google Play reviews for the client and 2–3 direct competitors — real users say what they actually care about in ways marketing never does.', 'Fee comparison sites (NerdWallet, Bankrate, MoneySavingExpert) — these frame the competitive landscape the way buyers actually see it.', '"[product] safe? legit?" searches reveal the trust objections new users bring. Content that addresses these before the question is asked wins.', 'Reddit communities (r/personalfinance, r/financialindependence, r/smallbusiness) — unpaid, unfiltered peer advice reveals what buyers actually think.', 'Regulatory filings and press releases — in finance, what a company says publicly about its products and licenses is itself a competitive differentiator.'],
+      questions: ['What specific problem in the user\'s financial life does this product solve better than a traditional bank, a spreadsheet, or doing nothing?', 'What are the fees — and how do they compare to alternatives? If this is a strength, it needs to be in the first paragraph.', 'Who is the target user specifically — and what does their relationship with money currently look like? The writing must start from their reality.', 'What compliance and security certifications does this product hold, and how do those compare to what competitors claim?']
+    },
+    voice: {
+      description: 'Confident and clear, without being condescending. Financial writing should feel like advice from a smart, honest friend who happens to know a lot about money — not a banker trying to sell you something.',
+      sentenceStyle: 'Short sentences for complex concepts. Spell out acronyms on first use. Never assume prior financial knowledge unless writing for a professional audience.',
+      perspective: 'Second person ("you", "your money") for consumer products. More formal for institutional or B2B content.',
+      useWords: ['straightforward', 'transparent', 'no hidden', 'in plain terms', 'your money', 'because', 'specifically'],
+      avoidWords: ['guaranteed returns', 'risk-free', 'get rich', 'passive income', 'secret', 'exclusive offer', 'limited time'],
+      badExample: 'Unlock guaranteed passive income with our exclusive, risk-free investment platform that financial experts don\'t want you to know about.',
+      doMore: ['Specific fee and rate information, not buried in footnotes', 'Plain-language explanations of how the product actually works', 'Honest risk disclosure written in a way that builds, not erodes, trust', 'Comparisons that honestly name what competitors charge or don\'t offer', 'Content that meets the reader at their current financial situation, not an aspirational one'],
+      doLess: ['Vague aspirational language about "financial freedom" with no concrete path', 'Jargon that makes readers feel excluded or unintelligent', 'Urgency tactics that exploit anxiety about money', 'Oversimplification that obscures real complexity or risk', 'Dense legal language in consumer-facing copy (save it for the actual disclosure documents)']
+    }
+  },
+
+  'Marketing / Agency': {
+    overview: {
+      whyMatters: [
+        'Marketing agencies sell expertise — and the client\'s content IS a sample of that expertise. If the writing is average, it signals that the work will be too.',
+        'Agency buyers are often marketers themselves. They will read your copy with a critical eye. Generic language and vague claims fail faster here than in almost any other industry.',
+        'Case studies and results are the only proof that matters. An agency that can\'t show what it\'s done for others is asking buyers to take an enormous leap of faith.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Marketing Director', emoji: '📣', role: 'VP or Director of Marketing at a mid-size company', age: '30–48',
+        goals: ['Find an agency that actually understands their business, not just marketing in general', 'Get results that justify the retainer to their CEO', 'Work with people who make them look good internally'],
+        pains: ['Agencies that overpromise in pitches and underdeliver in execution', 'Lack of communication and transparency mid-project', 'Having to educate the agency on their own industry every time'],
+        searches: ['"[channel] agency for [industry]"', '"agency case study [specific result]"', '"how to evaluate a marketing agency"'] },
+      secondary: { name: 'The Founder / CEO', emoji: '🚀', role: 'Founder or CEO of a startup or SMB', age: '28–50',
+        goals: ['Get more customers without building an in-house team yet', 'Understand clearly what they\'re getting for their money', 'Move fast — they don\'t have time for 6-week onboarding processes'],
+        pains: ['Agencies that treat them as a small account and assign junior staff', 'Pricing that isn\'t transparent or tied to outcomes', 'Slow execution cycles that don\'t match their startup pace'],
+        searches: ['"affordable marketing agency for startups"', '"performance marketing agency"', '"agency vs in-house [channel]"'] }
+    },
+    industry: {
+      primer: [
+        'The agency space is saturated. Generic positioning ("we grow brands") is invisible. Specificity — by channel, by industry, by result — is the only way to stand out.',
+        'Retainer vs project-based pricing signals very different things about an agency\'s model. Know which this client uses and what it means for the relationship dynamic.',
+        'AI tools are reshaping what agencies can do and how fast. Any agency that isn\'t actively addressing AI in their positioning is already behind in buyer perception.',
+        'The "black box" agency model (we do stuff, trust us) is dying. Buyers increasingly want reporting, attribution, and transparency into what their money is doing.',
+        'Specialization beats generalism in agency marketing. A B2B SaaS content agency beats a "full-service digital agency" for a B2B SaaS buyer almost every time.',
+        'Agency culture and communication style are part of the product. Writers should convey what it\'s actually like to work with this team, not just what services they offer.'
+      ],
+      glossary: [
+        { term: 'Retainer', def: 'A monthly fixed fee for ongoing work. Most agencies prefer this model for predictable revenue; buyers prefer it when they have ongoing needs.' },
+        { term: 'Attribution', def: 'Connecting marketing activity to revenue outcomes. The central challenge in proving agency ROI. Buyers increasingly demand this.' },
+        { term: 'Full-Funnel', def: 'Marketing that covers the entire customer journey from awareness to purchase to retention. Many agencies specialise in just one part of the funnel.' },
+        { term: 'White-Label', def: 'Work delivered under the client\'s brand, not the agency\'s. Some agencies white-label their services to other agencies.' },
+        { term: 'Media Mix', def: 'The combination of channels (paid, organic, email, social) used in a campaign. Strategy agencies help clients optimise across the whole mix.' },
+        { term: 'CPL / CPA', def: 'Cost Per Lead / Cost Per Acquisition — the efficiency metrics buyers use to evaluate paid marketing. Writers should understand what these mean to the buyer.' }
+      ]
+    },
+    competitors: {
+      sources: ['Agency review platforms (Clutch, G2, Agency Spotter) — read recent reviews looking for what clients praise beyond results: communication, transparency, strategic input.', 'Competitor case studies — what results do they claim, for what clients, and in what channels? Find where this agency can be more specific or credible.', 'LinkedIn pages of competing agencies — their content strategy reveals their positioning and what they think their audience cares about.', 'Job postings from competing agencies — what roles they\'re hiring reveals their actual service mix and growth areas.', '"Best [agency type] agencies" roundups on industry sites — these reveal the benchmark standard buyers are comparing against.'],
+      questions: ['What specific result can this agency point to that a buyer couldn\'t get from a generalist or in-house team?', 'Which channel, industry, or company stage does this agency serve better than any competitor? The more specific, the stronger the content.', 'What does the onboarding, reporting, and communication process actually look like? Buyers are buying a relationship, not just deliverables.', 'What\'s the minimum engagement, and what does the buyer get in the first 90 days? Content must address the "how fast will I see results?" question.']
+    },
+    voice: {
+      description: 'Sharp, specific, and confident — but never arrogant. Agency writing should feel like it comes from people who know exactly what they\'re doing and have the results to prove it.',
+      sentenceStyle: 'Short, punchy sentences for headers and CTAs. Medium-length sentences for explanations. Avoid padding — agency buyers are busy and will skip anything that doesn\'t earn their attention.',
+      perspective: 'Second person for client-facing content. First person plural ("we", "our team") is acceptable on case studies and team pages.',
+      useWords: ['measurable', 'specific', 'proven', 'for [industry] companies', 'in [timeframe]', 'results', 'strategy'],
+      avoidWords: ['innovative', 'holistic', 'synergy', 'full-service', 'passionate', 'storytelling', 'growth hacking'],
+      badExample: 'We are a passionate, innovative full-service agency that uses holistic storytelling strategies to unlock your brand\'s growth potential.',
+      doMore: ['Specific results with numbers, timeframes, and named clients (with permission)', 'Named channels and tactics, not vague "strategy" and "content"', 'What working with the team actually looks like (process, cadence, communication)', 'Industry and company-stage specificity ("we work best with B2B SaaS companies between $1M–$20M ARR")', 'Honest conversation about what they don\'t do'],
+      doLess: ['Agency jargon that buyers have heard a thousand times', 'Generic case studies with no numbers or recognisable client names', 'Service pages that list everything and specialise in nothing', 'Buzzwords that signal the agency is following trends, not setting them', '"Results may vary" buried at the bottom of a claims-heavy page']
+    }
+  },
+
+  'Education / EdTech': {
+    overview: {
+      whyMatters: [
+        'Education buyers are often spending their own money or limited department budgets — they\'re careful, they compare options, and they read the fine print. Clarity and honesty are non-negotiable.',
+        'The outcome being sold is a changed life — a skill, a certificate, a career. That\'s a heavy promise. Writers must make it feel achievable and credible, not just aspirational.',
+        'Learner attention is fragmented. E-learning content competes with Netflix and TikTok for the same 30-minute evening window. Writing must respect the learner\'s time above all else.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Upskilling Professional', emoji: '📚', role: 'Working adult seeking skills or certification', age: '25–45',
+        goals: ['Get a specific skill that makes them more employable or promotable', 'Fit learning into an already-busy schedule', 'Invest in something they\'ll actually finish, not abandon at week 3'],
+        pains: ['Courses that are too slow, too long, or too theoretical', 'Unclear outcomes — what exactly will they be able to do?', 'Paying for something and not having time to finish it'],
+        searches: ['"[skill] course online 2025"', '"best [certification] for [job title]"', '"[platform] review is it worth it"'] },
+      secondary: { name: 'The L&D Buyer', emoji: '🏫', role: 'HR / Learning & Development manager at a company', age: '32–52',
+        goals: ['Upskill teams at scale without disrupting work schedules', 'Show measurable ROI on training investment to leadership', 'Find a platform that integrates with existing HR systems'],
+        pains: ['Low course completion rates that make the ROI hard to demonstrate', 'Content that doesn\'t map to actual job skills employees need', 'Platforms that require heavy IT involvement to deploy'],
+        searches: ['"corporate training platform"', '"LMS for [company size]"', '"employee upskilling ROI"'] }
+    },
+    industry: {
+      primer: [
+        'Completion rates are the dirty secret of e-learning — industry averages are under 15%. Writers who understand this produce content that earns re-engagement, not just first clicks.',
+        'The credential matters as much as the content. Learners ask "will employers recognise this?" before "will this teach me what I need?" Address accreditation and recognition early.',
+        'Microlearning (5–15 minute modules) has overtaken long-form video courses for professional audiences. Content strategy should reflect how people actually learn on the job.',
+        'Outcomes-first framing always outperforms features-first. "Get hired as a data analyst in 6 months" beats "includes 40 hours of video content."',
+        'The freemium model (free first module, paid full access) is a standard conversion path. Introductory content must be genuinely valuable to convert to paid.',
+        'Accessibility is both a legal requirement and a differentiator. Screen reader compatibility, closed captions, and mobile-first design should be highlighted if the product offers them.'
+      ],
+      glossary: [
+        { term: 'LMS', def: 'Learning Management System — the platform that hosts and delivers courses. The infrastructure layer many EdTech companies build on or compete with.' },
+        { term: 'Completion Rate', def: 'Percentage of enrolled learners who finish a course. The core engagement metric — and a known weak point for most online learning platforms.' },
+        { term: 'Cohort-Based Learning', def: 'Courses where all learners progress together on a fixed schedule, often with live sessions. Higher completion rates but less flexibility than self-paced.' },
+        { term: 'Microlearning', def: 'Short, focused learning units (5–15 min) designed to fit into a workday. Increasingly preferred by corporate L&D buyers.' },
+        { term: 'Accreditation', def: 'Official recognition of a course or certificate by an educational or industry body. Directly affects the credential\'s value to employers.' },
+        { term: 'CPD', def: 'Continuing Professional Development — the ongoing learning requirement for licensed professionals (doctors, lawyers, accountants). A major driver of paid course purchases.' }
+      ]
+    },
+    competitors: {
+      sources: ['Course review sites (Course Report, Switchup for bootcamps; Reddit r/learnprogramming, r/datascience for subject-specific) — what do successful completers attribute their success to?', 'LinkedIn Learning, Coursera, Udemy, and Skillshare — the benchmark platforms buyers compare against. See how they frame similar courses.', 'Employer job postings for roles the learner wants — what credentials and skills are actually in demand? Content that maps to real job requirements converts better.', 'Alumni communities on LinkedIn and Discord — what do graduates say unprompted? What do they wish the course had covered?', '"[platform] vs [platform]" comparison searches reveal what buyers are actively weighing and what objections are deciding the choice.'],
+      questions: ['What specific job outcome, salary increase, or career move has this program enabled? Name it concretely.', 'Who teaches this — and do their credentials matter to the buyer? In education, instructor credibility is part of the product.', 'What support exists beyond the content? Community, mentoring, job placement? These convert learners who are on the fence.', 'What is the actual time commitment, week by week? Vague "flexible" claims damage trust. Specific numbers ("3–4 hours per week") set expectations and reduce drop-off.']
+    },
+    voice: {
+      description: 'Encouraging without being patronising. The tone of a great teacher — clear, warm, specific, and honest about what takes work. Never overpromises.',
+      sentenceStyle: 'Plain, direct sentences. Active voice throughout. Use "you will learn" not "learners will be introduced to."',
+      perspective: 'Second person always. Address the learner directly, not about them.',
+      useWords: ['you\'ll learn', 'by the end', 'in practice', 'step by step', 'build', 'real projects', 'your career'],
+      avoidWords: ['revolutionary', 'cutting-edge curriculum', 'world-class', 'transform your life overnight', 'guaranteed job', 'easy'],
+      badExample: 'Our revolutionary, world-class curriculum will transform your life and guarantee you a high-paying job in just 30 days with zero prior experience.',
+      doMore: ['Specific skills listed as outcomes ("you\'ll be able to build a REST API from scratch")', 'Realistic time estimates for completion and skill application', 'Student success stories with job titles and companies (with permission)', 'Who the course is not for — this builds trust and reduces churn from the wrong learners', 'Clear module-by-module breakdown so learners know what they\'re getting into'],
+      doLess: ['Outcome promises that over-index on salary or career transformation without evidence', 'Dense walls of text that undermine the message about clear, accessible learning', 'Course descriptions that describe the format, not the outcome', 'Vague "community" language that isn\'t backed by an actual active community', 'Implying the course is "easy" — it devalues the credential and sets learners up for disappointment']
+    }
+  },
+
+  'Creator Economy': {
+    overview: {
+      whyMatters: [
+        'Creators are building businesses, not just audiences. When you write for a creator economy client, you\'re writing for people who think of themselves as founders — not influencers.',
+        'The audience is the product. Tools, platforms, and services that serve creators must prove they understand the creator\'s relationship with their community — extractive feels obvious fast.',
+        'Creator income is precarious and platform-dependent. Content that acknowledges this reality — and positions the client as a way to build resilience — earns trust.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Independent Creator', emoji: '🎙️', role: 'Full-time or aspiring full-time content creator', age: '22–38',
+        goals: ['Build a sustainable income that doesn\'t depend on any single platform', 'Spend more time creating and less time on admin, tech, and business logistics', 'Grow an audience that actually buys, not just follows'],
+        pains: ['Algorithmic changes that tank reach overnight', 'Admin, taxes, contracts, and logistics eating into creative time', 'Monetisation that feels extractive to their audience'],
+        searches: ['"how to monetize a newsletter"', '"best platform for creators 2025"', '"[tool] review for creators"'] },
+      secondary: { name: 'The Side-Hustle Creator', emoji: '💡', role: 'Creator with a full-time job building on the side', age: '25–42',
+        goals: ['Grow enough to eventually go full-time', 'Find tools that don\'t require a full day to learn', 'Make consistent progress without burning out on nights and weekends'],
+        pains: ['Not enough time to do everything the algorithm seems to demand', 'Unclear which platforms and formats to focus on', 'Tools designed for full-time creators, not someone with 10 hours a week'],
+        searches: ['"grow newsletter while working full time"', '"best [tool] for beginners"', '"passive income for content creators"'] }
+    },
+    industry: {
+      primer: [
+        'Platform risk is the central fear. Creators remember when Vine died, when YouTube demonetized whole categories, when TikTok nearly got banned. Products that reduce platform dependency resonate deeply.',
+        'The creator middle class is growing but fragile. Most creators earn under $50K/year from content. Products pitched at the top 1% creator miss 99% of the market.',
+        'Community is the moat. A creator\'s email list, Discord, or paid community is more valuable than their follower count. Products that help build owned audiences are valued highest.',
+        'Authenticity is the product. Creator tools that feel corporate or "brand-safe" are rejected. The writing must feel peer-to-peer, not vendor-to-creator.',
+        'Creator burnout is endemic. Products that save time, reduce decision fatigue, or simplify the business side are addressing a genuine pain — lead with this.',
+        'The B2B/B2C line is blurry. A creator with 10K subscribers is a business owner. Some creator tools are genuinely B2B; write them that way.'
+      ],
+      glossary: [
+        { term: 'Owned Audience', def: 'Email lists, SMS subscribers, or paid community members that the creator controls — not followers on a platform that could change its algorithm or shut down.' },
+        { term: 'MRR (Creator context)', def: 'Monthly Recurring Revenue from subscriptions, memberships, or paid newsletters. The goal most serious creators are working toward.' },
+        { term: 'Platform Risk', def: 'The danger of depending on a single platform for income or audience. The driving anxiety behind most creator tool purchasing decisions.' },
+        { term: 'CPM', def: 'Cost Per Mille (thousand views) — how ad revenue is calculated on video platforms. Creators live and die by CPM swings.' },
+        { term: 'Niche Down', def: 'Focusing on a specific topic or audience rather than trying to appeal broadly. Counterintuitively, niching down almost always grows an audience faster.' },
+        { term: 'Evergreen Content', def: 'Content that remains relevant and drives traffic or engagement long after it\'s published. The goal of most content strategy advice for creators.' }
+      ]
+    },
+    competitors: {
+      sources: ['Creator communities (Indie Hackers, Creator Economy subreddit, Substack\'s Leaderboard comments) — real creators share what tools they use and why they switch.', 'Product Hunt launches in the creator tools category — see what\'s new, what\'s getting traction, and what creators say in the comments.', 'Creator newsletters and podcasts (Creator Science, The Saturday Solopreneur) — these shape creator tool purchasing decisions more than paid ads.', '"[tool] vs [competitor]" searches on YouTube — video reviews from creators carry enormous weight with other creators.', 'Churn interviews and cancellation surveys from similar products reveal why creators leave — this is the real competitor intelligence.'],
+      questions: ['Does this tool save time, make more money, or grow the audience? Be honest about which claim is strongest and lead with that.', 'Is this built by people who understand what a creator\'s actual week looks like? Content that signals this earns immediate trust.', 'What does the onboarding look like — and can a solo creator set it up in an afternoon, or does it require a developer?', 'What happens if the creator\'s platform changes or goes away — does this tool make them more resilient or more dependent?']
+    },
+    voice: {
+      description: 'Peer-to-peer, honest, and specific. This isn\'t a brand writing at a creator — it\'s a tool that gets what a creator\'s life actually looks like. Zero corporate tone.',
+      sentenceStyle: 'Short sentences. Casual contractions ("you\'re", "it\'s", "don\'t"). Direct. The energy of a smart Substack post, not a press release.',
+      perspective: 'Second person always. Talk to the creator, not about them.',
+      useWords: ['your audience', 'build', 'own your', 'without depending on', 'in an afternoon', 'actually works', 'we get it'],
+      avoidWords: ['leverage your content', 'scalable solution', 'content ecosystem', 'monetization strategy', 'brand synergy', 'growth hacking', 'go viral'],
+      badExample: 'Leverage our scalable content ecosystem solution to maximize your brand synergy and unlock exponential audience growth across all platforms.',
+      doMore: ['Real creator use cases ("a food blogger uses this to...")', 'Time and revenue specifics ("set up in 20 minutes", "saves 3 hours a week")', 'Platform-specific examples that show the team knows the landscape', 'Honest limitations and who the tool isn\'t for', 'Content that feels like it was written by someone who actually creates'],
+      doLess: ['Corporate language that makes a creator feel like a "user" rather than a person', 'Vague "grow your audience" promises with no mechanism', 'Features described without connecting to the creator\'s actual problem', 'Comparisons to huge creator success stories that most creators can\'t relate to', 'Overpromising virality, passive income, or audience growth speed']
+    }
+  },
+
+  'Professional Services': {
+    overview: {
+      whyMatters: [
+        'Professional services buyers are hiring a person, not a product. The relationship, trust, and credentials of the individuals doing the work matter more than any other industry. Writing must humanise the firm, not just describe it.',
+        'Word of mouth still drives most professional services referrals — but content increasingly supplements it. A well-written article or case study can open doors that cold outreach cannot.',
+        'Buyers in professional services are often sophisticated. Generic claims and vague promises are detected and dismissed faster here than almost anywhere else.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Senior Decision-Maker', emoji: '⚖️', role: 'C-Suite, Partner, or Director who approves vendor relationships', age: '38–60',
+        goals: ['Find someone they can trust with something important — legal, financial, strategic', 'Reduce their own risk and exposure', 'Work with people who understand their specific situation, not generic advice-givers'],
+        pains: ['Firms that pitch generically and don\'t demonstrate specific expertise', 'Unclear scope and billing that leads to unexpected costs', 'Advice that\'s technically correct but commercially impractical'],
+        searches: ['"[service type] firm for [industry]"', '"[firm name] reviews"', '"how to choose a [lawyer / accountant / consultant]"'] },
+      secondary: { name: 'The Internal Champion', emoji: '📋', role: 'Manager or Director who researches options and recommends a shortlist', age: '28–45',
+        goals: ['Find credible options to present to leadership', 'Look informed and competent in the selection process', 'Manage the relationship once it\'s established'],
+        pains: ['Not enough information to compare firms meaningfully', 'Firms that won\'t give pricing guidance upfront', 'Having to explain a bad recommendation to their boss'],
+        searches: ['"[service] firm pricing"', '"questions to ask a [consultant/lawyer/accountant]"', '"[firm type] RFP template"'] }
+    },
+    industry: {
+      primer: [
+        'The intangibility problem: buyers can\'t evaluate the quality of the work before they buy. Content that demonstrates expertise (through specificity, case studies, and thought leadership) is the main substitute for a product demo.',
+        'Specialisation signals expertise. A firm that works "with everyone" gives buyers no reason to choose them. Niche positioning — by industry, company size, or problem type — creates a reason to choose.',
+        'Thought leadership is the marketing. Articles, whitepapers, speaking, and books by firm members build the reputation that generates referrals and inbound enquiries.',
+        'Pricing is almost always sensitive and rarely disclosed upfront. Content that sets expectations around value and process — without quoting numbers — is a skill in professional services writing.',
+        'The pitch and proposal are content too. How a firm describes its approach, its credentials, and its understanding of the client\'s problem in a proposal is as important as any blog post.',
+        'Conflicts of interest, confidentiality, and regulatory constraints shape what can be shared in case studies. Writers must understand what can and cannot be named, quoted, or disclosed.'
+      ],
+      glossary: [
+        { term: 'Retainer', def: 'An ongoing fee for access to services — common in legal, PR, and consulting. Signals a long-term relationship rather than a one-off project.' },
+        { term: 'RFP', def: 'Request for Proposal — a formal process buyers use to evaluate competing firms. Many professional services engagements begin with an RFP.' },
+        { term: 'Engagement Letter', def: 'The formal agreement that defines scope, fees, and terms. Writers should know this exists — the content they produce often precedes it.' },
+        { term: 'Billable Hour', def: 'The traditional pricing model where clients pay for time spent. Many firms are moving to value-based or fixed-fee pricing — this is a differentiator worth writing about if applicable.' },
+        { term: 'Practice Area', def: 'A specific service specialty within a firm (e.g., M&A, employment law, tax advisory). Content is often organised by practice area rather than firm-wide.' },
+        { term: 'Thought Leadership', def: 'Content (articles, talks, books) that builds a firm\'s or individual\'s expert reputation. The primary marketing channel for most professional services firms.' }
+      ]
+    },
+    competitors: {
+      sources: ['Legal 500, Chambers, or industry-specific rankings relevant to this firm — these are the credentialing benchmarks buyers check.', 'LinkedIn profiles of partners and senior staff — in professional services, the people are the brand. What do competitors\' people post about?', 'Competitor website "insights" or "resources" sections — the quality and specificity of their thought leadership reveals the bar.', 'Industry associations and conference speaker lists — who is building profile in this space, and what are they saying?', 'Client testimonials (where available) — the language clients use to describe what they valued is the best guide to what to emphasise in content.'],
+      questions: ['What problem does this firm solve that a client couldn\'t solve by hiring a generalist or doing it in-house?', 'What industries or company stages does this firm serve best — and can that be named specifically?', 'What does the firm\'s process look like from first call to delivered work? Content that explains the process reduces buyer anxiety.', 'What do the best long-term clients say about working with this firm — and what made them stay?']
+    },
+    voice: {
+      description: 'Authoritative and clear, with warmth. The tone of a trusted advisor who respects the reader\'s intelligence and doesn\'t hide behind jargon to seem important.',
+      sentenceStyle: 'Medium-length sentences. Active voice. Avoid passive constructions that obscure responsibility ("it was decided that" → "we decided"). Lead with the point.',
+      perspective: 'First person plural ("we") on firm-facing content. Second person ("you", "your business") on client-facing advice content.',
+      useWords: ['specifically', 'in our experience', 'the evidence suggests', 'practical guidance', 'your situation', 'outcomes', 'proven'],
+      avoidWords: ['leverage our expertise', 'best-in-class service', 'seamless experience', 'value-add', 'holistic approach', 'synergies', 'paradigm'],
+      badExample: 'We leverage our best-in-class, holistic expertise to deliver seamless, value-add outcomes that synergize with your strategic paradigm.',
+      doMore: ['Specific scenarios and examples ("for a company facing [situation], we would typically...")', 'Case studies with real problems and outcomes, even if client names are anonymised', 'Plain-language explanation of complex processes — this is a signal of genuine expertise', 'The "who is this for" and "who is this not for" framing', 'Individual bios that make partners and practitioners feel like real, credible humans'],
+      doLess: ['Vague credentialing language that every firm can claim ("decades of experience", "client-first approach")', 'Jargon that makes the firm feel inaccessible', 'Case studies so anonymised they\'re meaningless', 'Passive voice that distances the firm from its own decisions', 'Website copy that describes the firm\'s values before its actual expertise']
+    }
+  },
+
+  'Dev Tools / API': {
+    overview: {
+      whyMatters: [
+        'Developers read documentation before they read marketing. If the docs are bad, no amount of copy will convert them. The writer\'s most important job is clarity, not persuasion.',
+        'The primary buyer (the developer) and the economic buyer (their manager or CTO) have completely different needs. Developer-facing content must be technical. Executive-facing content must be ROI-focused. Never mix them.',
+        'Developer trust is earned through specificity. If a developer can find one mistake in your technical content, you\'ve lost them. Accuracy is the minimum standard.'
+      ]
+    },
+    customers: {
+      primary: { name: 'The Developer', emoji: '👨‍💻', role: 'Software engineer or developer evaluating or integrating a tool', age: '22–40',
+        goals: ['Solve a specific technical problem as quickly as possible', 'Evaluate whether this tool is worth the integration effort before committing', 'Find clear documentation, examples, and a working quickstart'],
+        pains: ['Documentation that explains what the tool does but not how to actually use it', 'Hidden pricing or usage limits that only appear after hours of integration', 'SDKs that don\'t support their language or framework'],
+        searches: ['"[tool] python quickstart"', '"[api] rate limits"', '"[tool] vs [alternative]"'] },
+      secondary: { name: 'The Engineering Lead / CTO', emoji: '🏗️', role: 'Technical decision-maker who approves vendor tools', age: '30–50',
+        goals: ['Add capability without increasing team maintenance burden', 'Ensure the tool is secure, reliable, and scalable', 'Get a defensible answer to "why did we choose this?"'],
+        pains: ['Tools that require heavy customisation or maintenance overhead', 'Poor support when something breaks in production', 'Vendor lock-in that becomes a problem 18 months later'],
+        searches: ['"[tool] enterprise pricing"', '"[tool] SLA uptime"', '"[tool] security audit report"'] }
+    },
+    industry: {
+      primer: [
+        'Show, don\'t tell. A working code example is worth five paragraphs of description. Every piece of content should include a runnable sample wherever possible.',
+        'Time to first working call is a product metric and a marketing metric. If a developer can get from sign-up to a working API call in under 10 minutes, that\'s a headline claim — and writers should understand why it matters.',
+        'Pricing models in dev tools (per seat, per call, per token, usage-based) directly affect adoption decisions. Content must explain the pricing model clearly and without burying the numbers.',
+        'Developer communities (GitHub, Hacker News, Dev.to, Stack Overflow) are where reputation is built or destroyed. What developers say about a tool in these spaces matters more than what the company says.',
+        'Open source changes the conversation. If the core product is open source with a hosted or enterprise tier, the content strategy is completely different — community and contribution become marketing.',
+        'Deprecation and versioning are real fears. Developers who have been burned by a tool being deprecated or breaking backwards compatibility are sceptical. Stability and migration paths must be addressed in content.'
+      ],
+      glossary: [
+        { term: 'SDK', def: 'Software Development Kit — pre-built libraries in a specific programming language that make integrating an API much faster. Having SDKs for the most popular languages is now expected.' },
+        { term: 'Webhook', def: 'A way for a system to automatically notify your application when something happens. Explaining webhooks clearly vs polling is a common documentation challenge.' },
+        { term: 'Rate Limit', def: 'A cap on how many API calls can be made in a given time period. Developers check this before committing to any API — it must be clearly documented.' },
+        { term: 'SLA', def: 'Service Level Agreement — the guaranteed uptime and response time. Enterprise buyers require a specific SLA before procurement approval.' },
+        { term: 'Idempotency', def: 'When an API call produces the same result even if made multiple times. Important for payment and event-based APIs — worth explaining if the client implements it.' },
+        { term: 'DX', def: 'Developer Experience — the quality of the entire developer journey, from first sign-up to production. The developer equivalent of UX, and the primary competitive differentiator in developer tools.' }
+      ]
+    },
+    competitors: {
+      sources: ['GitHub issues and discussions for the client and competitors — developers tell you exactly what\'s broken, missing, or confusing in public.', 'Hacker News "Show HN" posts for similar tools — the comments reveal what developers care about and what objections they raise.', 'Stack Overflow tag pages for the technology area — the questions developers ask reveal what\'s confusing and what documentation is missing.', 'Competitor documentation — the quality and depth of competitor docs sets the bar you\'re competing against. Read them as a developer would.', '"[tool] alternatives" and "[tool] vs [competitor]" searches on Reddit and Hacker News reveal the switching triggers and decision criteria.'],
+      questions: ['What can a developer do with this tool in the first 15 minutes that proves it works? This is the product story, and the content must tell it.', 'What languages, frameworks, and infrastructure does this tool officially support — and what\'s on the roadmap?', 'How does pricing scale as usage grows? Is there a free tier? What hits the first paid tier? Developers simulate this before committing.', 'What happens when something breaks in production — how fast does support respond, and what\'s the escalation path?']
+    },
+    voice: {
+      description: 'Precise, technically credible, and direct. No marketing fluff — developers notice it immediately and distrust everything that follows. The tone of a good README written by someone who actually uses the tool.',
+      sentenceStyle: 'Short, declarative sentences. Active voice. Lead with the action or result, not the context. Code samples are part of the voice.',
+      perspective: 'Second person for tutorials and quickstarts. Third person for reference documentation. Never first person in technical content.',
+      useWords: ['returns', 'requires', 'in', 'example', 'note:', 'if...then', 'see', 'run'],
+      avoidWords: ['seamlessly integrates', 'powerful', 'leverage', 'robust', 'enterprise-grade', 'cutting-edge', 'next-generation'],
+      badExample: 'Our powerful, enterprise-grade API seamlessly integrates with your existing robust tech stack to leverage next-generation capabilities at scale.',
+      doMore: ['Working code examples in the most common languages', 'Exact error messages and what they mean', 'Step-by-step quickstarts with expected output at each step', '"Common mistakes" sections that show you understand developer pain', 'Changelog content that shows active maintenance and improvement'],
+      doLess: ['Feature descriptions without usage examples', 'Vague performance claims without benchmarks', 'Marketing language in technical documentation', 'Glossing over error handling and edge cases', 'Documentation that describes the happy path but nothing else']
+    }
+  }
+};
+
+function getTemplate(d) {
+  const indKey = Object.keys(IND).find(k => d.ind.includes(k.split(' ')[0])) || Object.keys(IND)[0];
+  const base = IND[indKey];
+  const voice = d.voice || 'professional';
+  const aud = d.aud || 'business professionals';
+
+  // Build voice goodExample using client name
+  const goEx = `${d.name} customers ${base.voice.goodExample ? base.voice.goodExample.replace(/^Customers\s/, '') : 'get results fast — that\'s the whole point.'}`;
+
+  return {
+    overview: {
+      summary: `${d.name} operates in the ${d.ind} space${aud && aud !== 'business professionals' ? ', serving ' + aud : ''}. ${d.desc || 'Understanding their business model and audience is the foundation of every piece of content you\'ll write for them.'} As a writer on this account, your job is to make their expertise legible to buyers who are researching, comparing, and deciding.`,
+      whyMatters: base.overview.whyMatters
+    },
+    customers: base.customers,
+    industry: base.industry,
+    competitors: base.competitors,
+    voice: { ...base.voice, goodExample: goEx }
+  };
+}
+
+function renderOverview(d, data, name) {
+  const wts = d.wts;
+  return `
+    <div class="sec-head">Who Is ${esc(name)}?</div>
+    <p class="sec-sub">Start here — your plain-language briefing on the client.</p>
+    <div class="card gold-left">
+      <div class="card-label">The One-Paragraph Brief</div>
+      <p>${esc(data.overview.summary)}</p>
+      ${wts.length ? `<p>Your writing will help them through <strong>${esc(wts.join(', ').toLowerCase())}</strong>. Voice: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
+      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px">Context: ${esc(d.extra)}</p>` : ''}
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val">${esc(d.ind.split(' ')[0])}</div><div class="stat-lbl">${esc(d.ind)}</div></div>
+      <div class="stat"><div class="stat-val">${wts.length || '—'}</div><div class="stat-lbl">content type${wts.length !== 1 ? 's' : ''} you write</div></div>
+      <div class="stat"><div class="stat-val">${d.doc ? '✓' : '—'}</div><div class="stat-lbl">source docs provided</div></div>
+    </div>
+    <div class="card"><div class="card-label">Why This Industry Matters for Writing</div><ul class="checklist">${data.overview.whyMatters.map(m => `<li>${esc(m)}</li>`).join('')}</ul></div>
+    ${wts.length ? `<div class="card"><div class="card-label">Your Content Formats</div><div class="pill-row">${wts.map(t => `<span class="pill pill-gold">${esc(t)}</span>`).join('')}</div><p style="margin:0;font-size:13px;color:var(--fg2)">Each format serves a different stage of the buyer journey.</p></div>` : ''}
+  `;
+}
+
+function renderCustomers(data, name) {
+  const pCard = (p) => `
+    <div class="persona-card">
+      <div class="persona-head">
+        <div class="persona-av">${esc(p.emoji)}</div>
+        <div><div class="persona-name">${esc(p.name)}</div><div class="persona-role">${esc(p.role)} · Age ${esc(p.age)}</div></div>
+      </div>
+      <div class="persona-body">
+        <div><div class="mini-label">What they want</div><ul class="p-list">${p.goals.map(g => `<li><span class="dot">→</span> ${esc(g)}</li>`).join('')}</ul></div>
+        <div><div class="mini-label">What keeps them up at night</div><ul class="p-list">${p.pains.map(g => `<li><span class="dot">→</span> ${esc(g)}</li>`).join('')}</ul></div>
+        <div style="grid-column:1/-1"><div class="mini-label">How they search</div><div class="pill-row" style="margin-bottom:0">${p.searches.map(s => `<span class="pill pill-gold">${esc(s)}</span>`).join('')}</div></div>
+      </div>
+    </div>`;
+  return `
+    <div class="sec-head">Understanding Their Customers</div>
+    <p class="sec-sub">Who buys from ${esc(name)}? Meet the people your writing needs to reach.</p>
+    ${pCard(data.customers.primary)}${pCard(data.customers.secondary)}
+    <hr class="divider">
+    <div class="sub-head">What Every Writer Should Know About This Buyer</div>
+    <div class="two-col">
+      <div class="box g"><div class="box-label">What motivates them</div><ul><li>They want outcomes, not feature lists</li><li>They compare options carefully and research extensively</li><li>They value their time above anything else</li></ul></div>
+      <div class="box r"><div class="box-label">What creates friction</div><ul><li>Vague promises without proof or specifics</li><li>Jargon that feels insider-only or exclusive</li><li>No clear next step — they need to know what to do</li></ul></div>
+    </div>`;
+}
+
+function renderIndustry(data) {
+  return `
+    <div class="sec-head">Industry 101 for Writers</div>
+    <p class="sec-sub">You don't need to be an expert. You need to know enough to write confidently and never make errors that undermine trust.</p>
+    <div class="card"><div class="card-label">Six Things You Must Know</div><ul class="checklist">${data.industry.primer.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
+    <hr class="divider">
+    <div class="sub-head">Industry Glossary</div>
+    <p class="sec-sub" style="margin-top:-8px">These terms will come up. Know them so you can use or avoid them intelligently.</p>
+    <div class="glossary">${data.industry.glossary.map(g => `<div class="grow"><div class="gterm">${esc(g.term)}</div><div class="gdef">${esc(g.def)}</div></div>`).join('')}</div>`;
+}
+
+function renderCompetitors(data, name) {
+  return `
+    <div class="sec-head">Competitor Research Guide</div>
+    <p class="sec-sub">Understanding the competitive landscape helps you write more distinctly.</p>
+    <div class="card gold-bg"><div class="card-label">Important</div><p>This is a research framework. Use these prompts to research ${esc(name)}'s specific competitive landscape. Even 30 minutes here will make your writing significantly sharper.</p></div>
+    <div class="sub-head" style="margin-top:20px">Where to Look</div>
+    <div style="margin-top:12px">${data.competitors.sources.map((s,i) => `<div class="rstep"><div class="rstep-n">${i+1}</div><div class="rstep-b"><p>${esc(s)}</p></div></div>`).join('')}</div>
+    <hr class="divider">
+    <div class="sub-head">The Differentiation Questions</div>
+    <div class="card"><ul class="checklist">${data.competitors.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>`;
+}
+
+function renderVoice(data, name) {
+  const v = data.voice;
+  return `
+    <div class="sec-head">Voice & Style Guide</div>
+    <p class="sec-sub">How ${esc(name)} sounds — and how to write like them, not like yourself.</p>
+    <div class="card gold-left">
+      <div class="card-label">The Voice</div>
+      <p>${esc(v.description)}</p>
+      <p><strong>Sentence style:</strong> ${esc(v.sentenceStyle)}</p>
+      <p style="margin-bottom:0"><strong>Point of view:</strong> ${esc(v.perspective)}</p>
+    </div>
+    <div class="two-col">
+      <div class="box g"><div class="box-label">Words to reach for</div><ul>${v.useWords.map(w => `<li>"${esc(w)}"</li>`).join('')}</ul></div>
+      <div class="box r"><div class="box-label">Words to avoid</div><ul>${v.avoidWords.map(w => `<li>"${esc(w)}"</li>`).join('')}</ul></div>
+    </div>
+    <div class="sub-head">Before & After</div>
+    <div class="compare">
+      <div class="cside bad"><div class="cside-label">❌ Not like this</div><p>${esc(v.badExample)}</p></div>
+      <div class="cside good"><div class="cside-label">✓ More like this</div><p>${esc(v.goodExample)}</p></div>
+    </div>
+    <hr class="divider">
+    <div class="sub-head">Content-Specific Notes</div>
+    <div class="two-col">
+      <div class="box g"><div class="box-label">Write more of</div><ul>${v.doMore.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>
+      <div class="box r"><div class="box-label">Steer clear of</div><ul>${v.doLess.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>
+    </div>
+    <div class="card"><div class="card-label">Pre-Submit Checklist</div><ul class="checklist">
+      <li>Does every paragraph serve the reader, not just the client?</li>
+      <li>Can I cut any sentence without losing meaning? (If yes, cut it.)</li>
+      <li>Does the opening earn attention in 10 seconds?</li>
+      <li>Is there a clear CTA? Does the reader know exactly what to do next?</li>
+      <li>Would someone in this industry wince at any phrase?</li>
+      <li>Have I used proof (data, quotes, results) rather than assertions?</li>
+    </ul></div>`;
+}
+
+function renderBrief(d, data, docText) {
+  const name = d.name;
+  document.getElementById('pane-overview').innerHTML   = renderOverview(d, data, name);
+  document.getElementById('pane-customers').innerHTML  = renderCustomers(data, name);
+  document.getElementById('pane-industry').innerHTML   = renderIndustry(data);
+  document.getElementById('pane-competitors').innerHTML = renderCompetitors(data, name);
+  document.getElementById('pane-voice').innerHTML      = renderVoice(data, name);
+  document.getElementById('outName').textContent = name;
+  const tags = document.getElementById('outTags');
+  const hasDocs = docText && docText.length > 0;
+  tags.innerHTML = `<span class="btag btag-gold">${esc(d.ind)}</span>${d.voice ? `<span class="btag btag-muted">${esc(d.voice)}</span>` : ''}${hasDocs ? '<span class="btag btag-green">+ your docs</span>' : ''}`;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('on', i===0));
+  document.querySelectorAll('.tab-pane').forEach((p,i) => p.classList.toggle('on', i===0));
+  document.getElementById('stEmpty').style.display   = 'none';
+  document.getElementById('stLoading').style.display = 'none';
+  document.getElementById('stError').style.display   = 'none';
+  const bc = document.getElementById('briefContent');
+  bc.style.display = 'block';
+  requestAnimationFrame(() => bc.classList.add('show'));
+  // Doc excerpt
+  const de = document.getElementById('docExcerpt');
+  const dt = document.getElementById('docExcerptText');
+  if (de && dt && hasDocs) {
+    dt.textContent = docText.slice(0, 240) + (docText.length > 240 ? '…' : '');
+    de.style.display = 'block';
+  } else if (de) { de.style.display = 'none'; }
+  // Research pack
+  renderResearchPack(d);
+  document.getElementById('outputCol').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const LOAD_MSGS = ['Analysing industry context...','Building buyer personas...','Mapping competitive landscape...','Crafting voice and style guide...','Assembling your brief...'];
+
+async function generate() {
+  const d = fd();
+  const docText = getAllDocText();
+  document.getElementById('stEmpty').style.display   = 'none';
+  document.getElementById('stError').style.display   = 'none';
+  document.getElementById('briefContent').classList.remove('show');
+  document.getElementById('briefContent').style.display = 'none';
+  document.getElementById('stLoading').style.display = 'flex';
+  document.getElementById('loadLabel').textContent = docText ? 'Reading your documents…' : 'Building your brief…';
+  document.getElementById('genBtn').disabled = true;
+  let mi = 0;
+  const st = document.getElementById('loadStatus');
+  const iv = setInterval(() => { if (mi < LOAD_MSGS.length) st.textContent = LOAD_MSGS[mi++]; }, 600);
+  try {
+    await new Promise(r => setTimeout(r, 2200));
+    let data = getTemplate(d);
+    if (docText) data = enrichWithDocs(data, docText);
+    clearInterval(iv);
+    renderBrief(d, data, docText);
+  } catch(err) {
+    clearInterval(iv);
+    document.getElementById('stLoading').style.display = 'none';
+    document.getElementById('stError').style.display   = 'flex';
+    document.getElementById('errorMsg').textContent = '⚠ ' + (err.message || String(err));
+  }
+  document.getElementById('genBtn').disabled = false;
+}
+
+function loadExample() {
+  document.getElementById('fName').value  = 'Flowdesk';
+  document.getElementById('fDesc').value  = 'Flowdesk is an email marketing and invoicing platform built specifically for creative freelancers — photographers, illustrators, designers, and artists. They make it easy to send beautiful newsletters and professional invoices without any tech skills required. Flat-rate pricing ($38/month) means no per-subscriber fees, which is a core differentiator.';
+  document.getElementById('fInd').value   = 'B2B SaaS';
+  document.getElementById('fAud').value   = 'Freelance creatives (photographers, designers, illustrators) who want to grow their client base and simplify their business admin';
+  document.getElementById('fVoice').value = 'Warm & conversational';
+  document.getElementById('fExtra').value = "Key competitors: Mailchimp (too complicated), HoneyBook (too expensive for early-stage). Flowdesk's edge is beauty + simplicity + flat pricing.";
+  ['c1','c3','c4','c2'].forEach(id => document.getElementById(id).checked = true);
+  ['c5','c6','c7','c8'].forEach(id => document.getElementById(id).checked = false);
+  generate();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', initUpload);
+</script>
+
+</html>

@@ -630,6 +630,21 @@ body {
 }
 @media (max-width:480px) { .rp-grid { grid-template-columns:1fr; } }
 @media (prefers-reduced-motion:reduce) { .brief-content.show,.rp-card { animation:none;transition:none; } .btn-generate { animation:none; } }
+
+/* ── NEW FIELDS ── */
+.form-opt { font-size:11px;color:var(--fg3);font-weight:400;margin-left:3px; }
+.url-input-row { display:flex;gap:6px;margin-top:8px; }
+.url-input { flex:1;min-width:0;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:12px;color:var(--fg);outline:none;font-family:var(--mono); }
+.url-input:focus { border-color:var(--gold-dim); }
+.url-load-btn { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;color:var(--fg2);cursor:pointer;white-space:nowrap;transition:all 120ms; }
+.url-load-btn:hover { border-color:var(--gold-dim);color:var(--gold); }
+.url-status { font-size:11px;color:var(--fg3);margin-top:5px;min-height:14px;font-family:var(--mono); }
+.comp-named-links { display:flex;flex-wrap:wrap;gap:6px;margin-top:12px; }
+.comp-named-link { display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:var(--gold-bg);border:1px solid var(--gold-lo);border-radius:var(--radius-sm);font-size:11.5px;color:var(--gold);text-decoration:none;font-family:var(--mono);transition:all 120ms; }
+.comp-named-link:hover { background:var(--surface3);border-color:var(--gold); }
+.product-card { background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px; }
+.product-card-label { font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
+.product-desc-text { font-size:13.5px;color:var(--fg);line-height:1.7;margin:0; }
 </style>
 
 <header class="site-header">
@@ -657,6 +672,10 @@ body {
       <div class="field">
         <label for="fDesc">What do they do?</label>
         <textarea id="fDesc" placeholder="2–3 sentences. Plain language is fine."></textarea>
+      </div>
+      <div class="field">
+        <label for="fWebsite">Company website <span class="form-opt">(optional)</span></label>
+        <input type="url" id="fWebsite" placeholder="https://uscreen.tv">
       </div>
       <div class="field">
         <label for="fInd">Industry</label>
@@ -708,8 +727,12 @@ body {
         </select>
       </div>
       <div class="field">
+        <label for="fCompetitors">Main competitors <span class="form-opt">(optional)</span></label>
+        <input type="text" id="fCompetitors" placeholder="e.g. Vimeo OTT, Teachable, Thinkific">
+      </div>
+      <div class="field">
         <label for="fExtra">Anything else? <span style="color:var(--fg3);font-weight:400">(optional)</span></label>
-        <textarea id="fExtra" placeholder="Key competitors, recent news, known constraints, tone notes..."></textarea>
+        <textarea id="fExtra" placeholder="Recent news, known constraints, tone notes..."></textarea>
       </div>
 
       <div class="form-section">Source Documents</div>
@@ -721,6 +744,14 @@ body {
         <div class="upload-sub">PDF, TXT, MD, CSV — ICPs, brand docs, LinkedIn pages</div>
       </div>
       <div class="file-list" id="fileList"></div>
+      <div style="margin-top:10px">
+        <div style="font-size:11px;color:var(--fg3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Or add a URL</div>
+        <div class="url-input-row">
+          <input type="url" class="url-input" id="urlInput" placeholder="https://uscreen.tv/about">
+          <button class="url-load-btn" onclick="loadURL()">Load</button>
+        </div>
+        <div class="url-status" id="urlStatus"></div>
+      </div>
     </div>
 
     <div class="gen-area">
@@ -910,6 +941,34 @@ function initUpload() {
 function buildResearchPack(d) {
   const q = encodeURIComponent(d.name);
   const qi = encodeURIComponent(d.name + ' ' + d.ind);
+  const isTech = /saas|dev|api|fintech|tech/i.test(d.ind);
+  const namedComps = d.competitors && d.competitors.length > 0 ? d.competitors : [];
+
+  // Blog link: use real website if provided, otherwise Google site search
+  const blogUrl = d.website
+    ? d.website.replace(/\/+$/, '') + '/blog'
+    : `https://www.google.com/search?q=${encodeURIComponent('"' + d.name + '" blog site:' + d.name.toLowerCase().replace(/\s+/g,'') + '.com')}`;
+  const blogLabel = d.website ? d.website.replace(/^https?:\/\//,'').replace(/\/+$/,'') + '/blog' : `${d.name} blog`;
+
+  // Competitor Signals links: named competitors first, then generic
+  const compLinks = namedComps.length > 0
+    ? [
+        ...namedComps.slice(0,2).map(c => ({ label: `${d.name} vs ${c}`, url: `https://www.google.com/search?q=${encodeURIComponent(d.name + ' vs ' + c)}` })),
+        { label: `${d.ind} alternatives`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' alternatives')}` }
+      ]
+    : [
+        { label: `${d.name} vs`, url: `https://www.google.com/search?q=${encodeURIComponent(d.name + ' vs')}` },
+        { label: `${d.ind} alternatives`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' alternatives')}` }
+      ];
+
+  // Community links: Reddit always; Hacker News only for tech industries
+  const communityLinks = [
+    { label: 'Reddit', url: `https://www.reddit.com/search/?q=${q}` },
+    ...(isTech ? [{ label: 'Hacker News', url: `https://hn.algolia.com/?q=${q}` }] : [
+      { label: `${d.name} reviews`, url: `https://www.google.com/search?q=${encodeURIComponent(d.name + ' user reviews forum')}` }
+    ])
+  ];
+
   return [
     {
       icon: '📰', title: 'Latest News',
@@ -938,25 +997,19 @@ function buildResearchPack(d) {
     },
     {
       icon: '💬', title: 'Community Chatter',
-      tip: 'What their audience is actually talking about.',
-      links: [
-        { label: 'Reddit', url: `https://www.reddit.com/search/?q=${q}` },
-        { label: 'Hacker News', url: `https://hn.algolia.com/?q=${q}` }
-      ]
+      tip: "What their audience is actually talking about.",
+      links: communityLinks
     },
     {
       icon: '🔍', title: 'Competitor Signals',
-      tip: 'Who else plays in this space.',
-      links: [
-        { label: `${d.name} vs`, url: `https://www.google.com/search?q=${encodeURIComponent(d.name + ' vs')}` },
-        { label: `${d.ind} alternatives`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' alternatives')}` }
-      ]
+      tip: namedComps.length > 0 ? `Comparing ${d.name} against the names you entered.` : 'Who else plays in this space.',
+      links: compLinks
     },
     {
       icon: '✍️', title: 'Content Benchmarks',
-      tip: 'What content looks like in this niche.',
+      tip: "What their content looks like — and what the category sounds like.",
       links: [
-        { label: 'Their blog', url: `https://www.google.com/search?q=site%3A${encodeURIComponent(d.name.toLowerCase().replace(/\s+/g,'')+'.com')}` },
+        { label: blogLabel, url: blogUrl },
         { label: `${d.ind} content`, url: `https://www.google.com/search?q=${encodeURIComponent(d.ind + ' content marketing examples')}` }
       ]
     }
@@ -1016,15 +1069,60 @@ function enrichWithDocs(data, docText) {
 function fd() {
   const wts = [];
   document.querySelectorAll('.chip-input:checked').forEach(c => wts.push(c.value));
+  const rawComps = document.getElementById('fCompetitors').value.trim();
   return {
-    name:  document.getElementById('fName').value.trim() || 'Your Client',
-    desc:  document.getElementById('fDesc').value.trim(),
-    ind:   document.getElementById('fInd').value || 'General Business',
-    aud:   document.getElementById('fAud').value.trim(),
+    name:        document.getElementById('fName').value.trim() || 'Your Client',
+    desc:        document.getElementById('fDesc').value.trim(),
+    website:     document.getElementById('fWebsite').value.trim(),
+    ind:         document.getElementById('fInd').value || 'General Business',
+    aud:         document.getElementById('fAud').value.trim(),
     wts,
-    voice: document.getElementById('fVoice').value,
-    extra: document.getElementById('fExtra').value.trim()
+    voice:       document.getElementById('fVoice').value,
+    competitors: rawComps ? rawComps.split(',').map(s => s.trim()).filter(Boolean) : [],
+    extra:       document.getElementById('fExtra').value.trim()
   };
+}
+
+async function loadURL() {
+  const input = document.getElementById('urlInput');
+  const status = document.getElementById('urlStatus');
+  const url = input.value.trim();
+  if (!url) return;
+  status.textContent = 'Loading…';
+  status.style.color = 'var(--fg3)';
+  try {
+    // Try direct fetch first (works on deployed site, not in artifact sandbox)
+    let text = '';
+    let resp;
+    try {
+      resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (!resp.ok) throw new Error('status ' + resp.status);
+      text = await resp.text();
+    } catch {
+      // Fall back to CORS proxy (works on deployed site with external fetch access)
+      resp = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
+      if (!resp.ok) throw new Error('proxy failed');
+      text = await resp.text();
+    }
+    // Extract readable text from HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    doc.querySelectorAll('script,style,nav,footer,header,noscript').forEach(el => el.remove());
+    const body = doc.querySelector('main') || doc.querySelector('article') || doc.body;
+    const extracted = (body?.innerText || body?.textContent || '').replace(/\s+/g,' ').trim().slice(0, 6000);
+    if (extracted.length < 50) throw new Error('no readable content found');
+    const name = url.replace(/^https?:\/\//, '').split('/')[0];
+    const entry = { name: name + ' (web)', size: extracted.length, text: extracted, status: 'done' };
+    uploadedDocs.push(entry);
+    updateDocStatus();
+    renderFileList();
+    input.value = '';
+    status.textContent = '✓ Loaded ' + extracted.length + ' chars from ' + name;
+    status.style.color = 'var(--green)';
+  } catch (e) {
+    status.textContent = 'Could not load URL — try saving the page as text and uploading it instead.';
+    status.style.color = 'var(--red)';
+  }
 }
 
 function switchTab(id, btn) {
@@ -1541,19 +1639,28 @@ function getTemplate(d) {
 
 function renderOverview(d, data, name) {
   const wts = d.wts;
+  const hasDesc = d.desc && d.desc.length > 10;
+  const hasWebsite = d.website && d.website.length > 4;
+  const hasComps = d.competitors && d.competitors.length > 0;
   return `
     <div class="sec-head">Who Is ${esc(name)}?</div>
     <p class="sec-sub">Start here — your plain-language briefing on the client.</p>
+    ${hasDesc ? `<div class="product-card">
+      <div class="product-card-label">What they do — in their own words</div>
+      <p class="product-desc-text">${esc(d.desc)}</p>
+      ${hasWebsite ? `<p style="margin:8px 0 0;font-size:12px;font-family:var(--mono)"><a href="${esc(d.website)}" target="_blank" rel="noopener" style="color:var(--gold-lo);text-decoration:none;">${esc(d.website)} ↗</a></p>` : ''}
+      ${hasComps ? `<p style="margin:10px 0 0;font-size:12px;color:var(--fg3)">Competes with: <strong style="color:var(--fg2)">${esc(d.competitors.join(', '))}</strong></p>` : ''}
+    </div>` : ''}
     <div class="card gold-left">
-      <div class="card-label">The One-Paragraph Brief</div>
+      <div class="card-label">Your Writer Context</div>
       <p>${esc(data.overview.summary)}</p>
       ${wts.length ? `<p>Your writing will help them through <strong>${esc(wts.join(', ').toLowerCase())}</strong>. Voice: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
-      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px">Context: ${esc(d.extra)}</p>` : ''}
+      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px">Notes: ${esc(d.extra)}</p>` : ''}
     </div>
     <div class="stat-row">
       <div class="stat"><div class="stat-val">${esc(d.ind.split(' ')[0])}</div><div class="stat-lbl">${esc(d.ind)}</div></div>
       <div class="stat"><div class="stat-val">${wts.length || '—'}</div><div class="stat-lbl">content type${wts.length !== 1 ? 's' : ''} you write</div></div>
-      <div class="stat"><div class="stat-val">${d.doc ? '✓' : '—'}</div><div class="stat-lbl">source docs provided</div></div>
+      <div class="stat"><div class="stat-val">${hasComps ? d.competitors.length : (d.doc ? '✓' : '—')}</div><div class="stat-lbl">${hasComps ? 'named competitor' + (d.competitors.length !== 1 ? 's' : '') : 'source docs'}</div></div>
     </div>
     <div class="card"><div class="card-label">Why This Industry Matters for Writing</div><ul class="checklist">${data.overview.whyMatters.map(m => `<li>${esc(m)}</li>`).join('')}</ul></div>
     ${wts.length ? `<div class="card"><div class="card-label">Your Content Formats</div><div class="pill-row">${wts.map(t => `<span class="pill pill-gold">${esc(t)}</span>`).join('')}</div><p style="margin:0;font-size:13px;color:var(--fg2)">Each format serves a different stage of the buyer journey.</p></div>` : ''}
@@ -1596,16 +1703,32 @@ function renderIndustry(data) {
     <div class="glossary">${data.industry.glossary.map(g => `<div class="grow"><div class="gterm">${esc(g.term)}</div><div class="gdef">${esc(g.def)}</div></div>`).join('')}</div>`;
 }
 
-function renderCompetitors(data, name) {
+function renderCompetitors(data, name, d) {
+  const namedComps = (d && d.competitors && d.competitors.length > 0) ? d.competitors : [];
+  const namedSection = namedComps.length > 0 ? `
+    <div class="card gold-bg" style="margin-top:16px">
+      <div class="card-label">Your Competitors — Quick Research</div>
+      <p style="margin-top:4px;margin-bottom:12px;font-size:13px;color:var(--fg2)">Jump straight into research on each one:</p>
+      <div class="comp-named-links">
+        ${namedComps.map(c => `
+          <a class="comp-named-link" href="https://www.google.com/search?q=${encodeURIComponent(name + ' vs ' + c)}" target="_blank" rel="noopener">${esc(name)} vs ${esc(c)} ↗</a>
+          <a class="comp-named-link" href="https://www.g2.com/search?utf8=%E2%9C%93&query=${encodeURIComponent(c)}" target="_blank" rel="noopener">${esc(c)} on G2 ↗</a>
+        `).join('')}
+      </div>
+    </div>` : '';
+  const questions = data.competitors.questions.map((q, i) =>
+    namedComps[i] ? q.replace(/this client/i, name).replace(/competitor/i, namedComps[i]) : q
+  );
   return `
     <div class="sec-head">Competitor Research Guide</div>
     <p class="sec-sub">Understanding the competitive landscape helps you write more distinctly.</p>
-    <div class="card gold-bg"><div class="card-label">Important</div><p>This is a research framework. Use these prompts to research ${esc(name)}'s specific competitive landscape. Even 30 minutes here will make your writing significantly sharper.</p></div>
+    ${namedComps.length === 0 ? `<div class="card gold-bg"><div class="card-label">Tip</div><p>Add competitor names in the form for direct comparison links. Even one or two makes this tab much more useful.</p></div>` : ''}
+    ${namedSection}
     <div class="sub-head" style="margin-top:20px">Where to Look</div>
     <div style="margin-top:12px">${data.competitors.sources.map((s,i) => `<div class="rstep"><div class="rstep-n">${i+1}</div><div class="rstep-b"><p>${esc(s)}</p></div></div>`).join('')}</div>
     <hr class="divider">
     <div class="sub-head">The Differentiation Questions</div>
-    <div class="card"><ul class="checklist">${data.competitors.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>`;
+    <div class="card"><ul class="checklist">${questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>`;
 }
 
 function renderVoice(data, name) {
@@ -1649,7 +1772,7 @@ function renderBrief(d, data, docText) {
   document.getElementById('pane-overview').innerHTML   = renderOverview(d, data, name);
   document.getElementById('pane-customers').innerHTML  = renderCustomers(data, name);
   document.getElementById('pane-industry').innerHTML   = renderIndustry(data);
-  document.getElementById('pane-competitors').innerHTML = renderCompetitors(data, name);
+  document.getElementById('pane-competitors').innerHTML = renderCompetitors(data, name, d);
   document.getElementById('pane-voice').innerHTML      = renderVoice(data, name);
   document.getElementById('outName').textContent = name;
   const tags = document.getElementById('outTags');
@@ -1706,12 +1829,14 @@ async function generate() {
 }
 
 function loadExample() {
-  document.getElementById('fName').value  = 'Flowdesk';
-  document.getElementById('fDesc').value  = 'Flowdesk is an email marketing and invoicing platform built specifically for creative freelancers — photographers, illustrators, designers, and artists. They make it easy to send beautiful newsletters and professional invoices without any tech skills required. Flat-rate pricing ($38/month) means no per-subscriber fees, which is a core differentiator.';
-  document.getElementById('fInd').value   = 'B2B SaaS';
-  document.getElementById('fAud').value   = 'Freelance creatives (photographers, designers, illustrators) who want to grow their client base and simplify their business admin';
-  document.getElementById('fVoice').value = 'Warm & conversational';
-  document.getElementById('fExtra').value = "Key competitors: Mailchimp (too complicated), HoneyBook (too expensive for early-stage). Flowdesk's edge is beauty + simplicity + flat pricing.";
+  document.getElementById('fName').value        = 'Flowdesk';
+  document.getElementById('fDesc').value        = 'Flowdesk is an email marketing and invoicing platform built specifically for creative freelancers — photographers, illustrators, designers, and artists. They make it easy to send beautiful newsletters and professional invoices without any tech skills required. Flat-rate pricing ($38/month) means no per-subscriber fees, which is a core differentiator.';
+  document.getElementById('fWebsite').value     = 'https://www.flowdesk.co';
+  document.getElementById('fInd').value         = 'B2B SaaS';
+  document.getElementById('fAud').value         = 'Freelance creatives (photographers, designers, illustrators) who want to grow their client base and simplify their business admin';
+  document.getElementById('fVoice').value       = 'Warm & conversational';
+  document.getElementById('fCompetitors').value = 'Mailchimp, HoneyBook, Dubsado';
+  document.getElementById('fExtra').value       = "Flowdesk's edge is beauty + simplicity + flat pricing. Mailchimp is too complicated; HoneyBook too expensive for early-stage.";
   ['c1','c3','c4','c2'].forEach(id => document.getElementById(id).checked = true);
   ['c5','c6','c7','c8'].forEach(id => document.getElementById(id).checked = false);
   generate();
@@ -1720,5 +1845,4 @@ function loadExample() {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initUpload);
 </script>
-
 </html>

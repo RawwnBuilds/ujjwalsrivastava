@@ -1611,8 +1611,27 @@ const IND = {
   }
 };
 
+function classifyCompany(d) {
+  const signals = ((d.wikiShortDesc || '') + ' ' + (d.desc || '')).toLowerCase();
+  const b2cKw = ['mobile app','social network','consumer','fitness','gaming','entertainment',
+    'streaming','media','personal finance','dating','athletes','students','health app',
+    'lifestyle','individuals','sport','music','travel','food','fashion','beauty','wellness'];
+  const b2bKw = ['enterprise','b2b','saas','business software','crm','erp',
+    'organizations','workforce','hr platform','marketing platform','sales software',
+    'for businesses','for companies','for teams'];
+  const b2cScore = b2cKw.filter(k => signals.includes(k)).length;
+  const b2bScore = b2bKw.filter(k => signals.includes(k)).length;
+  if (b2cScore > b2bScore) return 'B2C';
+  if (b2bScore > b2cScore) return 'B2B';
+  return 'unknown';
+}
+
 function getTemplate(d) {
-  const indKey = Object.keys(IND).find(k => d.ind.includes(k.split(' ')[0])) || Object.keys(IND)[0];
+  const indMatch = Object.keys(IND).find(k => d.ind.includes(k.split(' ')[0]));
+  // If no industry keyword matched, use research-based classification as the fallback
+  const b2cKey = Object.keys(IND).find(k => k.startsWith('B2C'));
+  const fallback = (d.companyType === 'B2C' && b2cKey) ? b2cKey : Object.keys(IND)[0];
+  const indKey = indMatch || fallback;
   const base = IND[indKey];
   const aud = d.aud || '';
 
@@ -1635,37 +1654,67 @@ function getTemplate(d) {
 
 function renderOverview(d, data, name) {
   const wts = d.wts;
-  const hasDesc = data.overview.summary && data.overview.summary.length > 30;
   const hasWebsite = d.website && d.website.length > 4;
   const hasComps = d.competitors && d.competitors.length > 0;
-  const descSource = d.descSource; // 'Wikipedia', 'you', domain name, or ''
-  const autoSourced = descSource && descSource !== 'you' && descSource.length > 0;
+  const descSource = d.descSource;
+  const autoSourced = descSource && descSource !== 'you';
+  const isB2C = d.companyType === 'B2C';
 
-  const sourceTag = autoSourced
-    ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);color:var(--fg3);margin-top:10px;padding:3px 8px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">↗ Sourced from ${esc(descSource)}</span>`
-    : '';
+  // Split multi-paragraph research text (Wikipedia uses \n\n) into display paragraphs
+  const rawDesc = data.overview.summary || '';
+  const paras = rawDesc.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 0).slice(0, 3);
+  const hasRichDesc = paras.length > 0 && rawDesc.length > 30;
+
+  // Writing implication bullets — differ by company type
+  const b2cBullets = [
+    `You're writing for <strong>individuals</strong>, not procurement departments`,
+    `Personal motivation — achievement, identity, belonging — matters more than ROI`,
+    `Social proof ("used by X million people") lands harder than feature lists`,
+    `The job-to-be-done is usually tied to a personal goal, not a business outcome`,
+    `Emotion earns trust first; logic gives people permission to act`
+  ];
+  const b2bBullets = [
+    `Your reader has to sell this internally — write content that makes their job easier`,
+    `ROI and proof matter: data, case studies, and specific outcomes beat vague claims`,
+    `Multiple people read and share this content before a decision is made`,
+    `Jargon is a double-edged sword — use the industry's own words, not invented ones`,
+    `The decision timeline is long; every piece should move readers one step forward`
+  ];
+  const genericBullets = [
+    `Your job is not to describe their product — their marketing does that`,
+    `Help the audience understand <em>why</em> it matters to them, in their own language`,
+    `Proof (data, quotes, results) earns trust; assertions lose it`,
+    `Every piece should have a clear next step — readers need to know what to do`
+  ];
+  const writingBullets = isB2C ? b2cBullets : (d.companyType === 'B2B' ? b2bBullets : genericBullets);
+
+  const descBlock = hasRichDesc ? `
+    <div class="product-card">
+      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">${autoSourced ? `Sourced from ${esc(descSource)}` : 'What they do'}</div>
+      ${paras.map((p, i) => `<p style="font-size:${i===0?'15.5':'14'}px;line-height:1.8;margin:${i===0?'8':'12'}px 0 0;color:${i===0?'var(--fg)':'var(--fg2)'}">${esc(p)}</p>`).join('')}
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border2)">
+        ${hasWebsite ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" style="font-size:12px;font-family:var(--mono);color:var(--gold-lo);text-decoration:none;">${esc(d.website.replace(/^https?:\/\//,'').replace(/\/+$/,''))} ↗</a>` : ''}
+        ${hasComps ? `<span style="font-size:12.5px;color:var(--fg2)">Competing with: <strong style="color:var(--fg)">${esc(d.competitors.join(', '))}</strong>${d.compSource ? ` <span style="color:var(--fg3);font-size:11px;font-family:var(--mono)">· ${esc(d.compSource)}</span>` : ''}</span>` : ''}
+        ${d.companyType && d.companyType !== 'unknown' ? `<span style="font-size:11px;font-family:var(--mono);color:var(--fg3);padding:2px 7px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">${d.companyType}</span>` : ''}
+      </div>
+    </div>` : `
+    <div class="card gold-bg">
+      <div class="card-label">Auto-research works at ujjwalsrivastava.com/clientlens</div>
+      <p>Add a website URL or a brief description above to sharpen this section — the deployed tool will also pull from Wikipedia and the web automatically.</p>
+    </div>`;
 
   return `
     <div class="sec-head">Who Is ${esc(name)}?</div>
     <p class="sec-sub">What your writer needs to know before writing a single word.</p>
 
-    ${hasDesc ? `
-    <div class="product-card">
-      <div class="product-card-label">${autoSourced ? `Found on ${esc(descSource)}` : 'What they do'}</div>
-      <p class="product-desc-text" style="font-size:15px;line-height:1.75">${esc(data.overview.summary)}</p>
-      ${hasWebsite ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" style="font-size:12px;font-family:var(--mono);color:var(--gold-lo);text-decoration:none;display:inline-block;margin-top:10px;">${esc(d.website.replace(/^https?:\/\//,'').replace(/\/+$/,''))} ↗</a>` : ''}
-      ${hasComps ? `<p style="margin:12px 0 0;font-size:12.5px;color:var(--fg2)">Competing with: <strong style="color:var(--fg)">${esc(d.competitors.join(', '))}</strong>${d.compSource ? ` <span style="color:var(--fg3);font-family:var(--mono);font-size:11px">· via ${esc(d.compSource)}</span>` : ''}</p>` : ''}
-    </div>` : `
-    <div class="card gold-bg">
-      <div class="card-label">Research is running at ujjwalsrivastava.com/clientlens</div>
-      <p>Auto-research (Wikipedia, G2, company website) works in the deployed tool. Here in the preview, add a website or description above to sharpen the brief.</p>
-    </div>`}
+    ${descBlock}
 
     <div class="card gold-left">
       <div class="card-label">What This Means for Your Writing</div>
-      <p>As a writer on this account, your job is not to describe their product — their marketing does that. Your job is to help their audience understand <em>why</em> it matters to them, in language that earns trust rather than demanding it.</p>
-      ${wts.length ? `<p>Your formats on this account: <strong>${esc(wts.join(', '))}</strong>. Voice target: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
-      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px;margin-bottom:0">Context: ${esc(d.extra)}</p>` : ''}
+      <p style="margin-bottom:10px">Here's what matters for writing about ${esc(name)}:</p>
+      <ul class="checklist">${writingBullets.map(b => `<li>${b}</li>`).join('')}</ul>
+      ${wts.length ? `<p style="margin:14px 0 0;font-size:13px">Your formats on this account: <strong>${esc(wts.join(', '))}</strong>. Voice target: <strong>${esc(d.voice || 'to be defined')}</strong>.</p>` : ''}
+      ${d.extra ? `<p style="color:var(--fg2);font-size:12.5px;margin-top:10px;margin-bottom:0">Brief notes: ${esc(d.extra)}</p>` : ''}
     </div>
 
     <div class="stat-row">
@@ -1679,7 +1728,56 @@ function renderOverview(d, data, name) {
   `;
 }
 
-function renderCustomers(data, name) {
+function renderCustomers(data, name, d) {
+  const isB2C = d && d.companyType === 'B2C';
+
+  // B2C branch: research-derived audience description, no rigid B2B personas
+  if (isB2C) {
+    // Pull the first 2–3 sentences from the researched description to characterise users
+    const rawDesc = (d.desc || '').trim();
+    const firstPara = rawDesc.split(/\n\n+/)[0] || rawDesc;
+    const userSentences = firstPara.split(/(?<=\.)\s+/).slice(0, 2).join(' ');
+
+    return `
+      <div class="sec-head">Who Actually Uses ${esc(name)}?</div>
+      <p class="sec-sub">Based on what we found, here's who your writing needs to reach.</p>
+
+      ${userSentences.length > 20 ? `
+      <div class="product-card">
+        <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">What the research tells us</div>
+        <p style="font-size:15px;line-height:1.8;margin:8px 0 0">${esc(userSentences)}</p>
+        <span style="display:inline-block;margin-top:12px;font-size:11px;font-family:var(--mono);color:var(--fg3);padding:2px 7px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2)">Consumer-facing · B2C</span>
+      </div>` : ''}
+
+      <div class="card gold-left">
+        <div class="card-label">What This Means for Your Writing</div>
+        <ul class="checklist">
+          <li>You're writing for <strong>individuals</strong>, not procurement teams or committee buyers</li>
+          <li>Personal motivation — achievement, identity, belonging, self-improvement — is the real driver</li>
+          <li>Social proof ("used by X million people", community stories) lands harder than feature specs</li>
+          <li>The job-to-be-done is usually tied to a personal goal, not a business outcome or ROI</li>
+          <li>Emotion earns trust first; logic gives people permission to take the next step</li>
+          <li>Write to one person, not to a demographic — the reader feels the difference immediately</li>
+        </ul>
+      </div>
+
+      <hr class="divider">
+      <div class="sub-head">What Every Writer Should Know About This Audience</div>
+      <div class="two-col">
+        <div class="box g"><div class="box-label">What motivates them</div><ul>
+          <li>A personal goal they care about (get better, feel better, connect more)</li>
+          <li>Community and belonging — they want to be part of something</li>
+          <li>Simple, beautiful experiences that fit their life</li>
+        </ul></div>
+        <div class="box r"><div class="box-label">What creates friction</div><ul>
+          <li>Corporate speak and B2B jargon — it feels cold and distant</li>
+          <li>Feature lists with no emotional hook</li>
+          <li>Complexity — if it feels like work, they're gone</li>
+        </ul></div>
+      </div>`;
+  }
+
+  // B2B branch (or unknown): use template personas
   const pCard = (p) => `
     <div class="persona-card">
       <div class="persona-head">
@@ -1782,7 +1880,7 @@ function renderVoice(data, name) {
 function renderBrief(d, data, docText) {
   const name = d.name;
   document.getElementById('pane-overview').innerHTML   = renderOverview(d, data, name);
-  document.getElementById('pane-customers').innerHTML  = renderCustomers(data, name);
+  document.getElementById('pane-customers').innerHTML  = renderCustomers(data, name, d);
   document.getElementById('pane-industry').innerHTML   = renderIndustry(data);
   document.getElementById('pane-competitors').innerHTML = renderCompetitors(data, name, d);
   document.getElementById('pane-voice').innerHTML      = renderVoice(data, name);
@@ -1812,7 +1910,7 @@ function renderBrief(d, data, docText) {
 
 // ── AUTO RESEARCH ─────────────────────────────────────────────────────────────
 async function autoResearch(d) {
-  const result = { desc: '', descSource: '', competitors: [], compSource: '' };
+  const result = { desc: '', descSource: '', wikiShortDesc: '', competitors: [], compSource: '' };
   const name = d.name;
 
   // 1. Scrape homepage meta description if website is provided — works for any company
@@ -1833,21 +1931,22 @@ async function autoResearch(d) {
     } catch {}
   }
 
-  // 2. Wikipedia — rich paragraphs for well-known companies
-  if (!result.desc) {
-    try {
-      const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
-        { signal: AbortSignal.timeout(5000) });
-      if (r.ok) {
-        const wiki = await r.json();
-        if (wiki.extract && wiki.type !== 'disambiguation') {
-          // First 2–3 sentences only
-          result.desc = wiki.extract.split(/(?<=\.)\s+/).slice(0, 3).join(' ');
+  // 2. Wikipedia — full extract for rich overview paragraphs
+  try {
+    const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
+      { signal: AbortSignal.timeout(5000) });
+    if (r.ok) {
+      const wiki = await r.json();
+      if (wiki.extract && wiki.type !== 'disambiguation') {
+        if (!result.desc) {
+          result.desc = wiki.extract; // full extract — multiple paragraphs
           result.descSource = 'Wikipedia';
         }
+        // Always capture the short descriptor (e.g. "social fitness mobile app")
+        if (wiki.description) result.wikiShortDesc = wiki.description;
       }
-    } catch {}
-  }
+    }
+  } catch {}
 
   // 3. DuckDuckGo Instant Answer — good fallback for mid-tier companies
   if (!result.desc) {
@@ -1857,7 +1956,7 @@ async function autoResearch(d) {
       if (r.ok) {
         const ddg = await r.json();
         if (ddg.AbstractText && ddg.AbstractText.length > 30) {
-          result.desc = ddg.AbstractText.split(/(?<=\.)\s+/).slice(0, 3).join(' ');
+          result.desc = ddg.AbstractText; // full text, not truncated
           result.descSource = ddg.AbstractSource || 'Web';
         }
       }
@@ -1925,10 +2024,13 @@ async function generate() {
     if (research.desc && d.desc.length < 20) {
       d.desc = research.desc;
       d.descSource = research.descSource;
-      document.getElementById('fDesc').value = research.desc;
+      // Don't overwrite textarea with the full Wikipedia extract — keep it clean
+      if (research.desc.length < 400) document.getElementById('fDesc').value = research.desc;
     } else if (d.desc.length >= 20) {
       d.descSource = 'you';
     }
+    // Always capture wikiShortDesc for classification
+    if (research.wikiShortDesc) d.wikiShortDesc = research.wikiShortDesc;
 
     // Auto-populate competitors if none were entered
     if (research.competitors.length > 0 && d.competitors.length === 0) {
@@ -1936,6 +2038,9 @@ async function generate() {
       d.compSource = research.compSource;
       document.getElementById('fCompetitors').value = research.competitors.join(', ');
     }
+
+    // Classify company type (B2C / B2B / unknown) from research signals
+    d.companyType = classifyCompany(d);
 
     const docText = getAllDocText();
     let data = getTemplate(d);

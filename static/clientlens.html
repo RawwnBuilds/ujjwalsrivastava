@@ -1749,49 +1749,75 @@ function renderCompanyBrief(d, data, docText) {
   const autoSourced = d.descSource && d.descSource !== 'you';
 
   // ── WHO THEY ARE — ESSAY STRUCTURE ───────────────────────────────────────
-  const rawDesc = (d.desc || '').trim();
-  const extraNote = (d.extra || '').trim();
+  const rawDesc    = (d.desc || '').trim();
+  const extraNote  = (d.extra || '').trim();
+  const aboutText  = (d.aboutText || '').trim();
+  const wikiDesc   = (d.wikiDesc || '').trim();
+  const searchCtx  = (d.searchContext || '').trim();
 
-  // Split description into paragraphs for multi-card display
-  let descParas = [];
-  if (rawDesc.length > 20) {
-    // Try splitting on double newlines first (Wikipedia format)
-    const dblNl = rawDesc.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 20);
-    if (dblNl.length >= 2) {
-      descParas = dblNl.slice(0, 4);
-    } else {
-      // Single paragraph — split at sentence boundaries into 2-3 chunks
-      const sentences = rawDesc.match(/[^.!?]+[.!?]+/g) || [rawDesc];
-      let chunks = [], buf = [];
-      sentences.forEach((s, i) => {
-        buf.push(s.trim());
-        if (buf.length >= 3 || (buf.length >= 2 && i === sentences.length - 1)) {
-          chunks.push(buf.join(' '));
-          buf = [];
-        }
-      });
-      if (buf.length) chunks.push(buf.join(' '));
-      descParas = chunks.filter(c => c.length > 20).slice(0, 4);
+  // ── Helper: split text into para-chunks of roughly maxWords each ─────────
+  function chunkText(text, maxWords, maxChunks) {
+    const paras = text.split(/\n\n+/).map(p => p.replace(/\s+/g, ' ').trim()).filter(p => p.length > 40);
+    if (paras.length >= 2) {
+      // Group paragraphs into chunks
+      const chunks = [];
+      let buf = '';
+      for (const p of paras) {
+        if (buf.split(/\s+/).length + p.split(/\s+/).length > maxWords && buf.length > 0) {
+          chunks.push(buf.trim());
+          buf = p;
+          if (chunks.length >= maxChunks - 1) { buf += '\n\n' + paras.slice(paras.indexOf(p) + 1).join('\n\n'); break; }
+        } else { buf += (buf ? '\n\n' : '') + p; }
+      }
+      if (buf.trim()) chunks.push(buf.trim());
+      return chunks.map(c => c.slice(0, maxWords * 7)).filter(c => c.length > 40).slice(0, maxChunks);
     }
+    // Single para — split at sentence boundaries
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    const chunks = [];
+    let buf = '';
+    for (const s of sentences) {
+      buf += s;
+      if (buf.split(/\s+/).length >= maxWords * 0.7) { chunks.push(buf.trim()); buf = ''; if (chunks.length >= maxChunks) break; }
+    }
+    if (buf.trim()) chunks.push(buf.trim());
+    return chunks.filter(c => c.length > 40).slice(0, maxChunks);
   }
 
-  // Pull quote: first full sentence from the description
-  const firstSentence = descParas.length > 0
-    ? (descParas[0].match(/^[^.!?]+[.!?]/)?.[0]?.trim() || descParas[0].slice(0, 180))
+  // ── Build the essay sections ─────────────────────────────────────────────
+  // Section 1: main description (what user entered OR homepage meta OR Wikipedia)
+  const descParas = rawDesc.length > 20 ? chunkText(rawDesc, 80, 3) : [];
+
+  // Section 2: about page deep-dive (most likely to be richest)
+  const aboutChunks = aboutText.length > 200 ? chunkText(aboutText, 100, 3) : [];
+
+  // Section 3: Wikipedia supplement (if we have it and it adds new info)
+  const wikiChunks = (wikiDesc.length > 100 && wikiDesc !== rawDesc) ? chunkText(wikiDesc, 80, 2) : [];
+
+  // Section 4: search context (what multiple web sources say about them)
+  const searchChunks = searchCtx.length > 100 ? chunkText(searchCtx, 80, 2) : [];
+
+  const allSections = [
+    ...descParas.map((p, i) => ({ label: i === 0 ? 'What they do' : i === 1 ? 'How it works' : 'More context', text: p, primary: i === 0 })),
+    ...aboutChunks.map((p, i) => ({ label: i === 0 ? 'From their About page' : i === 1 ? 'Their approach' : 'More from them', text: p })),
+    ...wikiChunks.map((p, i)   => ({ label: i === 0 ? 'The bigger picture' : 'Background', text: p })),
+    ...searchChunks.map((p, i) => ({ label: i === 0 ? 'What people say about them' : 'More context', text: p })),
+  ].slice(0, 8); // cap at 8 cards max
+
+  // Pull quote: first sentence of the primary description
+  const firstSentence = allSections.length > 0
+    ? (allSections[0].text.match(/^[^.!?]+[.!?]/)?.[0]?.trim() || allSections[0].text.slice(0, 200))
     : '';
 
-  // Section labels per paragraph position
-  const sectionLabels = ['What they do', 'How it works', 'What makes them different', 'More context'];
+  const hasContent = allSections.length > 0;
 
-  const hasDesc = descParas.length > 0;
-
-  const whoTheyAreBlock = hasDesc ? `
+  const whoTheyAreBlock = hasContent ? `
     ${firstSentence.length > 20 ? `<div style="font-family:var(--serif);font-size:19px;font-style:italic;font-weight:300;line-height:1.65;color:var(--fg);border-left:2px solid var(--gold-lo);padding-left:18px;margin-bottom:22px">${esc(firstSentence)}</div>` : ''}
 
-    ${descParas.map((para, i) => `
+    ${allSections.map(sec => `
     <div class="product-card" style="margin-bottom:14px">
-      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${i === 0 && autoSourced ? `Sourced from ${esc(d.descSource)}` : sectionLabels[i] || 'More context'}</div>
-      <p style="font-size:${i===0?'14.5':'13.5'}px;line-height:1.85;margin:8px 0 0;color:${i===0?'var(--fg)':'var(--fg2)'}">${esc(para)}</p>
+      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${sec.primary && autoSourced ? `Sourced from ${esc(d.descSource)}` : esc(sec.label)}</div>
+      <p style="font-size:${sec.primary?'14.5':'13.5'}px;line-height:1.85;margin:8px 0 0;color:${sec.primary?'var(--fg)':'var(--fg2)'}">${esc(sec.text)}</p>
     </div>`).join('')}
 
     ${extraNote ? `
@@ -1807,7 +1833,7 @@ function renderCompanyBrief(d, data, docText) {
     </div>` : `
     <div class="card gold-bg" style="margin-bottom:28px">
       <div class="card-label">Add context to sharpen this section</div>
-      <p>Add a website URL or description in the form — the deployed tool pulls from Wikipedia and the web automatically.</p>
+      <p>Add a website URL or description in the form — the deployed tool pulls from their About page, Wikipedia, and web sources automatically.</p>
     </div>`;
 
   // ── THEIR CUSTOMERS ───────────────────────────────────────────────────────
@@ -2045,96 +2071,153 @@ function renderBrief(d, data, docText) {
 
 // ── AUTO RESEARCH ─────────────────────────────────────────────────────────────
 async function autoResearch(d) {
-  const result = { desc: '', descSource: '', wikiShortDesc: '', competitors: [], compSource: '' };
+  const result = {
+    desc: '', descSource: '',
+    aboutText: '',     // /about page — richest company content
+    wikiDesc: '',      // Wikipedia full extract (supplement, not replace)
+    searchContext: '', // DuckDuckGo search snippets from multiple sources
+    wikiShortDesc: '',
+    competitors: [], compSource: ''
+  };
   const name = d.name;
+  const hostname = d.website ? d.website.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : '';
 
-  // 1. Scrape homepage — meta description first, body text as fallback for JS-rendered sites
-  if (d.website) {
+  // ── Shared helpers ───────────────────────────────────────────────────────
+  async function proxyFetch(url, ms = 7000) {
     try {
-      const hostname = d.website.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(d.website),
-        { signal: AbortSignal.timeout(8000) });
-      if (r.ok) {
-        const html = await r.text();
-        const doc2 = new DOMParser().parseFromString(html, 'text/html');
-        const metaDesc = doc2.querySelector('meta[name="description"]')?.getAttribute('content')
-          || doc2.querySelector('meta[property="og:description"]')?.getAttribute('content');
-        if (metaDesc && metaDesc.length > 25) {
-          result.desc = metaDesc.trim();
-          result.descSource = hostname;
-        } else {
-          // Meta description missing (common on JS-rendered sites) — extract body text instead
-          doc2.querySelectorAll('script,style,nav,footer,header,noscript,aside,form,svg').forEach(el => el.remove());
-          const body = doc2.querySelector('main') || doc2.querySelector('article') || doc2.querySelector('[role="main"]') || doc2.body;
-          const bodyText = (body?.textContent || '').replace(/\s+/g, ' ').trim();
-          if (bodyText.length > 100) {
-            result.desc = bodyText.slice(0, 2500);
-            result.descSource = hostname;
-          }
-        }
-      }
-    } catch {}
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+        { signal: AbortSignal.timeout(ms) });
+      if (!r.ok) return null;
+      const html = await r.text();
+      const doc2 = new DOMParser().parseFromString(html, 'text/html');
+      const title = (doc2.title || '').toLowerCase();
+      if (title.includes('404') || title.includes('page not found') || title.includes('error')) return null;
+      return doc2;
+    } catch { return null; }
   }
 
-  // 2. Wikipedia — full extract for rich overview paragraphs
-  try {
-    const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
-      { signal: AbortSignal.timeout(5000) });
-    if (r.ok) {
-      const wiki = await r.json();
-      if (wiki.extract && wiki.type !== 'disambiguation') {
-        if (!result.desc) {
-          result.desc = wiki.extract; // full extract — multiple paragraphs
-          result.descSource = 'Wikipedia';
-        }
-        // Always capture the short descriptor (e.g. "social fitness mobile app")
-        if (wiki.description) result.wikiShortDesc = wiki.description;
-      }
-    }
-  } catch {}
-
-  // 3. DuckDuckGo Instant Answer — good fallback for mid-tier companies
-  if (!result.desc) {
-    try {
-      const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
-        { signal: AbortSignal.timeout(5000) });
-      if (r.ok) {
-        const ddg = await r.json();
-        if (ddg.AbstractText && ddg.AbstractText.length > 30) {
-          result.desc = ddg.AbstractText; // full text, not truncated
-          result.descSource = ddg.AbstractSource || 'Web';
-        }
-      }
-    } catch {}
+  function extractText(doc2) {
+    if (!doc2) return { meta: '', body: '' };
+    const meta = (doc2.querySelector('meta[name="description"]')?.getAttribute('content')
+      || doc2.querySelector('meta[property="og:description"]')?.getAttribute('content') || '').trim();
+    doc2.querySelectorAll('script,style,nav,footer,header,noscript,aside,form,svg,button,[aria-hidden="true"]').forEach(el => el.remove());
+    const main = doc2.querySelector('main') || doc2.querySelector('article')
+      || doc2.querySelector('[role="main"]') || doc2.querySelector('.about') || doc2.body;
+    const body = (main?.textContent || '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    return { meta, body };
   }
 
-  // 4. G2 alternatives page — best source for competitor names
-  if (d.competitors.length === 0) {
-    try {
+  // ── 1. Website: homepage + about pages + Wikipedia + DDG all in parallel ─
+  const aboutPaths = ['/about', '/about-us', '/company', '/our-story', '/story', '/who-we-are'];
+  const base = d.website ? d.website.replace(/\/+$/, '') : '';
+
+  const [
+    homepageDoc,
+    ...parallelResults
+  ] = await Promise.all([
+    // Homepage
+    d.website ? proxyFetch(d.website) : Promise.resolve(null),
+
+    // About pages (6 paths)
+    ...aboutPaths.map(p => base ? proxyFetch(base + p, 6000) : Promise.resolve(null)),
+
+    // Wikipedia
+    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
+      { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : null).catch(() => null),
+
+    // DDG Instant Answer
+    fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
+      { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : null).catch(() => null),
+
+    // DDG HTML search — scrape actual search result snippets (rich, multi-source)
+    (async () => {
+      const q = name + ' company what they do overview';
+      const doc2 = await proxyFetch('https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q), 7000);
+      if (!doc2) return '';
+      return [...doc2.querySelectorAll('.result__snippet')]
+        .map(el => el.textContent.replace(/\s+/g, ' ').trim())
+        .filter(t => t.length > 50 && t.toLowerCase().indexOf('cookie') === -1)
+        .slice(0, 5).join('\n\n');
+    })(),
+
+    // G2 competitors
+    (d.competitors.length === 0 && base) ? (async () => {
       const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const g2url = 'https://www.g2.com/products/' + slug + '/competitors/alternatives';
-      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(g2url),
-        { signal: AbortSignal.timeout(9000) });
-      if (r.ok) {
-        const html = await r.text();
-        const doc2 = new DOMParser().parseFromString(html, 'text/html');
-        const names = new Set();
-        // G2 marks product names in several ways depending on page version
-        doc2.querySelectorAll('[data-product-name],[itemprop="name"],[class*="product-name"]').forEach(el => {
-          const n = el.textContent.trim();
-          if (n && n !== name && n.length > 1 && n.length < 60 && !/\n/.test(n)) names.add(n);
-        });
-        // Fallback: scan h3/h4 near "alternative" context
-        if (names.size === 0) {
-          doc2.querySelectorAll('h3,h4').forEach(el => {
-            const n = el.textContent.trim();
-            if (n && n !== name && n.length > 2 && n.length < 50) names.add(n);
-          });
-        }
-        const comps = [...names].slice(0, 5);
-        if (comps.length > 0) { result.competitors = comps; result.compSource = 'G2'; }
-      }
-    } catch {}
+      const doc2 = await proxyFetch('https://www.g2.com/products/' + slug + '/competitors/alternatives', 9000);
+      if (!doc2) return [];
+      const names = new Set();
+      doc2.querySelectorAll('[data-product-name],[itemprop="name"],[class*="product-name"]').forEach(el => {
+        const n = el.textContent.trim();
+        if (n && n !== name && n.length > 1 && n.length < 60 && !/\n/.test(n)) names.add(n);
+      });
+      if (names.size === 0) doc2.querySelectorAll('h3,h4').forEach(el => {
+        const n = el.textContent.trim();
+        if (n && n !== name && n.length > 2 && n.length < 50) names.add(n);
+      });
+      return [...names].slice(0, 5);
+    })() : Promise.resolve([])
+  ]);
+
+  // Destructure parallel results (6 about pages + wiki + ddg instant + ddg search + g2)
+  const aboutDocs = parallelResults.slice(0, 6);
+  const wikiData  = parallelResults[6];
+  const ddgData   = parallelResults[7];
+  const ddgSearch = parallelResults[8];
+  const g2Comps   = parallelResults[9];
+
+  // ── 2. Process homepage ──────────────────────────────────────────────────
+  if (homepageDoc) {
+    const { meta, body } = extractText(homepageDoc);
+    if (meta.length > 25) {
+      result.desc = meta;
+      result.descSource = hostname;
+    } else if (body.length > 100) {
+      result.desc = body.slice(0, 1200);
+      result.descSource = hostname;
+    }
+  }
+
+  // ── 3. Process about pages — find richest one ────────────────────────────
+  const aboutPage = aboutDocs
+    .map((doc2, i) => { const { body } = extractText(doc2); return { body, path: aboutPaths[i] }; })
+    .filter(a => a.body.length > 300)
+    .sort((a, b) => b.body.length - a.body.length)[0];
+
+  if (aboutPage) {
+    result.aboutText = aboutPage.body.slice(0, 5000);
+    // If homepage gave us nothing, use about page as primary desc too
+    if (!result.desc) {
+      result.desc = aboutPage.body.slice(0, 600);
+      result.descSource = hostname + aboutPage.path;
+    }
+  }
+
+  // ── 4. Wikipedia ────────────────────────────────────────────────────────
+  if (wikiData?.extract && wikiData.type !== 'disambiguation') {
+    if (!result.desc) {
+      result.desc = wikiData.extract;
+      result.descSource = 'Wikipedia';
+    } else {
+      result.wikiDesc = wikiData.extract; // supplement — shown as extra section
+    }
+    if (wikiData.description) result.wikiShortDesc = wikiData.description;
+  }
+
+  // ── 5. DDG Instant Answer fallback ──────────────────────────────────────
+  if (!result.desc && ddgData?.AbstractText?.length > 30) {
+    result.desc = ddgData.AbstractText;
+    result.descSource = ddgData.AbstractSource || 'Web';
+  }
+
+  // ── 6. DDG search snippets ───────────────────────────────────────────────
+  if (typeof ddgSearch === 'string' && ddgSearch.length > 80) {
+    result.searchContext = ddgSearch;
+  }
+
+  // ── 7. G2 competitors ───────────────────────────────────────────────────
+  if (Array.isArray(g2Comps) && g2Comps.length > 0) {
+    result.competitors = g2Comps;
+    result.compSource = 'G2';
   }
 
   return result;
@@ -2150,11 +2233,11 @@ async function generate() {
   document.getElementById('genBtn').disabled = true;
 
   const msgs = [
-    `Looking up ${d.name}…`,
-    'Checking what people say about them…',
+    `Pulling ${d.name}'s homepage…`,
+    'Reading their About page…',
+    'Checking Wikipedia and web sources…',
     'Scanning for competitor signals…',
-    'Building your content brief…',
-    'Finalising the research…'
+    'Building your content brief…'
   ];
   let mi = 0;
   const st = document.getElementById('loadStatus');
@@ -2174,8 +2257,11 @@ async function generate() {
     } else if (d.desc.length >= 20) {
       d.descSource = 'you';
     }
-    // Always capture wikiShortDesc for classification
+    // Merge all new research fields onto d
     if (research.wikiShortDesc) d.wikiShortDesc = research.wikiShortDesc;
+    if (research.aboutText)     d.aboutText     = research.aboutText;
+    if (research.wikiDesc)      d.wikiDesc      = research.wikiDesc;
+    if (research.searchContext) d.searchContext = research.searchContext;
 
     // Auto-populate competitors if none were entered
     if (research.competitors.length > 0 && d.competitors.length === 0) {

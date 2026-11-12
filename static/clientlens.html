@@ -1085,37 +1085,66 @@ async function loadURL() {
   if (!url) return;
   status.textContent = 'Loading…';
   status.style.color = 'var(--fg3)';
+
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?url='
+  ];
+
+  let text = '';
+  let networkBlocked = false;
+
+  // Try direct fetch first
   try {
-    // Try direct fetch first (works on deployed site, not in artifact sandbox)
-    let text = '';
-    let resp;
-    try {
-      resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
-      if (!resp.ok) throw new Error('status ' + resp.status);
-      text = await resp.text();
-    } catch {
-      // Fall back to CORS proxy (works on deployed site with external fetch access)
-      resp = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
-      if (!resp.ok) throw new Error('proxy failed');
-      text = await resp.text();
+    const resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (resp.ok) text = await resp.text();
+  } catch(e) {
+    if (e instanceof TypeError) networkBlocked = true;
+  }
+
+  // Try proxies if direct failed
+  if (!text) {
+    for (const proxy of proxies) {
+      try {
+        const resp = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
+        if (resp.ok) { text = await resp.text(); break; }
+      } catch(e) {
+        if (e instanceof TypeError) networkBlocked = true;
+      }
     }
-    // Extract readable text from HTML
+  }
+
+  if (!text) {
+    if (networkBlocked) {
+      status.textContent = 'URL loading works at ujjwalsrivastava.com/clientlens — this preview can\'t reach the web. Upload the page as a .txt file instead.';
+    } else {
+      status.textContent = 'Could not load URL — the site may block scraping. Save the page as text and upload it instead.';
+    }
+    status.style.color = 'var(--red)';
+    return;
+  }
+
+  // Extract readable text from HTML
+  try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(text, 'text/html');
-    doc.querySelectorAll('script,style,nav,footer,header,noscript').forEach(el => el.remove());
-    const body = doc.querySelector('main') || doc.querySelector('article') || doc.body;
-    const extracted = (body?.innerText || body?.textContent || '').replace(/\s+/g,' ').trim().slice(0, 6000);
-    if (extracted.length < 50) throw new Error('no readable content found');
+    doc.querySelectorAll('script,style,nav,footer,header,noscript,aside').forEach(el => el.remove());
+    const body = doc.querySelector('main') || doc.querySelector('article') || doc.querySelector('[role="main"]') || doc.body;
+    const extracted = (body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 6000);
+    if (extracted.length < 50) {
+      status.textContent = 'Page loaded but no readable text found — it may be JavaScript-rendered. Save it as text and upload instead.';
+      status.style.color = 'var(--red)';
+      return;
+    }
     const name = url.replace(/^https?:\/\//, '').split('/')[0];
-    const entry = { name: name + ' (web)', size: extracted.length, text: extracted, status: 'done' };
-    uploadedDocs.push(entry);
+    uploadedDocs.push({ name: name + ' (web)', size: extracted.length, text: extracted, status: 'done' });
     updateDocStatus();
     renderFileList();
     input.value = '';
     status.textContent = '✓ Loaded ' + extracted.length + ' chars from ' + name;
     status.style.color = 'var(--green)';
-  } catch (e) {
-    status.textContent = 'Could not load URL — try saving the page as text and uploading it instead.';
+  } catch(e) {
+    status.textContent = 'Loaded the page but could not parse it. Try uploading as a .txt file.';
     status.style.color = 'var(--red)';
   }
 }

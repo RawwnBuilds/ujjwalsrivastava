@@ -2084,16 +2084,19 @@ async function autoResearch(d) {
 
   // ── Shared helpers ───────────────────────────────────────────────────────
   async function proxyFetch(url, ms = 7000) {
-    try {
-      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-        { signal: AbortSignal.timeout(ms) });
-      if (!r.ok) return null;
-      const html = await r.text();
-      const doc2 = new DOMParser().parseFromString(html, 'text/html');
-      const title = (doc2.title || '').toLowerCase();
-      if (title.includes('404') || title.includes('page not found') || title.includes('error')) return null;
-      return doc2;
-    } catch { return null; }
+    const proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?url='];
+    for (const proxy of proxies) {
+      try {
+        const r = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(ms) });
+        if (!r.ok) continue;
+        const html = await r.text();
+        const doc2 = new DOMParser().parseFromString(html, 'text/html');
+        const title = (doc2.title || '').toLowerCase();
+        if (title.includes('404') || title.includes('page not found') || title.includes('error')) continue;
+        return doc2;
+      } catch {}
+    }
+    return null;
   }
 
   function extractText(doc2) {
@@ -2121,23 +2124,53 @@ async function autoResearch(d) {
     // About pages (6 paths)
     ...aboutPaths.map(p => base ? proxyFetch(base + p, 6000) : Promise.resolve(null)),
 
-    // Wikipedia
-    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name),
-      { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : null).catch(() => null),
+    // Wikipedia — try multiple title variants to avoid disambiguation (e.g. "Basecamp" → mountaineering)
+    (async () => {
+      const isCompanyWiki = w => {
+        if (!w?.extract || w.type === 'disambiguation') return false;
+        const txt = ((w.description || '') + ' ' + w.extract.slice(0, 400)).toLowerCase();
+        return ['company', 'software', 'platform', 'service', 'startup', 'saas', 'app',
+          'founded', 'corporation', 'inc.', 'llc', 'business', 'enterprise', 'product']
+          .some(k => txt.includes(k));
+      };
+      const variants = [name, `${name} (company)`, `${name} (software)`, `${name} (application)`];
+      for (const v of variants) {
+        try {
+          const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(v),
+            { signal: AbortSignal.timeout(5000) });
+          if (!r.ok) continue;
+          const w = await r.json();
+          if (isCompanyWiki(w)) return w;
+        } catch {}
+      }
+      return null;
+    })(),
 
     // DDG Instant Answer
     fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
       { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-    // DDG HTML search — scrape actual search result snippets (rich, multi-source)
+    // DDG HTML search — scrape real result snippets; try two proxies in sequence
     (async () => {
-      const q = name + ' company what they do overview';
-      const doc2 = await proxyFetch('https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q), 7000);
-      if (!doc2) return '';
-      return [...doc2.querySelectorAll('.result__snippet')]
-        .map(el => el.textContent.replace(/\s+/g, ' ').trim())
-        .filter(t => t.length > 50 && t.toLowerCase().indexOf('cookie') === -1)
-        .slice(0, 5).join('\n\n');
+      const q = name + ' company overview what they do';
+      const ddgUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q);
+      const proxies = [
+        'https://api.allorigins.win/raw?url=',
+        'https://corsproxy.io/?url=',
+      ];
+      for (const proxy of proxies) {
+        try {
+          const r = await fetch(proxy + encodeURIComponent(ddgUrl), { signal: AbortSignal.timeout(7000) });
+          if (!r.ok) continue;
+          const html = await r.text();
+          const doc2 = new DOMParser().parseFromString(html, 'text/html');
+          const snippets = [...doc2.querySelectorAll('.result__snippet,.results_links .snippet,.result__body')]
+            .map(el => el.textContent.replace(/\s+/g, ' ').trim())
+            .filter(t => t.length > 50 && !t.toLowerCase().includes('cookie') && !t.toLowerCase().includes('javascript'));
+          if (snippets.length > 0) return snippets.slice(0, 6).join('\n\n');
+        } catch {}
+      }
+      return '';
     })(),
 
     // G2 competitors
@@ -2192,13 +2225,13 @@ async function autoResearch(d) {
     }
   }
 
-  // ── 4. Wikipedia ────────────────────────────────────────────────────────
-  if (wikiData?.extract && wikiData.type !== 'disambiguation') {
+  // ── 4. Wikipedia (pre-validated as company article by the fetch above) ───
+  if (wikiData?.extract) {
     if (!result.desc) {
       result.desc = wikiData.extract;
       result.descSource = 'Wikipedia';
     } else {
-      result.wikiDesc = wikiData.extract; // supplement — shown as extra section
+      result.wikiDesc = wikiData.extract;
     }
     if (wikiData.description) result.wikiShortDesc = wikiData.description;
   }

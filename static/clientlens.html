@@ -2124,53 +2124,55 @@ async function autoResearch(d) {
     // About pages (6 paths)
     ...aboutPaths.map(p => base ? proxyFetch(base + p, 6000) : Promise.resolve(null)),
 
-    // Wikipedia — try multiple title variants to avoid disambiguation (e.g. "Basecamp" → mountaineering)
+    // DDG + Wikipedia: DDG disambiguates first, then we fetch the full Wikipedia article
     (async () => {
-      const isCompanyWiki = w => {
-        if (!w?.extract || w.type === 'disambiguation') return false;
-        const txt = ((w.description || '') + ' ' + w.extract.slice(0, 400)).toLowerCase();
-        return ['company', 'software', 'platform', 'service', 'startup', 'saas', 'app',
-          'founded', 'corporation', 'inc.', 'llc', 'business', 'enterprise', 'product']
-          .some(k => txt.includes(k));
-      };
-      const variants = [name, `${name} (company)`, `${name} (software)`, `${name} (application)`];
-      for (const v of variants) {
+      const companyKeywords = ['company', 'software', 'platform', 'service', 'startup', 'saas',
+        'app', 'founded', 'corporation', 'business', 'enterprise', 'product', 'tool', 'suite'];
+      let ddgAbstract = '';
+      let wikiTitle = '';
+      let wikiShortDesc = '';
+
+      // 1. DDG Instant Answer — handles disambiguation (e.g. "Basecamp" → 37signals company)
+      try {
+        const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
+          { signal: AbortSignal.timeout(6000) });
+        if (r.ok) {
+          const d = await r.json();
+          if (d.AbstractText?.length > 30 && d.Type === 'A') {
+            ddgAbstract = d.AbstractText;
+            // DDG's AbstractURL points to the right Wikipedia page
+            const m = d.AbstractURL?.match(/en\.wikipedia\.org\/wiki\/(.+)/);
+            if (m) wikiTitle = decodeURIComponent(m[1]).replace(/_/g, ' ');
+            if (d.Entity) wikiShortDesc = d.Entity;
+          }
+        }
+      } catch {}
+
+      // 2. Fetch full Wikipedia intro section — much richer than the summary API
+      // Uses DDG's title first (pre-disambiguated), then tries common variants
+      const titlesToTry = wikiTitle
+        ? [wikiTitle, name, `${name} (company)`, `${name} (software)`]
+        : [name, `${name} (company)`, `${name} (software)`, `${name} (application)`];
+
+      let wikiExtract = '';
+      for (const title of titlesToTry) {
         try {
-          const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(v),
-            { signal: AbortSignal.timeout(5000) });
+          const r = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&origin=*`,
+            { signal: AbortSignal.timeout(6000) }
+          );
           if (!r.ok) continue;
-          const w = await r.json();
-          if (isCompanyWiki(w)) return w;
+          const data = await r.json();
+          const page = Object.values(data.query?.pages || {})[0];
+          const extract = page?.extract || '';
+          if (extract.length < 80) continue;
+          const txt = extract.toLowerCase();
+          const isCompany = !!wikiTitle || companyKeywords.some(k => txt.includes(k));
+          if (isCompany) { wikiExtract = extract; break; }
         } catch {}
       }
-      return null;
-    })(),
 
-    // DDG Instant Answer
-    fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
-      { signal: AbortSignal.timeout(5000) }).then(r => r.ok ? r.json() : null).catch(() => null),
-
-    // DDG HTML search — scrape real result snippets; try two proxies in sequence
-    (async () => {
-      const q = name + ' company overview what they do';
-      const ddgUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q);
-      const proxies = [
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?url=',
-      ];
-      for (const proxy of proxies) {
-        try {
-          const r = await fetch(proxy + encodeURIComponent(ddgUrl), { signal: AbortSignal.timeout(7000) });
-          if (!r.ok) continue;
-          const html = await r.text();
-          const doc2 = new DOMParser().parseFromString(html, 'text/html');
-          const snippets = [...doc2.querySelectorAll('.result__snippet,.results_links .snippet,.result__body')]
-            .map(el => el.textContent.replace(/\s+/g, ' ').trim())
-            .filter(t => t.length > 50 && !t.toLowerCase().includes('cookie') && !t.toLowerCase().includes('javascript'));
-          if (snippets.length > 0) return snippets.slice(0, 6).join('\n\n');
-        } catch {}
-      }
-      return '';
+      return { ddgAbstract, wikiExtract, wikiShortDesc };
     })(),
 
     // G2 competitors
@@ -2191,12 +2193,10 @@ async function autoResearch(d) {
     })() : Promise.resolve([])
   ]);
 
-  // Destructure parallel results (6 about pages + wiki + ddg instant + ddg search + g2)
-  const aboutDocs = parallelResults.slice(0, 6);
-  const wikiData  = parallelResults[6];
-  const ddgData   = parallelResults[7];
-  const ddgSearch = parallelResults[8];
-  const g2Comps   = parallelResults[9];
+  // Destructure parallel results (6 about pages + combined DDG+wiki + g2)
+  const aboutDocs   = parallelResults.slice(0, 6);
+  const combined    = parallelResults[6]; // { ddgAbstract, wikiExtract, wikiShortDesc }
+  const g2Comps     = parallelResults[7];
 
   // ── 2. Process homepage ──────────────────────────────────────────────────
   if (homepageDoc) {
@@ -2218,36 +2218,42 @@ async function autoResearch(d) {
 
   if (aboutPage) {
     result.aboutText = aboutPage.body.slice(0, 5000);
-    // If homepage gave us nothing, use about page as primary desc too
     if (!result.desc) {
       result.desc = aboutPage.body.slice(0, 600);
       result.descSource = hostname + aboutPage.path;
     }
   }
 
-  // ── 4. Wikipedia (pre-validated as company article by the fetch above) ───
-  if (wikiData?.extract) {
-    if (!result.desc) {
-      result.desc = wikiData.extract;
-      result.descSource = 'Wikipedia';
-    } else {
-      result.wikiDesc = wikiData.extract;
+  // ── 4. DDG abstract + Wikipedia full extract ─────────────────────────────
+  // DDG disambiguates correctly (e.g. "Basecamp" → company not mountaineering)
+  // Wikipedia /w/api.php?exintro gives 5-10x more text than the summary API
+  if (combined) {
+    const { ddgAbstract, wikiExtract, wikiShortDesc } = combined;
+
+    if (wikiShortDesc) result.wikiShortDesc = wikiShortDesc;
+
+    // Use the full Wikipedia extract as the richest description when available
+    if (wikiExtract.length > 80) {
+      if (!result.desc) {
+        result.desc = wikiExtract;
+        result.descSource = 'Wikipedia';
+      } else {
+        result.wikiDesc = wikiExtract;
+      }
     }
-    if (wikiData.description) result.wikiShortDesc = wikiData.description;
+
+    // DDG abstract as fallback or additional context
+    if (ddgAbstract.length > 30) {
+      if (!result.desc) {
+        result.desc = ddgAbstract;
+        result.descSource = 'Web';
+      } else if (!result.wikiDesc && ddgAbstract !== wikiExtract) {
+        result.wikiDesc = ddgAbstract;
+      }
+    }
   }
 
-  // ── 5. DDG Instant Answer fallback ──────────────────────────────────────
-  if (!result.desc && ddgData?.AbstractText?.length > 30) {
-    result.desc = ddgData.AbstractText;
-    result.descSource = ddgData.AbstractSource || 'Web';
-  }
-
-  // ── 6. DDG search snippets ───────────────────────────────────────────────
-  if (typeof ddgSearch === 'string' && ddgSearch.length > 80) {
-    result.searchContext = ddgSearch;
-  }
-
-  // ── 7. G2 competitors ───────────────────────────────────────────────────
+  // ── 5. G2 competitors ───────────────────────────────────────────────────
   if (Array.isArray(g2Comps) && g2Comps.length > 0) {
     result.competitors = g2Comps;
     result.compSource = 'G2';

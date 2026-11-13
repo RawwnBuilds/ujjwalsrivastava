@@ -1752,8 +1752,6 @@ function renderCompanyBrief(d, data, docText) {
   const rawDesc    = (d.desc || '').trim();
   const extraNote  = (d.extra || '').trim();
   const aboutText  = (d.aboutText || '').trim();
-  const wikiDesc   = (d.wikiDesc || '').trim();
-  const searchCtx  = (d.searchContext || '').trim();
 
   // ── Helper: split text into para-chunks of roughly maxWords each ─────────
   function chunkText(text, maxWords, maxChunks) {
@@ -1784,25 +1782,48 @@ function renderCompanyBrief(d, data, docText) {
     return chunks.filter(c => c.length > 40).slice(0, maxChunks);
   }
 
-  // ── Build the essay sections ─────────────────────────────────────────────
-  // Section 1: main description (what user entered OR homepage meta OR Wikipedia)
-  const descParas = rawDesc.length > 20 ? chunkText(rawDesc, 80, 3) : [];
+  // ── Build the essay sections from all research sources ───────────────────
+  const productText  = (d.productText || '').trim();
+  const wikiIntro    = (d.wikiIntro || '').trim();
+  const wikiSections = d.wikiSections || {};
 
-  // Section 2: about page deep-dive (most likely to be richest)
-  const aboutChunks = aboutText.length > 200 ? chunkText(aboutText, 100, 3) : [];
+  // Priority source labels for the primary description card
+  const sourceLabel = autoSourced ? `Sourced from ${esc(d.descSource)}` : 'What they do';
 
-  // Section 3: Wikipedia supplement (if we have it and it adds new info)
-  const wikiChunks = (wikiDesc.length > 100 && wikiDesc !== rawDesc) ? chunkText(wikiDesc, 80, 2) : [];
+  // 1. Primary description chunks (homepage / Wikipedia intro / DDG)
+  const descParas = rawDesc.length > 20 ? chunkText(rawDesc, 100, 3) : [];
 
-  // Section 4: search context (what multiple web sources say about them)
-  const searchChunks = searchCtx.length > 100 ? chunkText(searchCtx, 80, 2) : [];
+  // 2. About/story page from Jina — narrative origin content
+  const aboutChunks = aboutText.length > 300 ? chunkText(aboutText, 100, 4) : [];
+
+  // 3. Product/features page from Jina — what it does in detail
+  const productChunks = productText.length > 300 ? chunkText(productText, 100, 2) : [];
+
+  // 4. Wikipedia intro as supplement (when desc came from website)
+  const wikiIntroChunks = (wikiIntro.length > 100 && wikiIntro !== rawDesc) ? chunkText(wikiIntro, 80, 2) : [];
+
+  // 5. Wikipedia named sections — History, Products, Culture etc.
+  const wikiSectionEntries = Object.entries(wikiSections)
+    .filter(([k, v]) => v.trim().length > 80)
+    .sort(([,a],[,b]) => {
+      // Prioritise important sections
+      const priority = ['history', 'products', 'services', 'culture', 'overview', 'background', 'about'];
+      const ai = priority.findIndex(p => a.toLowerCase().includes(p) || k.toLowerCase().includes(p));
+      const bi = priority.findIndex(p => b.toLowerCase().includes(p) || k.toLowerCase().includes(p));
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    })
+    .slice(0, 4);
 
   const allSections = [
-    ...descParas.map((p, i) => ({ label: i === 0 ? 'What they do' : i === 1 ? 'How it works' : 'More context', text: p, primary: i === 0 })),
-    ...aboutChunks.map((p, i) => ({ label: i === 0 ? 'From their About page' : i === 1 ? 'Their approach' : 'More from them', text: p })),
-    ...wikiChunks.map((p, i)   => ({ label: i === 0 ? 'The bigger picture' : 'Background', text: p })),
-    ...searchChunks.map((p, i) => ({ label: i === 0 ? 'What people say about them' : 'More context', text: p })),
-  ].slice(0, 8); // cap at 8 cards max
+    ...descParas.map((p, i) => ({ label: i === 0 ? sourceLabel : i === 1 ? 'How it works' : 'More context', text: p, primary: i === 0 })),
+    ...aboutChunks.map((p, i) => ({
+      label: i === 0 ? 'Their story' : i === 1 ? 'Their mission' : i === 2 ? 'Their approach' : 'More from them',
+      text: p
+    })),
+    ...productChunks.map((p, i) => ({ label: i === 0 ? 'The product' : 'What they build', text: p })),
+    ...wikiIntroChunks.map((p, i) => ({ label: i === 0 ? 'The bigger picture' : 'Background', text: p })),
+    ...wikiSectionEntries.map(([k, v]) => ({ label: k, text: v.slice(0, 700) })),
+  ].slice(0, 10); // up to 10 essay cards for comprehensive briefs
 
   // Pull quote: first sentence of the primary description
   const firstSentence = allSections.length > 0
@@ -1816,7 +1837,7 @@ function renderCompanyBrief(d, data, docText) {
 
     ${allSections.map(sec => `
     <div class="product-card" style="margin-bottom:14px">
-      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${sec.primary && autoSourced ? `Sourced from ${esc(d.descSource)}` : esc(sec.label)}</div>
+      <div class="product-card-label" style="text-transform:uppercase;letter-spacing:.08em;font-size:10.5px">${esc(sec.label)}</div>
       <p style="font-size:${sec.primary?'14.5':'13.5'}px;line-height:1.85;margin:8px 0 0;color:${sec.primary?'var(--fg)':'var(--fg2)'}">${esc(sec.text)}</p>
     </div>`).join('')}
 
@@ -2073,109 +2094,132 @@ function renderBrief(d, data, docText) {
 async function autoResearch(d) {
   const result = {
     desc: '', descSource: '',
-    aboutText: '',     // /about page — richest company content
-    wikiDesc: '',      // Wikipedia full extract (supplement, not replace)
-    searchContext: '', // DuckDuckGo search snippets from multiple sources
+    aboutText: '',     // about page content (story, origin, mission)
+    productText: '',   // product/features page content
+    wikiIntro: '',     // Wikipedia introduction
+    wikiSections: {}, // Wikipedia section name → content
     wikiShortDesc: '',
     competitors: [], compSource: ''
   };
   const name = d.name;
   const hostname = d.website ? d.website.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : '';
+  const base = d.website ? d.website.replace(/\/+$/, '') : '';
 
-  // ── Shared helpers ───────────────────────────────────────────────────────
+  // ── Jina AI: renders JS apps, no CORS issues, free, no key needed ────────
+  async function jinaFetch(url, ms = 14000) {
+    try {
+      const r = await fetch('https://r.jina.ai/' + url, {
+        headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
+        signal: AbortSignal.timeout(ms)
+      });
+      if (!r.ok) return '';
+      let text = await r.text();
+      if (text.length < 150) return '';
+      const preview = text.slice(0, 400).toLowerCase();
+      if ((preview.includes('not found') || preview.includes('error 404')) && text.length < 800) return '';
+      if (preview.includes('cookie') && text.length < 600) return '';
+      // Strip markdown formatting, keep readable text
+      text = text
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/^[*-]\s+/gm, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+      return text;
+    } catch { return ''; }
+  }
+
+  // ── Fallback CORS proxy for G2 only ─────────────────────────────────────
   async function proxyFetch(url, ms = 7000) {
-    const proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?url='];
-    for (const proxy of proxies) {
+    for (const proxy of ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?url=']) {
       try {
         const r = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(ms) });
         if (!r.ok) continue;
         const html = await r.text();
         const doc2 = new DOMParser().parseFromString(html, 'text/html');
-        const title = (doc2.title || '').toLowerCase();
-        if (title.includes('404') || title.includes('page not found') || title.includes('error')) continue;
-        return doc2;
+        if (!(doc2.title || '').toLowerCase().match(/404|not found|error/)) return doc2;
       } catch {}
     }
     return null;
   }
 
-  function extractText(doc2) {
-    if (!doc2) return { meta: '', body: '' };
-    const meta = (doc2.querySelector('meta[name="description"]')?.getAttribute('content')
-      || doc2.querySelector('meta[property="og:description"]')?.getAttribute('content') || '').trim();
-    doc2.querySelectorAll('script,style,nav,footer,header,noscript,aside,form,svg,button,[aria-hidden="true"]').forEach(el => el.remove());
-    const main = doc2.querySelector('main') || doc2.querySelector('article')
-      || doc2.querySelector('[role="main"]') || doc2.querySelector('.about') || doc2.body;
-    const body = (main?.textContent || '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
-    return { meta, body };
-  }
+  // Pages to scrape via Jina (renders JS; works for React/Next.js apps)
+  const jPaths = base ? [
+    base,              // Homepage
+    base + '/about',
+    base + '/about-us',
+    base + '/our-story',
+    base + '/story',
+    base + '/company',
+    base + '/product',
+    base + '/features',
+  ] : [];
 
-  // ── 1. Website: homepage + about pages + Wikipedia + DDG all in parallel ─
-  const aboutPaths = ['/about', '/about-us', '/company', '/our-story', '/story', '/who-we-are'];
-  const base = d.website ? d.website.replace(/\/+$/, '') : '';
+  const [jinaTexts, combinedData, g2Comps] = await Promise.all([
 
-  const [
-    homepageDoc,
-    ...parallelResults
-  ] = await Promise.all([
-    // Homepage
-    d.website ? proxyFetch(d.website) : Promise.resolve(null),
+    // ── Jina AI scrapes all site pages in parallel ───────────────────────
+    Promise.all(jPaths.map((url, i) => jinaFetch(url, i === 0 ? 15000 : 11000))),
 
-    // About pages (6 paths)
-    ...aboutPaths.map(p => base ? proxyFetch(base + p, 6000) : Promise.resolve(null)),
-
-    // DDG + Wikipedia: DDG disambiguates first, then we fetch the full Wikipedia article
+    // ── DDG disambiguation + full Wikipedia article (all sections) ───────
     (async () => {
-      const companyKeywords = ['company', 'software', 'platform', 'service', 'startup', 'saas',
+      const companyKw = ['company', 'software', 'platform', 'service', 'startup', 'saas',
         'app', 'founded', 'corporation', 'business', 'enterprise', 'product', 'tool', 'suite'];
-      let ddgAbstract = '';
-      let wikiTitle = '';
-      let wikiShortDesc = '';
+      let ddgAbstract = '', wikiTitle = '', wikiShortDesc = '';
 
-      // 1. DDG Instant Answer — handles disambiguation (e.g. "Basecamp" → 37signals company)
       try {
-        const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) + '&format=json&no_redirect=1&skip_disambig=1',
-          { signal: AbortSignal.timeout(6000) });
+        const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(name) +
+          '&format=json&no_redirect=1&skip_disambig=1', { signal: AbortSignal.timeout(6000) });
         if (r.ok) {
-          const d = await r.json();
-          if (d.AbstractText?.length > 30 && d.Type === 'A') {
-            ddgAbstract = d.AbstractText;
-            // DDG's AbstractURL points to the right Wikipedia page
-            const m = d.AbstractURL?.match(/en\.wikipedia\.org\/wiki\/(.+)/);
+          const dq = await r.json();
+          if (dq.AbstractText?.length > 30 && dq.Type === 'A') {
+            ddgAbstract = dq.AbstractText;
+            const m = dq.AbstractURL?.match(/en\.wikipedia\.org\/wiki\/(.+)/);
             if (m) wikiTitle = decodeURIComponent(m[1]).replace(/_/g, ' ');
-            if (d.Entity) wikiShortDesc = d.Entity;
+            if (dq.Entity) wikiShortDesc = dq.Entity;
           }
         }
       } catch {}
 
-      // 2. Fetch full Wikipedia intro section — much richer than the summary API
-      // Uses DDG's title first (pre-disambiguated), then tries common variants
-      const titlesToTry = wikiTitle
+      // Fetch FULL Wikipedia article (all sections), not just intro
+      const tryTitles = wikiTitle
         ? [wikiTitle, name, `${name} (company)`, `${name} (software)`]
         : [name, `${name} (company)`, `${name} (software)`, `${name} (application)`];
 
-      let wikiExtract = '';
-      for (const title of titlesToTry) {
+      let wikiIntro = '', wikiSections = {};
+      for (const title of tryTitles) {
         try {
           const r = await fetch(
-            `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts&exintro=1&explaintext=1&redirects=1&format=json&origin=*`,
-            { signal: AbortSignal.timeout(6000) }
+            `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts&explaintext=1&redirects=1&format=json&origin=*`,
+            { signal: AbortSignal.timeout(8000) }
           );
           if (!r.ok) continue;
           const data = await r.json();
           const page = Object.values(data.query?.pages || {})[0];
-          const extract = page?.extract || '';
-          if (extract.length < 80) continue;
-          const txt = extract.toLowerCase();
-          const isCompany = !!wikiTitle || companyKeywords.some(k => txt.includes(k));
-          if (isCompany) { wikiExtract = extract; break; }
+          const fullText = page?.extract || '';
+          if (fullText.length < 80) continue;
+          const txt = fullText.toLowerCase();
+          const isCompany = !!wikiTitle || companyKw.some(k => txt.includes(k));
+          if (!isCompany) continue;
+
+          // Parse into intro + named sections
+          const skipSections = new Set(['references', 'external links', 'see also', 'notes', 'further reading', 'citations']);
+          const parts = fullText.split(/\n\n?==+\s*([^=\n]+?)\s*==+\n\n?/);
+          wikiIntro = parts[0]?.trim() || '';
+          for (let i = 1; i < parts.length - 1; i += 2) {
+            const sName = parts[i]?.trim() || '';
+            const sBody = parts[i + 1]?.trim() || '';
+            if (sName && sBody.length > 60 && !skipSections.has(sName.toLowerCase())) {
+              wikiSections[sName] = sBody;
+            }
+          }
+          break;
         } catch {}
       }
-
-      return { ddgAbstract, wikiExtract, wikiShortDesc };
+      return { ddgAbstract, wikiIntro, wikiSections, wikiShortDesc };
     })(),
 
-    // G2 competitors
+    // G2 competitors (uses CORS proxy — only for G2, structured HTML)
     (d.competitors.length === 0 && base) ? (async () => {
       const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       const doc2 = await proxyFetch('https://www.g2.com/products/' + slug + '/competitors/alternatives', 9000);
@@ -2193,67 +2237,61 @@ async function autoResearch(d) {
     })() : Promise.resolve([])
   ]);
 
-  // Destructure parallel results (6 about pages + combined DDG+wiki + g2)
-  const aboutDocs   = parallelResults.slice(0, 6);
-  const combined    = parallelResults[6]; // { ddgAbstract, wikiExtract, wikiShortDesc }
-  const g2Comps     = parallelResults[7];
+  // ── 2. Process Jina results ──────────────────────────────────────────────
+  const homepageText = jinaTexts[0] || '';
+  // story pages: about, about-us, our-story, story, company (indices 1-5)
+  const storyTexts = jinaTexts.slice(1, 6).filter(t => t.length > 300);
+  // product pages: product, features (indices 6-7)
+  const productTexts = jinaTexts.slice(6, 8).filter(t => t.length > 300);
 
-  // ── 2. Process homepage ──────────────────────────────────────────────────
-  if (homepageDoc) {
-    const { meta, body } = extractText(homepageDoc);
-    if (meta.length > 25) {
-      result.desc = meta;
-      result.descSource = hostname;
-    } else if (body.length > 100) {
-      result.desc = body.slice(0, 1200);
+  // Homepage: extract first meaningful paragraphs as primary description
+  if (homepageText.length > 200) {
+    const paras = homepageText.split('\n\n').map(p => p.trim()).filter(p => p.length > 60 && !/^(Title:|URL Source:|Markdown Content:)/i.test(p));
+    if (paras.length > 0) {
+      result.desc = paras.slice(0, 2).join('\n\n').slice(0, 1200);
       result.descSource = hostname;
     }
   }
 
-  // ── 3. Process about pages — find richest one ────────────────────────────
-  const aboutPage = aboutDocs
-    .map((doc2, i) => { const { body } = extractText(doc2); return { body, path: aboutPaths[i] }; })
-    .filter(a => a.body.length > 300)
-    .sort((a, b) => b.body.length - a.body.length)[0];
-
-  if (aboutPage) {
-    result.aboutText = aboutPage.body.slice(0, 5000);
+  // About/story pages: pick the richest (most text = most narrative content)
+  if (storyTexts.length > 0) {
+    const richest = storyTexts.sort((a, b) => b.length - a.length)[0];
+    result.aboutText = richest.slice(0, 6000);
     if (!result.desc) {
-      result.desc = aboutPage.body.slice(0, 600);
-      result.descSource = hostname + aboutPage.path;
+      result.desc = richest.slice(0, 800);
+      result.descSource = hostname + '/about';
     }
   }
 
-  // ── 4. DDG abstract + Wikipedia full extract ─────────────────────────────
-  // DDG disambiguates correctly (e.g. "Basecamp" → company not mountaineering)
-  // Wikipedia /w/api.php?exintro gives 5-10x more text than the summary API
-  if (combined) {
-    const { ddgAbstract, wikiExtract, wikiShortDesc } = combined;
+  // Product/features pages
+  if (productTexts.length > 0) {
+    result.productText = productTexts.sort((a, b) => b.length - a.length)[0].slice(0, 4000);
+  }
 
+  // ── 3. DDG + Wikipedia sections ─────────────────────────────────────────
+  if (combinedData) {
+    const { ddgAbstract, wikiIntro, wikiSections, wikiShortDesc } = combinedData;
     if (wikiShortDesc) result.wikiShortDesc = wikiShortDesc;
+    if (Object.keys(wikiSections).length > 0) result.wikiSections = wikiSections;
 
-    // Use the full Wikipedia extract as the richest description when available
-    if (wikiExtract.length > 80) {
+    // Wikipedia intro: use as primary description if site scraping returned nothing
+    if (wikiIntro.length > 80) {
       if (!result.desc) {
-        result.desc = wikiExtract;
+        result.desc = wikiIntro;
         result.descSource = 'Wikipedia';
       } else {
-        result.wikiDesc = wikiExtract;
+        result.wikiIntro = wikiIntro;
       }
     }
 
-    // DDG abstract as fallback or additional context
-    if (ddgAbstract.length > 30) {
-      if (!result.desc) {
-        result.desc = ddgAbstract;
-        result.descSource = 'Web';
-      } else if (!result.wikiDesc && ddgAbstract !== wikiExtract) {
-        result.wikiDesc = ddgAbstract;
-      }
+    // DDG abstract as final fallback
+    if (ddgAbstract.length > 30 && !result.desc) {
+      result.desc = ddgAbstract;
+      result.descSource = 'Web';
     }
   }
 
-  // ── 5. G2 competitors ───────────────────────────────────────────────────
+  // ── 4. G2 competitors ───────────────────────────────────────────────────
   if (Array.isArray(g2Comps) && g2Comps.length > 0) {
     result.competitors = g2Comps;
     result.compSource = 'G2';
@@ -2272,10 +2310,10 @@ async function generate() {
   document.getElementById('genBtn').disabled = true;
 
   const msgs = [
-    `Pulling ${d.name}'s homepage…`,
-    'Reading their About page…',
-    'Checking Wikipedia and web sources…',
-    'Scanning for competitor signals…',
+    `Pulling ${d.name}'s website…`,
+    'Reading their About and product pages…',
+    'Pulling full Wikipedia article…',
+    'Checking DuckDuckGo for company context…',
     'Building your content brief…'
   ];
   let mi = 0;
@@ -2297,10 +2335,11 @@ async function generate() {
       d.descSource = 'you';
     }
     // Merge all new research fields onto d
-    if (research.wikiShortDesc) d.wikiShortDesc = research.wikiShortDesc;
-    if (research.aboutText)     d.aboutText     = research.aboutText;
-    if (research.wikiDesc)      d.wikiDesc      = research.wikiDesc;
-    if (research.searchContext) d.searchContext = research.searchContext;
+    if (research.wikiShortDesc)                      d.wikiShortDesc = research.wikiShortDesc;
+    if (research.aboutText)                          d.aboutText     = research.aboutText;
+    if (research.productText)                        d.productText   = research.productText;
+    if (research.wikiIntro)                          d.wikiIntro     = research.wikiIntro;
+    if (research.wikiSections && Object.keys(research.wikiSections).length > 0) d.wikiSections = research.wikiSections;
 
     // Auto-populate competitors if none were entered
     if (research.competitors.length > 0 && d.competitors.length === 0) {
@@ -2327,14 +2366,14 @@ async function generate() {
 }
 
 function loadExample() {
-  document.getElementById('fName').value        = 'Flowdesk';
-  document.getElementById('fDesc').value        = 'Flowdesk is an email marketing and invoicing platform built specifically for creative freelancers — photographers, illustrators, designers, and artists. They make it easy to send beautiful newsletters and professional invoices without any tech skills required. Flat-rate pricing ($38/month) means no per-subscriber fees, which is a core differentiator.';
-  document.getElementById('fWebsite').value     = 'https://www.flowdesk.co';
+  document.getElementById('fName').value        = 'Basecamp';
+  document.getElementById('fDesc').value        = '';
+  document.getElementById('fWebsite').value     = 'https://basecamp.com';
   document.getElementById('fInd').value         = 'B2B SaaS';
-  document.getElementById('fAud').value         = 'Freelance creatives (photographers, designers, illustrators) who want to grow their client base and simplify their business admin';
+  document.getElementById('fAud').value         = '';
   document.getElementById('fVoice').value       = 'Warm & conversational';
-  document.getElementById('fCompetitors').value = 'Mailchimp, HoneyBook, Dubsado';
-  document.getElementById('fExtra').value       = "Flowdesk's edge is beauty + simplicity + flat pricing. Mailchimp is too complicated; HoneyBook too expensive for early-stage.";
+  document.getElementById('fCompetitors').value = '';
+  document.getElementById('fExtra').value       = '';
   ['c1','c3','c4','c2'].forEach(id => document.getElementById(id).checked = true);
   ['c5','c6','c7','c8'].forEach(id => document.getElementById(id).checked = false);
   generate();

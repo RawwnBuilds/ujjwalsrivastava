@@ -2016,15 +2016,22 @@ function renderEditorialGuide(d, data, docText) {
   const isReaderFirst  = youCount > 12;
   const isCollective   = weCount > 8 && iCount < 5;
 
-  // Key positioning sentence (first substantive sentence from about or desc)
-  const allSentences = allText.match(/[A-Z][^.!?]{30,}[.!?]/g) || [];
-  const noiseWords = /subscribe|newsletter|cookie|sign up|sign in|follow|click|tap|copyright|privacy|terms/i;
-  const keySentence = allSentences.find(s => !noiseWords.test(s) && s.length < 280) || '';
+  // Key positioning sentence (first substantive sentence from about or desc — not a nav heading)
+  const sentenceSource = (aboutSample + ' ' + wikiIntro).replace(/^[A-Z][a-z ]{2,25}\n/gm, ''); // strip short nav headings
+  const allSentences = sentenceSource.match(/[A-Z][^.!?]{40,}[.!?]/g) || [];
+  const noiseWords = /subscribe|newsletter|cookie|sign up|sign in|follow|click|tap|copyright|privacy|terms|where we came|how we|what we|who we/i;
+  const keySentence = allSentences.find(s => !noiseWords.test(s) && s.length < 280 && s.length > 50) || '';
+
+  // Wikipedia description — skip if too generic (1-2 words)
+  const wikiDesc = d.wikiShortDesc && d.wikiShortDesc.split(' ').length > 2 ? d.wikiShortDesc : '';
+  // Fallback: first sentence of wikiIntro
+  const wikiFirstSentence = wikiIntro.match(/^[^.!?]{40,}[.!?]/)?.[0]?.trim() || '';
 
   // Build the research card items
   const researchItems = [];
-  if (foundedYear) researchItems.push(`Founded <strong>${foundedYear}</strong>${wikiIntro.includes('Chicago') ? ' · Based in Chicago, IL' : ''}`);
-  if (d.wikiShortDesc) researchItems.push(`Wikipedia describes them as: <em>${esc(d.wikiShortDesc)}</em>`);
+  if (foundedYear) researchItems.push(`Founded <strong>${foundedYear}</strong>${wikiIntro.toLowerCase().includes('chicago') ? ' · Based in Chicago, IL' : ''}`);
+  if (wikiDesc) researchItems.push(`Wikipedia: <em>${esc(wikiDesc)}</em>`);
+  else if (wikiFirstSentence) researchItems.push(`Wikipedia: <em>${esc(wikiFirstSentence)}</em>`);
   if (d.companyType && d.companyType !== 'unknown') researchItems.push(`Business model: <strong>${esc(d.companyType)}</strong>`);
   if (isFounderVoice)   researchItems.push(`Founder-led voice — their copy uses "I" heavily. Write with that same personal, direct register.`);
   if (isReaderFirst)    researchItems.push(`Reader-first framing — heavy "you" in their copy. This brand speaks directly to the reader, not at them.`);

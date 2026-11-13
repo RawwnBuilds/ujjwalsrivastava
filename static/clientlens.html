@@ -1782,6 +1782,36 @@ function renderCompanyBrief(d, data, docText) {
     return chunks.filter(c => c.length > 40).slice(0, maxChunks);
   }
 
+  // ── Strip noise from raw scraped text before chunking ───────────────────
+  function cleanForBrief(raw) {
+    if (!raw) return '';
+    const noiseRx = [
+      /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i,
+      /have a great day/i,
+      /thanks[!.]?\s*you(?:'re| are) in/i,
+      /look out for our latest/i,
+      /join (?:more than )?\d[\d,]+ people/i,
+      /(?:sign up|sign in|subscribe|unsubscribe)\s+(?:to|for|now)/i,
+      /(?:no,?\s*thanks|yes,?\s*that)/i,
+      /(?:have an account|want an account)\?/i,
+      /\bco-?founder\b.*(?:&|and)\s*(?:ceo|cto|coo)\b/i,
+    ];
+    const lines = raw.split('\n').filter(ln => {
+      const l = ln.trim();
+      if (!l) return true;
+      if (l.length < 20) return false;
+      return !noiseRx.some(rx => rx.test(l));
+    });
+    // Drop nav-dump paragraphs (4+ lines all < 60 chars)
+    return lines.join('\n').split(/\n\n+/).filter(p => {
+      const pt = p.trim();
+      if (pt.length < 60) return false;
+      const ls = pt.split('\n').filter(l => l.trim());
+      if (ls.length >= 4 && ls.every(l => l.trim().length < 60)) return false;
+      return true;
+    }).join('\n\n');
+  }
+
   // ── Build the essay sections from all research sources ───────────────────
   const productText  = (d.productText || '').trim();
   const wikiIntro    = (d.wikiIntro || '').trim();
@@ -1793,11 +1823,13 @@ function renderCompanyBrief(d, data, docText) {
   // 1. Primary description chunks (homepage / Wikipedia intro / DDG)
   const descParas = rawDesc.length > 20 ? chunkText(rawDesc, 100, 3) : [];
 
-  // 2. About/story page from Jina — narrative origin content
-  const aboutChunks = aboutText.length > 300 ? chunkText(aboutText, 100, 4) : [];
+  // 2. About/story page from Jina — clean noise first, then chunk
+  const aboutClean = cleanForBrief(aboutText);
+  const aboutChunks = aboutClean.length > 300 ? chunkText(aboutClean, 100, 4) : [];
 
-  // 3. Product/features page from Jina — what it does in detail
-  const productChunks = productText.length > 300 ? chunkText(productText, 100, 2) : [];
+  // 3. Product/features page from Jina — clean then chunk
+  const productClean = cleanForBrief(productText);
+  const productChunks = productClean.length > 300 ? chunkText(productClean, 100, 2) : [];
 
   // 4. Wikipedia intro as supplement (when desc came from website)
   const wikiIntroChunks = (wikiIntro.length > 100 && wikiIntro !== rawDesc) ? chunkText(wikiIntro, 80, 2) : [];
@@ -1966,6 +1998,47 @@ function renderEditorialGuide(d, data, docText) {
   const v = data.voice;
   const wts = d.wts;
 
+  // ── Research-derived facts about this client ─────────────────────────────
+  const wikiIntro = d.wikiIntro || '';
+  const aboutSample = (d.aboutText || '').slice(0, 3000);
+  const descSample  = (d.desc || '').slice(0, 1000);
+  const allText     = aboutSample + ' ' + descSample + ' ' + wikiIntro;
+
+  // Extract founding year
+  const foundedYear = wikiIntro.match(/(?:founded|established|incorporated|co.?founded)\s+in\s+(\d{4})/i)?.[1]
+    || wikiIntro.match(/in\s+(\d{4})\b/)?.[1];
+
+  // Voice signals from their own writing
+  const iCount  = (aboutSample.match(/\bI\b/g) || []).length;
+  const youCount = (allText.match(/\byou\b/gi) || []).length;
+  const weCount  = (aboutSample.match(/\bwe\b/gi) || []).length;
+  const isFounderVoice = iCount > 5;
+  const isReaderFirst  = youCount > 12;
+  const isCollective   = weCount > 8 && iCount < 5;
+
+  // Key positioning sentence (first substantive sentence from about or desc)
+  const allSentences = allText.match(/[A-Z][^.!?]{30,}[.!?]/g) || [];
+  const noiseWords = /subscribe|newsletter|cookie|sign up|sign in|follow|click|tap|copyright|privacy|terms/i;
+  const keySentence = allSentences.find(s => !noiseWords.test(s) && s.length < 280) || '';
+
+  // Build the research card items
+  const researchItems = [];
+  if (foundedYear) researchItems.push(`Founded <strong>${foundedYear}</strong>${wikiIntro.includes('Chicago') ? ' · Based in Chicago, IL' : ''}`);
+  if (d.wikiShortDesc) researchItems.push(`Wikipedia describes them as: <em>${esc(d.wikiShortDesc)}</em>`);
+  if (d.companyType && d.companyType !== 'unknown') researchItems.push(`Business model: <strong>${esc(d.companyType)}</strong>`);
+  if (isFounderVoice)   researchItems.push(`Founder-led voice — their copy uses "I" heavily. Write with that same personal, direct register.`);
+  if (isReaderFirst)    researchItems.push(`Reader-first framing — heavy "you" in their copy. This brand speaks directly to the reader, not at them.`);
+  if (isCollective)     researchItems.push(`Collective "we" voice — they write as a team, not a founder. Avoid over-personalising.`);
+  if (keySentence)      researchItems.push(`Their own words: <em>"${esc(keySentence)}"</em>`);
+
+  const researchCard = researchItems.length > 0 ? `
+    <div class="card gold-left" style="margin-bottom:20px">
+      <div class="card-label">What Research Found About ${esc(name)}</div>
+      <ul style="margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.9;color:var(--fg2)">
+        ${researchItems.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    </div>` : '';
+
   // Editorial approach: voice description + sentence style + POV as prose
   const editorialApproach = `${esc(v.description)} ${esc(v.sentenceStyle)} ${v.perspective ? esc(v.perspective) : ''}`;
 
@@ -1976,24 +2049,24 @@ function renderEditorialGuide(d, data, docText) {
       <p style="font-size:13.5px;line-height:1.8;margin:8px 0 0;white-space:pre-wrap;color:var(--fg2)">${esc(data.docVoice)}</p>
     </div>` : '';
 
-  // Company-type specific editorial signals
+  // Company-type specific editorial signals, personalised with the client name
   const b2cSignals = [
-    `<strong>Write to one person.</strong> Consumer writing that speaks to a crowd falls flat. Every sentence should feel like it was written for the specific person who is reading it right now.`,
-    `<strong>Lead with desire, justify with logic.</strong> The initial hook needs to connect with who the reader wants to be or what they want to feel — the product features come second.`,
-    `<strong>Use their language, not the brand's.</strong> Look at how their customers describe their own goals in reviews and social posts. That vocabulary is more persuasive than anything marketing invented.`,
-    `<strong>Social proof isn't a section — it's an ingredient.</strong> Weave real user results into every piece rather than cordoning them off in a testimonials block.`
+    `<strong>Write to one person.</strong> ${esc(name)} users chose this for personal reasons. Every sentence should feel written for the specific reader — not a crowd.`,
+    `<strong>Lead with desire, justify with logic.</strong> The hook needs to connect with who the reader wants to be. For ${esc(name)}, that is usually about identity or achievement — not features.`,
+    `<strong>Use customer language, not ${esc(name)}'s marketing language.</strong> Look at how users describe their goals in reviews and social posts. That vocabulary is more persuasive than anything the brand invented.`,
+    `<strong>Social proof is an ingredient, not a section.</strong> Weave real user results into every piece rather than cordoning them off in a testimonials block.`
   ];
   const b2bSignals = [
-    `<strong>Your reader is managing up.</strong> They need help making the case to someone above them. Write content that gives them the words to do that — specific outcomes, not vague benefits.`,
-    `<strong>Proof is not optional.</strong> Every claim needs evidence: a customer result, a specific metric, a third-party endorsement. Assertions without proof get ignored.`,
-    `<strong>Write for the problem first, the product second.</strong> B2B buyers arrive with a problem, not a product in mind. Meet them at the problem before connecting it to the solution.`,
-    `<strong>Be specific about who this is for.</strong> Vague B2B copy that could apply to any company signals that the product doesn't understand its own customer. Name the buyer type, the company size, the use case.`
+    `<strong>Your reader is managing up inside their company.</strong> ${esc(name)} buyers need to make the case to someone above them. Write content that gives them the words to do that — specific outcomes, not vague benefits.`,
+    `<strong>Proof is not optional for ${esc(name)} content.</strong> Every claim needs evidence: a customer result, a specific metric, a third-party endorsement. Assertions without proof get ignored in this category.`,
+    `<strong>Write for the problem first, the product second.</strong> Buyers arrive with a problem, not a product in mind. Meet them at the problem before connecting it to ${esc(name)}.`,
+    `<strong>Be specific about who ${esc(name)} is for.</strong> Vague copy that could describe any tool signals that you don't understand the customer. Name the buyer type, company size, and use case.`
   ];
   const genericSignals = [
-    `<strong>Know the reader before writing the first sentence.</strong> Every piece should have a specific, named type of reader in mind — not "their audience" in the abstract.`,
-    `<strong>Proof earns trust; assertions erode it.</strong> Every claim should be backed by something verifiable: a number, a quote, a result, a comparison.`,
+    `<strong>Know the reader before writing the first sentence about ${esc(name)}.</strong> Every piece needs a specific, named type of reader in mind — not "their audience" in the abstract.`,
+    `<strong>Proof earns trust; assertions erode it.</strong> Every claim about ${esc(name)} should be backed by something verifiable: a number, a quote, a result, a comparison.`,
     `<strong>The opening earns or loses the rest.</strong> If the first paragraph doesn't earn the reader's attention, the rest of the piece doesn't matter.`,
-    `<strong>End with clarity.</strong> Every piece should leave the reader knowing exactly what to do next — not wondering.`
+    `<strong>End with clarity.</strong> Every ${esc(name)} piece should leave the reader knowing exactly what to do next — not wondering.`
   ];
   const editorialSignals = isB2C ? b2cSignals : (isB2B ? b2bSignals : genericSignals);
 
@@ -2025,6 +2098,7 @@ function renderEditorialGuide(d, data, docText) {
     <p class="sec-sub">How to write for this client specifically. Not generic style rules — the actual editorial positioning that makes the difference.</p>
 
     ${docVoiceBlock}
+    ${researchCard}
 
     <div class="card gold-left">
       <div class="card-label">Editorial Approach</div>

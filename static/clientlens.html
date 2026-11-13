@@ -1805,11 +1805,11 @@ function renderCompanyBrief(d, data, docText) {
   // 5. Wikipedia named sections — History, Products, Culture etc.
   const wikiSectionEntries = Object.entries(wikiSections)
     .filter(([k, v]) => v.trim().length > 80)
-    .sort(([,a],[,b]) => {
+    .sort(([ka, a],[kb, b]) => {
       // Prioritise important sections
       const priority = ['history', 'products', 'services', 'culture', 'overview', 'background', 'about'];
-      const ai = priority.findIndex(p => a.toLowerCase().includes(p) || k.toLowerCase().includes(p));
-      const bi = priority.findIndex(p => b.toLowerCase().includes(p) || k.toLowerCase().includes(p));
+      const ai = priority.findIndex(p => a.toLowerCase().includes(p) || ka.toLowerCase().includes(p));
+      const bi = priority.findIndex(p => b.toLowerCase().includes(p) || kb.toLowerCase().includes(p));
       return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
     })
     .slice(0, 4);

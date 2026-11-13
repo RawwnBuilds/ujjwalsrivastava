@@ -2124,12 +2124,15 @@ async function autoResearch(d) {
         .replace(/^#{1,6}\s+/gm, '')
         .replace(/\*\*([^*]+)\*\*/g, '$1')
         .replace(/^[*-]\s+/gm, '')
+        .replace(/ +$/gm, '')         // strip trailing spaces so \n \n becomes \n\n
         .replace(/\n{3,}/g, '\n\n')
         .trim();
-      // Strip cookie consent banners and nav junk
+      // Strip cookie consent banners and nav junk from start of content
       text = text.replace(/^Skip to (?:main )?content\s*/i, '');
-      text = text.replace(/We'?d? like to use cookies[^\n]*(?:\n[^\n]*){0,6}/gi, '');
-      text = text.replace(/(?:Have an account\?|Sign in|Sign up|Want an account\?)[^\n]*\n?/gi, '');
+      text = text.replace(/We[‘’']d like to use cookies[\s\S]{0,800}?(?=(?:[A-Z][a-z]{3,}[\s\S]|$))/g, '');
+      // Strip sign-in / menu nav fragments
+      text = text.replace(/(?:Have an account\?|Want an account\?)[^\n]*\n?/gi, '');
+      text = text.replace(/^\s*Menu\s*$/im, '');
       text = text.replace(/\n{3,}/g, '\n\n').trim();
       return text;
     } catch { return ''; }
@@ -2251,7 +2254,13 @@ async function autoResearch(d) {
 
   // Homepage: extract first meaningful paragraphs as primary description
   if (homepageText.length > 200) {
-    const paras = homepageText.split('\n\n').map(p => p.trim()).filter(p => p.length > 60 && !/^(Title:|URL Source:|Markdown Content:)/i.test(p));
+    const paras = homepageText.split('\n\n').map(p => p.trim()).filter(p => {
+      if (p.length < 80 || /^(Title:|URL Source:|Markdown Content:)/i.test(p)) return false;
+      // Skip nav list blocks: many short lines = menu items, not prose
+      const lines = p.split('\n');
+      if (lines.length > 3 && lines.every(l => l.trim().length < 50)) return false;
+      return true;
+    });
     if (paras.length > 0) {
       result.desc = paras.slice(0, 2).join('\n\n').slice(0, 1200);
       result.descSource = hostname;

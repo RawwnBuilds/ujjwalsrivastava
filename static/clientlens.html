@@ -2126,6 +2126,11 @@ async function autoResearch(d) {
         .replace(/^[*-]\s+/gm, '')
         .replace(/\n{3,}/g, '\n\n')
         .trim();
+      // Strip cookie consent banners and nav junk
+      text = text.replace(/^Skip to (?:main )?content\s*/i, '');
+      text = text.replace(/We'?d? like to use cookies[^\n]*(?:\n[^\n]*){0,6}/gi, '');
+      text = text.replace(/(?:Have an account\?|Sign in|Sign up|Want an account\?)[^\n]*\n?/gi, '');
+      text = text.replace(/\n{3,}/g, '\n\n').trim();
       return text;
     } catch { return ''; }
   }

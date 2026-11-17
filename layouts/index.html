@@ -49,8 +49,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ── THEME TOKENS — LIQUID CHROME ── */
 :root {
@@ -135,12 +135,12 @@ nav {
 }
 
 /* TICKER */
-.ticker-wrap { overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background: var(--bg-section); padding:11px 0; transition: background 0.3s ease; }
-.ticker-track { display:flex; width:max-content; animation:ticker-scroll 40s linear infinite; }
+.ticker-wrap { overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background: var(--bg-section); padding:13px 0; transition: background 0.3s ease; }
+.ticker-track { display:flex; width:max-content; animation:ticker-scroll 22s linear infinite; }
 .ticker-track:hover { animation-play-state:paused; }
 @keyframes ticker-scroll { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
-.t-item { white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.13em; color: var(--text-secondary); padding:0 1.8rem; text-transform:uppercase; }
-.t-dot { color: var(--accent); margin:0 0.5rem; }
+.t-item { white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:0.76rem; letter-spacing:0.14em; color: var(--text-secondary); padding:0 2.2rem; text-transform:uppercase; }
+.t-dot { color: var(--accent); margin:0 0.6rem; }
 
 /* GRAIN on photo */
 .grain { position:relative; overflow:hidden; }
@@ -410,6 +410,72 @@ nav {
 .cs-card:hover {
   box-shadow: 0 0 0 1px var(--border-strong), 0 8px 32px rgba(155,174,200,0.07);
 }
+
+/* ── EDITORIAL DISPLAY TYPOGRAPHY ── */
+.section-label {
+  display: block;
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.section-label.on {
+  opacity: 1;
+  transform: translateY(0);
+}
+.section-sub {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+
+/* ── BIG METRIC NUMBERS ── */
+.metric-num {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+.metric-num .metric-accent { color: var(--accent); }
+
+/* ── CURSOR GLOW ── */
+.cursor-glow {
+  position: fixed;
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(90,105,225,0.11) 0%, transparent 68%);
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  transition: left 0.07s linear, top 0.07s linear;
+  will-change: left, top;
+}
+:root[data-theme="light"] .cursor-glow {
+  mix-blend-mode: multiply;
+  background: radial-gradient(circle, rgba(130,130,210,0.07) 0%, transparent 68%);
+}
+@media (hover: none) { .cursor-glow { display: none; } }
+
+/* ── SECTION DIVIDER LINE ── */
+.section-rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, var(--border-strong), transparent);
+  margin-bottom: 3.5rem;
+}
 </style>
 </head>
 
@@ -419,6 +485,7 @@ nav {
   <div class="chrome-orb o2"></div>
   <div class="chrome-orb o3"></div>
 </div>
+<div class="cursor-glow" aria-hidden="true"></div>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7KRCKTH"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
@@ -539,21 +606,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section style="border-bottom:1px solid var(--border);">
   <div style="max-width:1120px;margin:0 auto;padding:0 24px;">
     <div class="metrics-row" style="display:grid;grid-template-columns:repeat(4,1fr);">
-      <div class="reveal" style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--text-primary);line-height:1;margin-bottom:0.5rem;">70<span style="color:var(--accent);">+</span></div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">Articles shipped<br>every month</div>
+      <div class="reveal" style="padding:2.5rem 1.5rem;border-right:1px solid var(--border);">
+        <div class="metric-num" style="margin-bottom:0.6rem;"><span data-count="70">70</span><span class="metric-accent">+</span></div>
+        <div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5;letter-spacing:0.02em;">Articles shipped<br>every month</div>
       </div>
-      <div class="reveal reveal-d1" style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">GEO / AEO</div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">AI-first content<br>architecture</div>
+      <div class="reveal reveal-d1" style="padding:2.5rem 1.5rem;border-right:1px solid var(--border);">
+        <div class="metric-num" style="margin-bottom:0.6rem;color:var(--accent);font-size:clamp(2rem,3.8vw,3.4rem);">GEO&thinsp;/&thinsp;AEO</div>
+        <div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5;letter-spacing:0.02em;">AI-first content<br>architecture</div>
       </div>
-      <div class="reveal reveal-d2" style="padding:2.25rem 1.5rem;border-right:1px solid var(--border);">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">Editorial SOPs</div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">Writer training and<br>QA infrastructure</div>
+      <div class="reveal reveal-d2" style="padding:2.5rem 1.5rem;border-right:1px solid var(--border);">
+        <div class="metric-num" style="margin-bottom:0.6rem;color:var(--accent);font-size:clamp(1.8rem,3.2vw,3rem);">SOPs</div>
+        <div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5;letter-spacing:0.02em;">Writer training and<br>QA infrastructure</div>
       </div>
-      <div class="reveal reveal-d3" style="padding:2.25rem 1.5rem;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent);line-height:1.2;margin-bottom:0.5rem;padding-top:0.4rem;">MA Lit.</div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">English Language<br>and Literature</div>
+      <div class="reveal reveal-d3" style="padding:2.5rem 1.5rem;">
+        <div class="metric-num" style="margin-bottom:0.6rem;color:var(--accent);font-size:clamp(2rem,3.6vw,3.2rem);">MA Lit.</div>
+        <div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5;letter-spacing:0.02em;">English Language<br>and Literature</div>
       </div>
     </div>
   </div>
@@ -562,8 +629,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ════════════════════ SERVICES ════════════════════ -->
 <section id="services" style="max-width:1120px;margin:0 auto;padding:80px 24px;">
-  <div class="reveal" style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3.5rem;flex-wrap:wrap;gap:1rem;">
-    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">What I actually do</h2>
+  <div style="margin-bottom:3.5rem;">
+    <h2><span class="section-label reveal">Services.</span></h2>
+    <span class="section-sub">What I actually do</span>
+    <div class="section-rule"></div>
   </div>
   <div class="svcs" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;">
 
@@ -589,8 +658,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ════════════════════ FAQ ════════════════════ -->
 <section id="faq" style="max-width:1120px;margin:0 auto;padding:80px 24px;">
-  <div class="reveal" style="margin-bottom:3rem;">
-    <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">Things worth knowing</h2>
+  <div style="margin-bottom:3rem;">
+    <h2><span class="section-label reveal">FAQ.</span></h2>
+    <span class="section-sub">Things worth knowing</span>
+    <div class="section-rule"></div>
   </div>
   <div style="max-width:780px;" itemscope itemtype="https://schema.org/FAQPage">
 
@@ -692,9 +763,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ════════════════════ PUBLISHED WRITING ════════════════════ -->
 <section style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-page);">
   <div style="max-width:1120px;margin:0 auto;padding:72px 24px;">
-    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1rem;">
-      <h2 style="font-family:'Newsreader',serif;font-size:2rem;font-weight:400;letter-spacing:-0.02em;color:var(--text-primary);">Personal writing work</h2>
-      <a href="/side-b/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px;">Side B: music, athletics, essays ↗</a>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2><span class="section-label reveal">Writing.</span></h2>
+        <span class="section-sub">Personal work</span>
+        <div class="section-rule" style="margin-bottom:0;margin-top:1.5rem;"></div>
+      </div>
+      <a href="/side-b/" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px;white-space:nowrap;margin-bottom:0.3rem;">Side B: music, athletics, essays ↗</a>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);" class="writing-grid">
 
@@ -825,6 +900,40 @@ document.querySelectorAll('.faq-question').forEach(q => {
     });
   });
 });
+
+// ── CURSOR GLOW ──
+(function() {
+  var glow = document.querySelector('.cursor-glow');
+  if (!glow) return;
+  var mx = -999, my = -999;
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX; my = e.clientY;
+    glow.style.left = mx + 'px';
+    glow.style.top  = my + 'px';
+  });
+})();
+
+// ── COUNTER ANIMATION ──
+(function() {
+  function animateCount(el) {
+    var target = parseInt(el.getAttribute('data-count'), 10);
+    var duration = 1100;
+    var start = performance.now();
+    function step(now) {
+      var pct = Math.min((now - start) / duration, 1);
+      var ease = 1 - Math.pow(1 - pct, 3);
+      el.textContent = Math.floor(ease * target);
+      if (pct < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var cobs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { animateCount(e.target); cobs.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('[data-count]').forEach(function(el) { cobs.observe(el); });
+})();
 </script>
 
 </body>

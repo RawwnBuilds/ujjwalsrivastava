@@ -16,54 +16,54 @@
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
-/* ── THEME TOKENS ── */
+/* ── THEME TOKENS — LIQUID CHROME ── */
 :root {
-  --bg-page:        #0B0907;
-  --bg-section:     #141108;
-  --bg-card:        #1A1813;
-  --bg-card-hover:  #1f1c14;
-  --bg-overlay:     rgba(11,9,7,0.94);
-  --bg-grad-card:   linear-gradient(transparent, rgba(11,9,7,0.88));
-  --bg-grad-div:    linear-gradient(to right, #28231A, transparent);
-  --text-primary:   #EDE8DF;
-  --text-secondary: #9A8E7E;
-  --text-muted:     #5A5148;
-  --text-ghost:     #2E2820;
-  --text-dim:       #4A4438;
-  --accent:         #C4A969;
-  --accent-hover:   #d4b870;
-  --accent-on:      #0B0907;
-  --border:         #28231A;
-  --border-hover:   #3F3426;
-  --border-strong:  #4A3D2C;
-  --scrollbar-bg:   #0B0907;
-  --scrollbar-thumb:#3F3426;
-  --vinyl-shadow:   0 0 0 6px #0B0907, 0 0 0 11px #28231A, 0 0 0 16px #0B0907, 0 0 0 21px #1e1a12;
-  --bg-gradient:    radial-gradient(ellipse 80% 55% at 50% 0%, #1E1710, #0B0907 70%);
+  --bg-page:        #07070B;
+  --bg-section:     #0D0D18;
+  --bg-card:        #111120;
+  --bg-card-hover:  #18182C;
+  --bg-overlay:     rgba(7,7,11,0.95);
+  --bg-grad-card:   linear-gradient(transparent, rgba(7,7,11,0.9));
+  --bg-grad-div:    linear-gradient(to right, #1C1C32, transparent);
+  --text-primary:   #E4E8F5;
+  --text-secondary: #7A80A0;
+  --text-muted:     #3C4060;
+  --text-ghost:     #161630;
+  --text-dim:       #2A2A4A;
+  --accent:         #9BAEC8;
+  --accent-hover:   #B8CCE8;
+  --accent-on:      #07070B;
+  --border:         #1A1A30;
+  --border-hover:   #26263E;
+  --border-strong:  #363658;
+  --scrollbar-bg:   #07070B;
+  --scrollbar-thumb:#26263E;
+  --vinyl-shadow:   0 0 0 6px #07070B, 0 0 0 11px #1A1A30, 0 0 0 16px #07070B, 0 0 0 21px #161628;
+  --bg-gradient:    radial-gradient(ellipse 85% 60% at 50% 0%, #161632, #07070B 70%);
 }
 :root[data-theme="light"] {
-  --bg-page:        #FFFFFF;
-  --bg-section:     #E8F4FD;
-  --bg-card:        #F4F9FD;
-  --bg-card-hover:  #DFF0FA;
-  --bg-overlay:     rgba(255,255,255,0.96);
-  --bg-grad-card:   linear-gradient(transparent, rgba(232,244,253,0.94));
-  --bg-grad-div:    linear-gradient(to right, #C5DDE8, transparent);
-  --text-primary:   #0D0D0D;
-  --text-secondary: #4A6878;
-  --text-muted:     #7A9BAB;
-  --text-ghost:     #C5DDE8;
-  --text-dim:       #7AAFC4;
-  --accent:         #FF1493;
-  --accent-hover:   #D10077;
+  --bg-page:        #F2F2F8;
+  --bg-section:     #E8E8F4;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #EEEEFC;
+  --bg-overlay:     rgba(242,242,248,0.96);
+  --bg-grad-card:   linear-gradient(transparent, rgba(232,232,244,0.94));
+  --bg-grad-div:    linear-gradient(to right, #C4C4DC, transparent);
+  --text-primary:   #08081A;
+  --text-secondary: #48487A;
+  --text-muted:     #7878A4;
+  --text-ghost:     #C0C0DC;
+  --text-dim:       #9494C0;
+  --accent:         #4848A8;
+  --accent-hover:   #3030A0;
   --accent-on:      #FFFFFF;
-  --border:         #C5DDE8;
-  --border-hover:   #A8CCDB;
-  --border-strong:  #8BBCCD;
-  --scrollbar-bg:   #FFFFFF;
-  --scrollbar-thumb:#C5DDE8;
-  --vinyl-shadow:   0 0 0 6px #FFFFFF, 0 0 0 11px #C5DDE8, 0 0 0 16px #FFFFFF, 0 0 0 21px #E0F0FA;
-  --bg-gradient:    radial-gradient(ellipse 80% 45% at 50% 0%, #EDF6FF, #FFFFFF 65%);
+  --border:         #C0C0DC;
+  --border-hover:   #A0A0CC;
+  --border-strong:  #8080B4;
+  --scrollbar-bg:   #F2F2F8;
+  --scrollbar-thumb:#C0C0DC;
+  --vinyl-shadow:   0 0 0 6px #F2F2F8, 0 0 0 11px #C0C0DC, 0 0 0 16px #F2F2F8, 0 0 0 21px #D8D8F0;
+  --bg-gradient:    radial-gradient(ellipse 85% 50% at 50% 0%, #E0E0F5, #F2F2F8 65%);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
@@ -224,10 +224,51 @@ nav {
   .pub-row { flex-direction:column !important; }
   .bento3 { grid-template-columns:1fr !important; }
 }
+
+/* ── LIQUID CHROME EFFECTS ── */
+@keyframes chrome-ambient {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+@keyframes chrome-sweep {
+  0%   { background-position: 220% center; }
+  100% { background-position: -220% center; }
+}
+.chrome-bg {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(ellipse 55% 42% at 10% 18%, rgba(80,95,220,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 48% 36% at 88% 72%, rgba(110,80,220,0.055) 0%, transparent 52%);
+  animation: chrome-ambient 12s ease-in-out infinite alternate;
+}
+:root[data-theme="light"] .chrome-bg {
+  mix-blend-mode: multiply;
+  background:
+    radial-gradient(ellipse 55% 42% at 10% 18%, rgba(180,180,230,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse 48% 36% at 88% 72%, rgba(190,180,235,0.18) 0%, transparent 52%);
+}
+.chrome-shine {
+  background: linear-gradient(
+    105deg,
+    var(--text-dim) 0%,
+    var(--text-muted) 32%,
+    var(--text-secondary) 50%,
+    var(--text-muted) 68%,
+    var(--text-dim) 100%
+  );
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: chrome-sweep 6s linear infinite;
+}
 </style>
 </head>
 
 <body>
+<div class="chrome-bg" aria-hidden="true"></div>
 
 <!-- NAV -->
 <nav>

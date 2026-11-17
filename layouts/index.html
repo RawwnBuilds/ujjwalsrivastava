@@ -321,30 +321,72 @@ nav {
 }
 
 /* ── LIQUID CHROME EFFECTS ── */
-@keyframes chrome-ambient {
-  from { opacity: 0.5; }
-  to   { opacity: 1; }
-}
 @keyframes chrome-sweep {
   0%   { background-position: 220% center; }
   100% { background-position: -220% center; }
 }
+@keyframes orb1 {
+  0%   { transform: translate(0,0)       scale(1);    }
+  20%  { transform: translate(6vw,10vh)  scale(1.1);  }
+  45%  { transform: translate(12vw,4vh)  scale(0.94); }
+  70%  { transform: translate(5vw,14vh)  scale(1.14); }
+  100% { transform: translate(9vw,7vh)   scale(1.04); }
+}
+@keyframes orb2 {
+  0%   { transform: translate(0,0)        scale(1);    }
+  25%  { transform: translate(-8vw,-7vh)  scale(1.08); }
+  55%  { transform: translate(-14vw,4vh)  scale(0.92); }
+  80%  { transform: translate(-6vw,-11vh) scale(1.11); }
+  100% { transform: translate(-10vw,-3vh) scale(1.03); }
+}
+@keyframes orb3 {
+  0%   { transform: translate(0,0)       scale(1);    }
+  30%  { transform: translate(4vw,-9vh)  scale(1.07); }
+  60%  { transform: translate(-5vw,-14vh)scale(0.96); }
+  85%  { transform: translate(7vw,-8vh)  scale(1.09); }
+  100% { transform: translate(2vw,-11vh) scale(1.02); }
+}
 
-/* Ambient iridescent glow — fixed behind all content */
+/* Liquid chrome orbs */
 .chrome-bg {
   position: fixed; inset: 0;
   pointer-events: none; z-index: 0;
-  mix-blend-mode: screen;
-  background:
-    radial-gradient(ellipse 55% 42% at 10% 18%, rgba(80,95,220,0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 48% 36% at 88% 72%, rgba(110,80,220,0.055) 0%, transparent 52%);
-  animation: chrome-ambient 12s ease-in-out infinite alternate;
+  overflow: hidden;
 }
-:root[data-theme="light"] .chrome-bg {
-  mix-blend-mode: multiply;
-  background:
-    radial-gradient(ellipse 55% 42% at 10% 18%, rgba(180,180,230,0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 48% 36% at 88% 72%, rgba(190,180,235,0.18) 0%, transparent 52%);
+.chrome-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  mix-blend-mode: screen;
+}
+.chrome-orb.o1 {
+  width: 65vw; height: 65vh;
+  background: radial-gradient(circle, rgba(70,80,210,0.55) 0%, rgba(40,50,160,0.3) 55%, transparent 75%);
+  top: -18vh; left: -12vw;
+  animation: orb1 20s ease-in-out infinite alternate;
+}
+.chrome-orb.o2 {
+  width: 55vw; height: 55vh;
+  background: radial-gradient(circle, rgba(100,60,210,0.45) 0%, rgba(70,40,170,0.25) 55%, transparent 75%);
+  top: 35vh; right: -12vw;
+  animation: orb2 26s ease-in-out infinite alternate;
+}
+.chrome-orb.o3 {
+  width: 50vw; height: 50vh;
+  background: radial-gradient(circle, rgba(40,100,220,0.4) 0%, rgba(20,70,170,0.22) 55%, transparent 75%);
+  bottom: -12vh; left: 22vw;
+  animation: orb3 32s ease-in-out infinite alternate;
+}
+
+:root[data-theme="light"] .chrome-orb { mix-blend-mode: multiply; }
+:root[data-theme="light"] .chrome-orb.o1 {
+  background: radial-gradient(circle, rgba(170,170,230,0.35) 0%, rgba(140,140,210,0.18) 55%, transparent 75%);
+}
+:root[data-theme="light"] .chrome-orb.o2 {
+  background: radial-gradient(circle, rgba(180,160,230,0.28) 0%, rgba(150,130,210,0.15) 55%, transparent 75%);
+}
+:root[data-theme="light"] .chrome-orb.o3 {
+  background: radial-gradient(circle, rgba(150,170,230,0.25) 0%, rgba(120,150,210,0.14) 55%, transparent 75%);
 }
 
 /* Metallic shimmer sweep on dim hero text */
@@ -372,7 +414,11 @@ nav {
 </head>
 
 <body>
-<div class="chrome-bg" aria-hidden="true"></div>
+<div class="chrome-bg" aria-hidden="true">
+  <div class="chrome-orb o1"></div>
+  <div class="chrome-orb o2"></div>
+  <div class="chrome-orb o3"></div>
+</div>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7KRCKTH"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 

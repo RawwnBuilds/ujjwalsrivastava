@@ -119,9 +119,13 @@ I gave ChatGPT and Perplexity the same prompt about US ChatGPT Pro pricing as of
 
 ### ChatGPT
 
+![ChatGPT's response to the Pro pricing prompt, showing a compact table of Pro tiers, prices, and rollout restrictions.](/uploads/chatgpt-pro-pricing-response.png)
+
 ChatGPT opened with the three Pro tiers and organized their prices and usage differences into a compact table. It then separated included features, rollout restrictions, and annual billing into short sections. I found the layout easy to scan, with source links beside several claims. Its discussion of grandfathered allowances still needed a closer source check before I could rely on it.
 
 ### Perplexity
+
+![Perplexity's response to the same prompt, with a source panel on the right and a note explaining why it relied on the Help Center for US dollar amounts.](/uploads/perplexity-pro-pricing-response.png)
 
 Perplexity also identified the three tiers, but its table separated Ultrafast access from included usage. What stood out to me was its explanation of a source limitation. It said the retrieved pricing page displayed Brazilian reais, so it relied on OpenAI's Help Center for the US dollar amounts. The visible source panel also made its references easy to locate.
 
@@ -149,6 +153,8 @@ OpenAI documents [**file-based editing**](https://openai.com/academy/working-wit
 With access to internal documents through connected apps such as Google Drive, ChatGPT can use **your briefs, source material, and style rules** to develop a first draft. I see it as a strong starting point for someone who understands content and can sharpen the argument through manual editing. Perplexity makes more sense when the immediate need is gathering sources before drafting.
 
 That makes ChatGPT my recommendation for editorial back-and-forth, rather than a proven winner across every writing genre.
+
+![ChatGPT responding to a writing brief, showing how it frames a first draft around argument and evidence rather than a feature list.](/uploads/chatgpt-writing-response.png)
 
 ## Which is better for coding, ChatGPT or Perplexity?
 
@@ -187,6 +193,8 @@ ChatGPT Work and Perplexity Computer both extend the comparison from answering q
 
 ### ChatGPT Work
 
+![ChatGPT Work product page showing availability across plans.](/uploads/chatgpt-work-product-page.png)
+
 [**ChatGPT Work**](https://chatgpt.com/work/) uses apps, files, tools, and approved context to create deliverables such as documents, presentations, and spreadsheets. Its product page lists **desktop availability across plans, with web and mobile access** on Plus, Pro, Business, Enterprise, and Edu. Usage still varies by subscription.
 
 I find this relevant when a question is only the beginning. Suppose I need a meeting brief from supplied notes, a supporting spreadsheet, and a presentation. Keeping those related outputs within one assignment could reduce the effort of carrying context between separate conversations.
@@ -194,6 +202,8 @@ I find this relevant when a question is only the beginning. Suppose I need a mee
 But I would judge the files themselves. Does the spreadsheet calculate correctly? Does the presentation preserve the report's qualifications? Can I make the needed changes in the destination app? An assistant finishing its response isn't sufficient evidence that my assignment is finished.
 
 ### Perplexity Computer
+
+![Perplexity Computer product page showing coding and app-building capabilities.](/uploads/perplexity-computer-product-page.png)
 
 [**Perplexity Computer**](https://www.perplexity.ai/products/computer) combines background work, research, browsing, and creation. Its help documentation describes authenticated connections to services **such as Gmail, GitHub, Slack, and Notion**. Those connections are relevant only when they support the particular action and permissions the assignment requires.
 
@@ -208,6 +218,8 @@ The practical buying question includes usage. Perplexity's [**credit guide**](ht
 Atlas has retired, so it shouldn't appear as a current browser alternative to Comet. OpenAI now directs former Atlas users toward supported ChatGPT experiences. Comet remains Perplexity's browser. For a new purchase, I would compare Comet with the current ChatGPT browser capabilities available to my account rather than reproduce an outdated Atlas head-to-head.
 
 OpenAI's [**Atlas retirement guidance**](https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement) confirms that Atlas no longer receives updates. That changes the brief materially. I wouldn't recommend installing a retired browser because an older comparison still names it.
+
+![Comet browser landing page: "The browser that works for you", available for Mac, Windows, iOS, and Android.](/uploads/perplexity-comet-browser.png)
 
 [**Comet**](https://www.perplexity.ai/comet) is listed for Mac, Windows, iOS, and Android. Its browser experience brings Perplexity alongside browsing and page-based tasks. That appeals to me when comparing information across tabs is a regular part of the assignment.
 
